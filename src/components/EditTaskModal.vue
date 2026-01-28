@@ -1,5 +1,76 @@
+<!--<script setup>-->
+<!--import { onMounted, ref, watch } from 'vue'-->
+<!--import { useTasksStore } from '@/store/tasks.js'-->
+
+<!--const props = defineProps({-->
+<!--  task: {-->
+<!--    type: Object,-->
+<!--    required: true-->
+<!--  }-->
+<!--})-->
+
+<!--const emit = defineEmits(['close', 'save'])-->
+<!--const tasksStore = useTasksStore()-->
+<!--const title = ref('')-->
+<!--const description = ref('')-->
+<!--const priority = ref(3)-->
+<!--const deadline = ref(null)-->
+<!--const newFiles = ref([])-->
+<!--const existingFiles = ref([])-->
+<!--const filesToDelete =  ref([])-->
+
+<!--watch(-->
+<!--  () => props.task,-->
+<!--  (task) => {-->
+<!--    if (!task) return-->
+<!--    title.value = task.title-->
+<!--    description.value = task.description || ''-->
+<!--    priority.value = task.priority-->
+<!--    deadline.value = task.deadline-->
+<!--      ? task.deadline.slice(0, 10)-->
+<!--      : null-->
+<!--    existingFiles.value = task.task_files || []-->
+<!--    filesToDelete.value = []-->
+<!--    newFiles.value = []-->
+<!--  },-->
+<!--  { immediate: true }-->
+<!--)-->
+
+<!--function onFileChange(e) {-->
+<!--  const files = Array.from(e.target.files)-->
+<!--  newFiles.value.push(...files)-->
+<!--  e.target.value = ''-->
+<!--}-->
+
+<!--function markFileForDelete(file) {-->
+<!--  existingFiles.value = existingFiles.value.filter(f => f.id !== file.id)-->
+<!--  filesToDelete.value.push(file)-->
+<!--}-->
+
+<!--function removeNewFile(index) {-->
+<!--  newFiles.value.splice(index, 1)-->
+<!--}-->
+
+<!--function save() {-->
+<!--  emit('save', {-->
+<!--    id: props.task.id,-->
+<!--    title: title.value,-->
+<!--    description: description.value,-->
+<!--    priority: priority.value,-->
+<!--    deadline: deadline.value,-->
+<!--    newFiles: newFiles.value,-->
+<!--    filesToDelete: filesToDelete.value,-->
+<!--  })-->
+<!--}-->
+
+<!--onMounted(async () => {-->
+<!--  existingFiles.value = await tasksStore.loadTaskFiles(props.task.id)-->
+<!--  //existingFiles.value = await tasksStore.fetchTaskFiles(props.task.id)-->
+<!--})-->
+<!--</script>-->
 <script setup>
-import { ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
+import { useTasksStore } from '@/store/tasks'
 
 const props = defineProps({
   task: {
@@ -9,40 +80,54 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['close', 'save'])
+const tasksStore = useTasksStore()
 
 const title = ref('')
 const description = ref('')
 const priority = ref(3)
 const deadline = ref(null)
-const newFiles = ref([])
-const existingFiles = ref([])
-const filesToDelete =  ref([])
 
+const newFiles = ref([])
+const filesToDelete = ref([])
+
+/* ✅ реактивно берём файлы ИЗ STORE */
+const existingFiles = computed(() => {
+  return props.task.task_files || []
+})
+
+/* sync task → form */
 watch(
   () => props.task,
   (task) => {
     if (!task) return
+
     title.value = task.title
     description.value = task.description || ''
     priority.value = task.priority
     deadline.value = task.deadline
       ? task.deadline.slice(0, 10)
       : null
-    existingFiles.value = task.task_files || []
-    filesToDelete.value = []
+
     newFiles.value = []
+    filesToDelete.value = []
   },
   { immediate: true }
 )
 
+/* lazy-load файлов */
+onMounted(async () => {
+  await tasksStore.loadTaskFiles(props.task.id)
+  existingFiles.value = props.task.task_files
+})
+
+
 function onFileChange(e) {
-  const files = Array.from(e.target.files)
-  newFiles.value.push(...files)
+  newFiles.value.push(...Array.from(e.target.files))
   e.target.value = ''
 }
 
+/* ❗ ТОЛЬКО UI */
 function markFileForDelete(file) {
-  existingFiles.value = existingFiles.value.filter(f => f.id !== file.id)
   filesToDelete.value.push(file)
 }
 
@@ -58,8 +143,9 @@ function save() {
     priority: priority.value,
     deadline: deadline.value,
     newFiles: newFiles.value,
-    filesToDelete: filesToDelete.value,
+    filesToDelete: filesToDelete.value
   })
+  newFiles.value = []
 }
 </script>
 
@@ -83,12 +169,33 @@ function save() {
 
       <input type="date" v-model="deadline" />
 
-      <!-- EXISTING FILES -->
+<!--      &lt;!&ndash; EXISTING FILES &ndash;&gt;-->
+<!--      <div v-if="existingFiles.length" class="files-section">-->
+<!--        <p class="label">Attached files</p>-->
+
+<!--        <div-->
+<!--          v-for="file in existingFiles"-->
+<!--          :key="file.id"-->
+<!--          class="file-preview"-->
+<!--        >-->
+<!--          <span class="file-name">{{ file.file_name }}</span>-->
+
+<!--          <button-->
+<!--            class="remove-file"-->
+<!--            @click="markFileForDelete(file)"-->
+<!--            type="button"-->
+<!--          >-->
+<!--            ✕-->
+<!--          </button>-->
+<!--        </div>-->
+<!--      </div>-->
       <div v-if="existingFiles.length" class="files-section">
         <p class="label">Attached files</p>
 
         <div
-          v-for="file in existingFiles"
+          v-for="file in existingFiles.filter(
+      f => !filesToDelete.some(d => d.id === f.id)
+    )"
           :key="file.id"
           class="file-preview"
         >
@@ -96,13 +203,14 @@ function save() {
 
           <button
             class="remove-file"
-            @click="markFileForDelete(file)"
             type="button"
+            @click="markFileForDelete(file)"
           >
             ✕
           </button>
         </div>
       </div>
+
 
       <!-- ADD FILES -->
       <label class="file-btn">

@@ -8,19 +8,17 @@
 шаг 17 - Статистика 
 
 
-1️⃣ убрать лишние select task_files(*)
-2️⃣ сделать optimistic update
+1️⃣ Исправить отображение файлов в задаче, при изменении файала(добавлении), счетчик не увеличивается, только после обновления страницы
+2️⃣ Убрать лишний код
+Проверить добавление задачи
 3️⃣ добавить drag & drop
 4️⃣ превью изображений
-НАЧАТЬ ГИТИТЬ!
+
 
 -------Добавление-
 Анимация появления модалки
 Focus trap (Tab внутри модалки)
-Edit Task — reuse modal
-Delete confirmation
-Optimistic UI + Supabase insert
-1️⃣ Edit Task modal
+
 2️⃣ Drag & Drop приоритетов
 3️⃣ Deadline badge + overdue state
 4️⃣ Calendar sync

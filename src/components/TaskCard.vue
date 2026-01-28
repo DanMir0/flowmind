@@ -11,9 +11,6 @@ const props = defineProps({
 
 defineEmits(['edit', 'delete'])
 
-const files = computed(() => props.task.task_files || [])
-
-
 /**
  * Priority label
  */
@@ -107,21 +104,25 @@ async function openFile(file) {
       </span>
     </p>
 
-
     <!-- Files -->
-    <div v-if="files.length" class="files">
-      <p class="files-title">Files:</p>
-      <ul>
-        <li
-          v-for="file in files"
-          :key="file.id"
-        >
-          <a href="#" @click.prevent="openFile(file)">
-            {{ file.file_name }}
-          </a>
-        </li>
-      </ul>
+    <div v-if="task.files_count" class="files-indicator">
+
+      📎 {{ task.files_count }}
     </div>
+
+    <!--    <div v-if="files.length" class="files">-->
+<!--      <p class="files-title">Files:</p>-->
+<!--      <ul>-->
+<!--        <li-->
+<!--          v-for="file in files"-->
+<!--          :key="file.id"-->
+<!--        >-->
+<!--          <a href="#" @click.prevent="openFile(file)">-->
+<!--            {{ file.file_name }}-->
+<!--          </a>-->
+<!--        </li>-->
+<!--      </ul>-->
+<!--    </div>-->
 
     <div class="actions">
       <button
@@ -142,6 +143,13 @@ async function openFile(file) {
 </template>
 
 <style scoped>
+.files-indicator {
+  font-size: 13px;
+  color: #666;
+  margin-top: 6px;
+}
+
+
 .task-card {
   background: white;
   padding: 22px;
