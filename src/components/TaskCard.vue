@@ -1,6 +1,5 @@
 <script setup>
-import { computed, onMounted, ref } from 'vue'
-import { supabase } from '@/services/supabase.js'
+import { computed } from 'vue'
 
 const props = defineProps({
   task: {
@@ -47,45 +46,6 @@ const formattedDeadline = computed(() => {
     ? new Date(props.task.deadline).toLocaleDateString()
     : '—'
 })
-
-/**
- * Open attached file
- */
-async function openFile(file) {
-  const { data, error } = await supabase
-    .storage
-    .from('task-files')
-    .createSignedUrl(file.file_path, 120)
-
-  if (error) {
-    console.error(error)
-    return
-  }
-
-  const response = await fetch(data.signedUrl)
-  const blob = await response.blob()
-
-  const url = window.URL.createObjectURL(blob)
-
-  const a = document.createElement('a')
-  a.href = url
-  a.download = file.file_name // ОРИГИНАЛЬНОЕ ИМЯ (РУССКОЕ)
-  document.body.appendChild(a)
-  a.click()
-
-  document.body.removeChild(a)
-  window.URL.revokeObjectURL(url)
-}
-
-
-// onMounted(async () => {
-//   const { data } = await supabase
-//     .from('task_files')
-//     .select('*')
-//     .eq('task_id', props.task.id)
-//
-//   files.value = data || []
-// })
 </script>
 
 <template>
@@ -106,23 +66,8 @@ async function openFile(file) {
 
     <!-- Files -->
     <div v-if="task.files_count" class="files-indicator">
-
       📎 {{ task.files_count }}
     </div>
-
-    <!--    <div v-if="files.length" class="files">-->
-<!--      <p class="files-title">Files:</p>-->
-<!--      <ul>-->
-<!--        <li-->
-<!--          v-for="file in files"-->
-<!--          :key="file.id"-->
-<!--        >-->
-<!--          <a href="#" @click.prevent="openFile(file)">-->
-<!--            {{ file.file_name }}-->
-<!--          </a>-->
-<!--        </li>-->
-<!--      </ul>-->
-<!--    </div>-->
 
     <div class="actions">
       <button
@@ -143,13 +88,6 @@ async function openFile(file) {
 </template>
 
 <style scoped>
-.files-indicator {
-  font-size: 13px;
-  color: #666;
-  margin-top: 6px;
-}
-
-
 .task-card {
   background: white;
   padding: 22px;
@@ -186,6 +124,12 @@ async function openFile(file) {
   color: #43a047;
 }
 
+.files-indicator {
+  font-size: 13px;
+  color: #666;
+  margin-top: 6px;
+}
+
 .actions {
   margin-top: auto;
   display: flex;
@@ -215,19 +159,5 @@ async function openFile(file) {
 
 .btn.delete:hover {
   background: #c62828;
-}
-
-.files-title {
-  font-weight: 600;
-  font-size: 14px;
-}
-
-.files ul {
-  padding-left: 16px;
-}
-
-.files a {
-  color: #7a3cff;
-  cursor: pointer;
 }
 </style>
