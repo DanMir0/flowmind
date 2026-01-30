@@ -68,7 +68,7 @@ async function confirmDelete() {
     <EditTaskModal
       v-if="taskToEdit"
       :task="taskToEdit"
-      @save="saveEdit"
+      :on-save="saveEdit"
       @close="taskToEdit = null"
     />
 

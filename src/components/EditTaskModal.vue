@@ -1,15 +1,19 @@
 <script setup>
 import { computed, onMounted, ref, watch } from 'vue'
 import { useTasksStore } from '@/store/tasks'
+import Loader from '@/components/Loader.vue'
 
 const props = defineProps({
   task: {
     type: Object,
     required: true
-  }
+  },
+  onSave: {
+    type: Function
+  },
 })
 
-const emit = defineEmits(['close', 'save'])
+const emit = defineEmits(['close'])
 const tasksStore = useTasksStore()
 
 const title = ref('')
@@ -20,7 +24,9 @@ const deadline = ref(null)
 const newFiles = ref([])
 const filesToDelete = ref([])
 
-/* ✅ реактивно берём файлы ИЗ STORE */
+const saving = ref(false)
+
+/* реактивно берём файлы ИЗ STORE */
 const existingFiles = computed(() => {
   return props.task.task_files || []
 })
@@ -50,7 +56,6 @@ onMounted(async () => {
   existingFiles.value = props.task.task_files
 })
 
-
 function onFileChange(e) {
   newFiles.value.push(...Array.from(e.target.files))
   e.target.value = ''
@@ -65,22 +70,34 @@ function removeNewFile(index) {
   newFiles.value.splice(index, 1)
 }
 
-function save() {
-  emit('save', {
-    id: props.task.id,
-    title: title.value,
-    description: description.value,
-    priority: priority.value,
-    deadline: deadline.value,
-    newFiles: newFiles.value,
-    filesToDelete: filesToDelete.value
-  })
-  newFiles.value = []
+async function save() {
+  if (saving.value) return
+
+  saving.value = true
+
+  try {
+    await props.onSave({
+      id: props.task.id,
+      title: title.value,
+      description: description.value,
+      priority: priority.value,
+      deadline: deadline.value,
+      newFiles: newFiles.value,
+      filesToDelete: filesToDelete.value
+    })
+
+    emit('close')
+  } finally {
+    saving.value = false
+    newFiles.value = []
+  }
 }
 </script>
 
 <template>
-  <div class="modal-backdrop" @click.self="emit('close')">
+  <Loader :visible="saving" />
+
+  <div class="modal-backdrop" @click.self="!saving && emit('close')">
     <div class="modal">
       <h2>Edit Task</h2>
 
@@ -160,6 +177,10 @@ function save() {
 </template>
 
 <style scoped>
+.modal {
+  position: relative; /* 👈 критично для overlay */
+}
+
 .modal-backdrop {
   position: fixed;
   inset: 0;
