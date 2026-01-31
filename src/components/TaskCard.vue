@@ -10,6 +10,14 @@ const props = defineProps({
 
 defineEmits(['edit', 'delete'])
 
+const filesCount = computed(() => {
+  if (Array.isArray(props.task.task_files)) {
+    return props.task.task_files.length
+  }
+
+  return props.task.files_count || 0
+})
+
 /**
  * Priority label
  */
@@ -65,8 +73,8 @@ const formattedDeadline = computed(() => {
     </p>
 
     <!-- Files -->
-    <div v-if="task.files_count" class="files-indicator">
-      📎 {{ task.files_count }}
+    <div v-if="filesCount > 0" class="files-indicator">
+      📎 {{ filesCount }}
     </div>
 
     <div class="actions">

@@ -20,16 +20,8 @@ export const useTasksStore = defineStore('tasks', {
       this.loading = true
 
       const { data, error } = await supabase
-        .from('tasks')
-        .select(`
-          id,
-          title,
-          description,
-          priority,
-          deadline,
-          created_at,
-          files_count
-        `)
+        .from('tasks_with_files_count')
+        .select('*')
         .eq('user_id', auth.user.id)
         .order('created_at', { ascending: false })
 
@@ -37,7 +29,7 @@ export const useTasksStore = defineStore('tasks', {
 
       this.tasks = data.map(task => ({
         ...task,
-        task_files: undefined // lazy-load
+        task_files: undefined // lazy load
       }))
 
       this.loading = false
@@ -102,8 +94,6 @@ export const useTasksStore = defineStore('tasks', {
       const auth = useAuthStore()
       if (!auth.user) throw new Error('Not authenticated')
 
-      const task = this.tasks.find(t => t.id === taskId)
-
       /* update task fields */
       await supabase
         .from('tasks')
@@ -117,7 +107,7 @@ export const useTasksStore = defineStore('tasks', {
         .eq('id', taskId)
         .eq('user_id', auth.user.id)
 
-      /* DELETE FILES (без RPC) */
+      /* delete files */
       for (const file of payload.filesToDelete || []) {
         await supabase.storage
           .from('task-files')
@@ -129,21 +119,42 @@ export const useTasksStore = defineStore('tasks', {
           .eq('id', file.id)
       }
 
-      /* ОДИН РАЗ уменьшаем счётчик */
-      if (payload.filesToDelete?.length) {
-        const { data: newCount } = await supabase.rpc(
-          'task_increment_files',
-          {
-            task_id: taskId,
-            delta: -payload.filesToDelete.length
-          }
-        )
-
-        task.files_count = newCount
-      }
-
-      /* upload новых файлов (там уже есть optimistic) */
+      /* upload new files */
       await this.uploadMultipleFiles(taskId, payload.newFiles || [])
+
+      /* 🔥 ПЕРЕЗАГРУЖАЕМ ФАЙЛЫ ИЗ БД */
+      const { data: files, error: filesError } = await supabase
+        .from('task_files')
+        .select('*')
+        .eq('task_id', taskId)
+        .order('uploaded_at', { ascending: true })
+
+      if (filesError) throw filesError
+
+      /* 🔥 ПЕРЕЗАГРУЖАЕМ ЗАДАЧУ */
+      const { data: freshTask, error } = await supabase
+        .from('tasks')
+        .select(`
+      id,
+      title,
+      description,
+      priority,
+      deadline,
+      created_at,
+      files_count
+    `)
+        .eq('id', taskId)
+        .single()
+
+      if (error) throw error
+
+      /* 🔥 АТОМАРНАЯ ЗАМЕНА */
+      const index = this.tasks.findIndex(t => t.id === taskId)
+
+      this.tasks[index] = {
+        ...freshTask,
+        task_files: files
+      }
     },
 
     async uploadMultipleFiles(taskId, files) {
@@ -156,7 +167,7 @@ export const useTasksStore = defineStore('tasks', {
       for (const file of files) {
         const tempId = crypto.randomUUID()
 
-        // optimistic UI
+        /* optimistic UI */
         task.task_files.push({
           id: tempId,
           task_id: taskId,
@@ -169,12 +180,12 @@ export const useTasksStore = defineStore('tasks', {
         const filePath = `${auth.user.id}/${taskId}/${safeName}`
 
         try {
-          // upload
+          /* upload */
           await supabase.storage
             .from('task-files')
             .upload(filePath, file)
 
-          // insert metadata
+          /* insert metadata */
           const { data: savedFile, error } = await supabase
             .from('task_files')
             .insert({
@@ -189,34 +200,23 @@ export const useTasksStore = defineStore('tasks', {
 
           if (error) throw error
 
-          // replace temp file
+          /* replace temp */
           const idx = task.task_files.findIndex(f => f.id === tempId)
           task.task_files[idx] = savedFile
 
-          // ОБНОВЛЯЕМ СЧЁТЧИК ЛОКАЛЬНО
-          const { data: newCount } = await supabase.rpc(
-            'task_increment_files',
-            { task_id: taskId, delta: 1 }
-          )
-
-          task.files_count = newCount
-
         } catch (e) {
-          // rollback
+          /* rollback */
           task.task_files = task.task_files.filter(f => f.id !== tempId)
           throw e
         }
       }
     },
 
-    /* =========================
-       DELETE FILE (OPTIMISTIC)
-    ========================= */
     async deleteFile(file) {
       const task = this.tasks.find(t => t.id === file.task_id)
       if (!task) return
 
-      // optimistic UI
+      /* optimistic UI */
       task.task_files = task.task_files.filter(f => f.id !== file.id)
 
       await supabase.storage
@@ -233,7 +233,7 @@ export const useTasksStore = defineStore('tasks', {
         { task_id: file.task_id, delta: -1 }
       )
 
-      task.files_count = newCount
+      task.files_count = Math.max(0, newCount)
     },
 
     /* =========================

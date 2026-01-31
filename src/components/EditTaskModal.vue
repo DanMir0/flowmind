@@ -16,6 +16,10 @@ const props = defineProps({
 const emit = defineEmits(['close'])
 const tasksStore = useTasksStore()
 
+const task = computed(() =>
+  tasksStore.tasks.find(t => t.id === props.task.id)
+)
+
 const title = ref('')
 const description = ref('')
 const priority = ref(3)
@@ -27,13 +31,11 @@ const filesToDelete = ref([])
 const saving = ref(false)
 
 /* реактивно берём файлы ИЗ STORE */
-const existingFiles = computed(() => {
-  return props.task.task_files || []
-})
+const existingFiles = computed(() => task.value?.task_files || [])
 
 /* sync task → form */
 watch(
-  () => props.task,
+  task,
   (task) => {
     if (!task) return
 
@@ -53,7 +55,6 @@ watch(
 /* lazy-load файлов */
 onMounted(async () => {
   await tasksStore.loadTaskFiles(props.task.id)
-  existingFiles.value = props.task.task_files
 })
 
 function onFileChange(e) {
