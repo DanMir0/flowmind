@@ -62,7 +62,7 @@ export const useTasksStore = defineStore('tasks', {
       const auth = useAuthStore()
       if (!auth.user) throw new Error('Not authenticated')
 
-      const { data, error } = await supabase
+      const { data: task, error } = await supabase
         .from('tasks')
         .insert({
           title: payload.title,
@@ -84,10 +84,17 @@ export const useTasksStore = defineStore('tasks', {
 
       if (error) throw error
 
-      this.tasks.unshift({
-        ...data,
-        task_files: undefined
-      })
+      const newTask = {
+        ...task,
+        task_files: []
+      }
+
+      this.tasks.unshift(newTask)
+
+      /* upload files (if any) */
+      if (payload.newFiles?.length) {
+        await this.uploadMultipleFiles(newTask.id, payload.newFiles)
+      }
     },
 
     async updateTask(taskId, payload) {

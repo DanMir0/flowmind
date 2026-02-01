@@ -2,6 +2,7 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useTasksStore } from '@/store/tasks'
 import { useAuthStore } from '@/store/auth'
+import Loader from '@/components/Loader.vue'
 
 const emit = defineEmits(['close'])
 
@@ -12,7 +13,7 @@ const title = ref('')
 const description = ref('')
 const deadline = ref('')
 const priority = ref(3)
-const file = ref(null)
+const newFiles = ref([])
 
 const loading = ref(false)
 const error = ref('')
@@ -26,17 +27,16 @@ const canSubmit = computed(() =>
 )
 
 function onFileChange(e) {
-  const selected = e.target.files[0]
-  if (!selected) return
-  file.value = selected
+  newFiles.value.push(...Array.from(e.target.files))
+  e.target.value = ''
 }
 
-function removeFile() {
-  file.value = null
+function removeNewFile(index) {
+  newFiles.value.splice(index, 1)
 }
 
 async function submit() {
-  if (!canSubmit.value) return
+  if (!canSubmit.value || loading.value) return
 
   loading.value = true
   error.value = ''
@@ -47,7 +47,7 @@ async function submit() {
       description: description.value,
       deadline: deadline.value || null,
       priority: priority.value,
-      file: file.value || null
+      newFiles: newFiles.value,
     })
 
     emit('close')
@@ -55,6 +55,7 @@ async function submit() {
     error.value = e.message || 'Failed to add task'
   } finally {
     loading.value = false
+    newFiles.value = []
   }
 }
 
@@ -69,8 +70,9 @@ onUnmounted(() => {
 
 <template>
   <Teleport to="body">
-    <div class="overlay" @click.self="emit('close')">
+    <div class="overlay" @click.self="!loading && emit('close')">
       <div class="modal">
+        <Loader :visible="loading"/>
         <h3>Add Task</h3>
 
         <input v-model="title" placeholder="Task title" />
@@ -94,26 +96,29 @@ onUnmounted(() => {
           <label class="file-btn">
             <input
               type="file"
+              multiple
               class="hidden-input"
               @change="onFileChange"
             />
             📎 Attach file
           </label>
 
-          <div v-if="file" class="file-preview">
-            <span class="file-name">{{ file.name }}</span>
+          <TransitionGroup name="file" tag="div">
+            <div
+              v-for="(file, index) in newFiles"
+              :key="file.name + index"
+              class="file-preview">
+              <span class="file-name">{{ file.name }}</span>
 
-            <button
-              class="remove-file"
-              type="button"
-              @click="removeFile"
-            >
-              ✕
-            </button>
-          </div>
-
+              <button
+                class="remove-file"
+                type="button"
+                @click="removeNewFile(index)">
+                ✕
+              </button>
+            </div>
+          </TransitionGroup>
         </div>
-
 
         <p v-if="error" class="error">{{ error }}</p>
 
@@ -147,6 +152,7 @@ onUnmounted(() => {
 }
 
 .modal {
+  position: relative;
   width: 420px;
   background: white;
   padding: 28px;
@@ -222,11 +228,12 @@ onUnmounted(() => {
 
 .file-preview {
   display: flex;
-  align-items: center;
   justify-content: space-between;
+  align-items: center;
   background: #f7f5ff;
   border-radius: 12px;
-  padding: 10px 14px;
+  padding: 8px 12px;
+  margin-bottom: 6px;
   font-size: 14px;
 }
 
@@ -245,4 +252,19 @@ onUnmounted(() => {
   color: #e53935;
 }
 
+/* animations */
+.file-enter-active,
+.file-leave-active {
+  transition: all 0.2s ease;
+}
+
+.file-enter-from {
+  opacity: 0;
+  transform: translateY(-6px);
+}
+
+.file-leave-to {
+  opacity: 0;
+  transform: translateX(6px);
+}
 </style>
