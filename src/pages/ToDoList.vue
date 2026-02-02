@@ -121,6 +121,9 @@ async function confirmDelete() {
         </button>
       </div>
     </div>
+    <p v-if="!filteredTasks.length && !loading">
+      No tasks with this priority
+    </p>
 
     <p v-if="loading">Loading...</p>
     <p v-if="error" class="error">{{ error }}</p>
