@@ -59,18 +59,17 @@ const formattedDeadline = computed(() => {
 <template>
   <div class="task-card">
     <h3>{{ task.title }}</h3>
+      <p class="meta">
+        Deadline:
+        <span>{{ formattedDeadline }}</span>
+      </p>
 
-    <p class="meta">
-      Deadline:
-      <span>{{ formattedDeadline }}</span>
-    </p>
-
-    <p class="meta">
-      Priority:
-      <span :class="['priority', priorityClass]">
-        {{ priorityLabel }}
-      </span>
-    </p>
+    <div class="priority-badge" :class="priorityClass">
+      <span v-if="task.priority === 1">🔥</span>
+      <span v-else-if="task.priority === 2">⚡</span>
+      <span v-else>🌿</span>
+      {{ priorityLabel }}
+    </div>
 
     <!-- Files -->
     <div v-if="filesCount > 0" class="files-indicator">
@@ -104,6 +103,15 @@ const formattedDeadline = computed(() => {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.task-card:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    0 12px 24px rgba(0, 0, 0, 0.08);
 }
 
 .task-card h3 {
@@ -116,26 +124,37 @@ const formattedDeadline = computed(() => {
   color: #555;
 }
 
-.priority {
+.priority-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 13px;
   font-weight: 600;
+  width: fit-content;
+
 }
 
-.priority.high {
+.priority-badge span {
+  margin-right: 6px;
+}
+
+/* High */
+.priority-badge.high {
+  background: rgba(229, 57, 53, 0.12);
   color: #e53935;
 }
 
-.priority.medium {
-  color: #fb8c00;
+/* Medium */
+.priority-badge.medium {
+  background: rgba(255, 167, 38, 0.15);
+  color: #ffa726;
 }
 
-.priority.low {
+/* Low */
+.priority-badge.low {
+  background: rgba(67, 160, 71, 0.15);
   color: #43a047;
-}
-
-.files-indicator {
-  font-size: 13px;
-  color: #666;
-  margin-top: 6px;
 }
 
 .actions {
