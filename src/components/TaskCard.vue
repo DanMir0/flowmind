@@ -1,5 +1,6 @@
 <script setup>
 import { computed } from 'vue'
+import { getDeadlineState } from '@/utils/getDeadlineState.js'
 
 const props = defineProps({
   task: {
@@ -9,6 +10,8 @@ const props = defineProps({
 })
 
 defineEmits(['edit', 'delete'])
+
+const deadlineState = computed(() => getDeadlineState(props.task.deadline))
 
 const filesCount = computed(() => {
   if (Array.isArray(props.task.task_files)) {
@@ -57,12 +60,23 @@ const formattedDeadline = computed(() => {
 </script>
 
 <template>
-  <div class="task-card">
+  <div class="task-card"  :class="deadlineState">
+
+    <span
+      v-if="deadlineState === 'overdue'"
+      class="badge-overdue">
+      Overdue
+    </span>
     <h3>{{ task.title }}</h3>
-      <p class="meta">
-        Deadline:
-        <span>{{ formattedDeadline }}</span>
-      </p>
+    <p
+      class="deadline"
+      :class="{
+      'deadline-soon-text': deadlineState === 'soon',
+      'deadline-overdue-text': deadlineState === 'overdue'
+    }">
+      Deadline: {{ formattedDeadline }}
+    </p>
+
 
     <div class="priority-badge" :class="priorityClass">
       <span v-if="task.priority === 1">🔥</span>
@@ -96,6 +110,7 @@ const formattedDeadline = computed(() => {
 
 <style scoped>
 .task-card {
+  position: relative;
   background: white;
   padding: 22px;
   border-radius: 20px;
@@ -108,6 +123,21 @@ const formattedDeadline = computed(() => {
     box-shadow 0.18s ease;
 }
 
+.task-card.deadline-soon {
+  border: 1.5px solid #ffb703;
+  background: rgba(255,183,3,0.08);
+}
+
+.deadline-soon-text {
+  color: #f59e0b;
+  font-weight: 600;
+}
+
+.deadline-overdue-text {
+  color: #ff4d4f;
+  font-weight: 700;
+}
+
 .task-card:hover {
   transform: translateY(-4px);
   box-shadow:
@@ -117,11 +147,25 @@ const formattedDeadline = computed(() => {
 .task-card h3 {
   font-size: 18px;
   font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 6px;
+  line-height: 1.3;
 }
 
-.meta {
-  font-size: 14px;
-  color: #555;
+/* overdue badge */
+.badge-overdue {
+  display: block !important; /* На всякий случай */
+  opacity: 1 !important;
+  visibility: visible !important;
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: #e53935;
+  color: white;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
 }
 
 .priority-badge {
@@ -164,8 +208,8 @@ const formattedDeadline = computed(() => {
 }
 
 .btn {
-  padding: 8px 16px;
-  border-radius: 20px;
+  padding: 8px 20px;
+  border-radius: 12px;
   border: none;
   font-size: 14px;
   cursor: pointer;
