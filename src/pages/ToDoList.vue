@@ -87,6 +87,10 @@ async function confirmDelete() {
   await tasksStore.deleteTask(taskToDelete.value.id)
   taskToDelete.value = null
 }
+
+async function toggleComplete(task) {
+  await tasksStore.toggleTaskCompleted(task.id, !task.completed)
+}
 </script>
 
 <template>
@@ -135,6 +139,7 @@ async function confirmDelete() {
         :task="task"
         @delete="requestDelete"
         @edit="requestEdit"
+        @toggle-complete="toggleComplete"
       />
     </div>
 

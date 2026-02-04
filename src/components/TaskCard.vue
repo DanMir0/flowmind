@@ -9,7 +9,7 @@ const props = defineProps({
   }
 })
 
-defineEmits(['edit', 'delete'])
+defineEmits(['edit', 'delete', 'toggle-complete'])
 
 const deadlineInfo = computed(() =>
   getDeadlineState(props.task.deadline)
@@ -62,12 +62,25 @@ const formattedDeadline = computed(() => {
 </script>
 
 <template>
-  <div class="task-card"  :class="deadlineInfo.state">
 
+
+  <div class="task-card" :class="[deadlineInfo.state, { completed: task.completed}]">
+    <div class="task-header">
+      <label class="toggle">
+        <input
+          type="checkbox"
+          :checked="task.completed"
+          @change="$emit('toggle-complete', task)" />
+        <span class="slider"></span>
+      </label>
+
+      <span class="toggle-label">
+    {{ task.completed ? 'Done' : 'Todo' }}
+  </span>
+    </div>
     <div
       v-if="deadlineInfo.state === 'overdue'"
-      class="overdue-badge"
-    >
+      class="overdue-badge">
       ⛔ Overdue
     </div>
     <h3>{{ task.title }}</h3>
@@ -114,6 +127,73 @@ const formattedDeadline = computed(() => {
 </template>
 
 <style scoped>
+.task-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Toggle container */
+.toggle {
+  position: relative;
+  width: 42px;
+  height: 22px;
+}
+
+.toggle input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* Track */
+.slider {
+  position: absolute;
+  inset: 0;
+  background: #e5e7eb;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.25s;
+}
+
+/* Knob */
+.slider::before {
+  content: '';
+  position: absolute;
+  height: 18px;
+  width: 18px;
+  left: 2px;
+  top: 2px;
+  background: white;
+  border-radius: 50%;
+  transition: transform 0.25s;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* Checked */
+.toggle input:checked + .slider {
+  background: #22c55e;
+}
+
+.toggle input:checked + .slider::before {
+  transform: translateX(20px);
+}
+
+.toggle-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #6b7280;
+}
+
+.completed {
+  background: #f3f4f6;
+  opacity: 0.75;
+}
+
+.task-card.completed h3 {
+  text-decoration: line-through;
+}
+
 .task-card {
   position: relative;
   background: white;
@@ -123,20 +203,19 @@ const formattedDeadline = computed(() => {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  transition:
-    transform 0.18s ease,
-    box-shadow 0.18s ease;
+  transition: transform 0.18s ease,
+  box-shadow 0.18s ease;
 }
 
 /* DEADLINE STATES */
 .task-card.soon {
   border: 1.5px solid #ffb703;
-  background: rgba(255,183,3,0.06);
+  background: rgba(255, 183, 3, 0.06);
 }
 
 .task-card.overdue {
   border: 1.5px solid #ff4d4f;
-  background: rgba(255,77,79,0.06);
+  background: rgba(255, 77, 79, 0.06);
 }
 
 /* OVERDUE BADGE */
@@ -165,12 +244,11 @@ const formattedDeadline = computed(() => {
 .deadline-label.overdue {
   color: #ff4d4f;
   font-weight: 700;
-  }
+}
 
 .task-card:hover {
   transform: translateY(-4px);
-  box-shadow:
-    0 12px 24px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
 }
 
 .task-card h3 {

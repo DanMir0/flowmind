@@ -255,6 +255,35 @@ export const useTasksStore = defineStore('tasks', {
       if (error) throw error
 
       this.tasks = this.tasks.filter(t => t.id !== taskId)
+    },
+
+    async toggleTaskCompleted(taskId) {
+      const task = this.tasks.find(t => t.id === taskId)
+      if (!task) return
+
+      const previous = task.completed
+      const newValue = !previous
+
+      // optimistic
+      task.completed = newValue
+      task.completed_at = newValue ? new Date() : null
+
+      const { error } = await supabase
+        .from('tasks')
+        .update({
+          completed: newValue,
+          completed_at: task.completed_at
+        })
+        .eq('id', taskId)
+
+      if (error) {
+        // rollback
+        task.completed = previous
+        task.completed_at = previous ? task.completed_at : null
+        throw error
+      }
     }
+
+
   }
 })
