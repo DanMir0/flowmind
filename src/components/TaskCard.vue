@@ -11,7 +11,9 @@ const props = defineProps({
 
 defineEmits(['edit', 'delete'])
 
-const deadlineState = computed(() => getDeadlineState(props.task.deadline))
+const deadlineInfo = computed(() =>
+  getDeadlineState(props.task.deadline)
+)
 
 const filesCount = computed(() => {
   if (Array.isArray(props.task.task_files)) {
@@ -60,21 +62,24 @@ const formattedDeadline = computed(() => {
 </script>
 
 <template>
-  <div class="task-card"  :class="deadlineState">
+  <div class="task-card"  :class="deadlineInfo.state">
 
-    <span
-      v-if="deadlineState === 'overdue'"
-      class="badge-overdue">
-      Overdue
-    </span>
+    <div
+      v-if="deadlineInfo.state === 'overdue'"
+      class="overdue-badge"
+    >
+      ⛔ Overdue
+    </div>
     <h3>{{ task.title }}</h3>
-    <p
-      class="deadline"
-      :class="{
-      'deadline-soon-text': deadlineState === 'soon',
-      'deadline-overdue-text': deadlineState === 'overdue'
-    }">
-      Deadline: {{ formattedDeadline }}
+    <p class="deadline">
+      🕒 {{ formattedDeadline }}
+      <span
+        v-if="deadlineInfo.label"
+        class="deadline-label"
+        :class="deadlineInfo.state"
+      >
+        · {{ deadlineInfo.label }}
+      </span>
     </p>
 
 
@@ -123,20 +128,44 @@ const formattedDeadline = computed(() => {
     box-shadow 0.18s ease;
 }
 
-.task-card.deadline-soon {
+/* DEADLINE STATES */
+.task-card.soon {
   border: 1.5px solid #ffb703;
-  background: rgba(255,183,3,0.08);
+  background: rgba(255,183,3,0.06);
 }
 
-.deadline-soon-text {
+.task-card.overdue {
+  border: 1.5px solid #ff4d4f;
+  background: rgba(255,77,79,0.06);
+}
+
+/* OVERDUE BADGE */
+.overdue-badge {
+  position: absolute;
+  top: -10px;
+  right: 16px;
+  background: #ff4d4f;
+  color: white;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 999px;
+}
+
+/* DEADLINE TEXT */
+.deadline {
+  font-size: 14px;
+}
+
+.deadline-label.soon {
   color: #f59e0b;
   font-weight: 600;
 }
 
-.deadline-overdue-text {
+.deadline-label.overdue {
   color: #ff4d4f;
   font-weight: 700;
-}
+  }
 
 .task-card:hover {
   transform: translateY(-4px);
