@@ -73,17 +73,19 @@ const formattedDeadline = computed(() => {
           @change="$emit('toggle-complete', task)" />
         <span class="slider"></span>
       </label>
-
       <span class="toggle-label">
-    {{ task.completed ? 'Done' : 'Todo' }}
-  </span>
+        {{ task.completed ? 'Done' : 'Todo' }}
+      </span>
     </div>
+
     <div
       v-if="deadlineInfo.state === 'overdue'"
       class="overdue-badge">
       ⛔ Overdue
     </div>
+
     <h3>{{ task.title }}</h3>
+
     <p class="deadline">
       🕒 {{ formattedDeadline }}
       <span
@@ -94,7 +96,6 @@ const formattedDeadline = computed(() => {
         · {{ deadlineInfo.label }}
       </span>
     </p>
-
 
     <div class="priority-badge" :class="priorityClass">
       <span v-if="task.priority === 1">🔥</span>
@@ -111,15 +112,13 @@ const formattedDeadline = computed(() => {
     <div class="actions">
       <button
         class="btn edit"
-        @click="$emit('edit', task)"
-      >
+        @click="$emit('edit', task)">
         Edit
       </button>
 
       <button
         class="btn delete"
-        @click="$emit('delete', task)"
-      >
+        @click="$emit('delete', task)">
         Delete
       </button>
     </div>

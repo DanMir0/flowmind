@@ -29,7 +29,8 @@ export const useTasksStore = defineStore('tasks', {
 
       this.tasks = data.map(task => ({
         ...task,
-        task_files: undefined // lazy load
+        task_files: undefined, // lazy load
+        completed: Boolean(task.completed),
       }))
 
       this.loading = false
@@ -261,29 +262,30 @@ export const useTasksStore = defineStore('tasks', {
       const task = this.tasks.find(t => t.id === taskId)
       if (!task) return
 
-      const previous = task.completed
-      const newValue = !previous
+      const prevCompleted = task.completed
+      const prevCompletedAt = task.completed_at
+
+      const newValue = !prevCompleted
+      const newCompletedAt = newValue ? new Date().toISOString() : null
 
       // optimistic
       task.completed = newValue
-      task.completed_at = newValue ? new Date() : null
+      task.completed_at = newCompletedAt
 
       const { error } = await supabase
         .from('tasks')
         .update({
           completed: newValue,
-          completed_at: task.completed_at
+          completed_at: newCompletedAt,
         })
         .eq('id', taskId)
 
       if (error) {
         // rollback
-        task.completed = previous
-        task.completed_at = previous ? task.completed_at : null
+        task.completed = prevCompleted
+        task.completed_at = prevCompletedAt
         throw error
       }
     }
-
-
   }
 })
