@@ -17,6 +17,7 @@ const taskToEdit = ref(null)
 
 const sortKey = ref('created_desc')
 const priorityFilter = ref('all')
+const statusFilter = ref('active')
 
 const priorityFilters = [
   { label: 'All', value: 'all' },
@@ -56,7 +57,7 @@ const sortedTasks = computed(() => {
   }
 })
 
-const filteredTasks = computed(() => {
+const priorityFilteredTasks = computed(() => {
   if (priorityFilter.value === 'all') {
     return sortedTasks.value
   }
@@ -64,6 +65,17 @@ const filteredTasks = computed(() => {
   return sortedTasks.value.filter(
     t => t.priority === priorityFilter.value
   )
+})
+
+const  visibleTasks = computed(() => {
+  switch (statusFilter.value) {
+    case 'active':
+      return priorityFilteredTasks.value.filter(t => !t.completed)
+    case 'completed':
+      return priorityFilteredTasks.value.filter(t => t.completed)
+    default:
+      return priorityFilteredTasks.value
+  }
 })
 
 onMounted(() => {
@@ -101,16 +113,46 @@ async function toggleComplete(task) {
 
       <div class="controls">
 
-        <div class="filters">
+        <!-- PRIORITY -->
+        <div class="filters-group">
           <button
             v-for="option in priorityFilters"
             :key="option.value"
             :class="['filter-pill', { active: priorityFilter === option.value }]"
-            @click="priorityFilter = option.value">
+            @click="priorityFilter = option.value"
+          >
             {{ option.label }}
           </button>
         </div>
 
+        <!-- STATUS -->
+        <div class="filters-group">
+          <button
+            class="filter-pill"
+            :class="{ active: statusFilter === 'active' }"
+            @click="statusFilter = 'active'"
+          >
+            Active
+          </button>
+
+          <button
+            class="filter-pill"
+            :class="{ active: statusFilter === 'completed' }"
+            @click="statusFilter = 'completed'"
+          >
+            Completed
+          </button>
+
+          <button
+            class="filter-pill"
+            :class="{ active: statusFilter === 'all' }"
+            @click="statusFilter = 'all'"
+          >
+            All
+          </button>
+        </div>
+
+        <!-- SORT -->
         <select v-model="sortKey" class="sort-select">
           <option value="created_desc">Newest first</option>
           <option value="created_asc">Oldest first</option>
@@ -123,9 +165,11 @@ async function toggleComplete(task) {
         <button class="add-btn" @click="showAddModal = true">
           Add Task
         </button>
+
       </div>
+
     </div>
-    <p v-if="!filteredTasks.length && !loading">
+    <p v-if="!visibleTasks.length && !loading">
       No tasks with this priority
     </p>
 
@@ -134,7 +178,7 @@ async function toggleComplete(task) {
 
     <div class="tasks-grid">
       <TaskCard
-        v-for="task in filteredTasks"
+        v-for="task in visibleTasks"
         :key="task.id"
         :task="task"
         @delete="requestDelete"
@@ -203,8 +247,38 @@ async function toggleComplete(task) {
 
 .controls {
   display: flex;
-  gap: 14px;
   align-items: center;
+  gap: 20px;
+}
+
+/* группа фильтров */
+.filters-group {
+  display: flex;
+  gap: 8px;
+  padding: 4px;
+  background: #fafafa;
+  border-radius: 24px;
+  border: 1px solid #eee;
+}
+
+.filter-pill {
+  padding: 8px 14px;
+  border-radius: 16px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-weight: 500;
+  color: #555;
+  transition: all 0.2s ease;
+}
+
+.filter-pill:hover {
+  background: #f0f0f0;
+}
+
+.filter-pill.active {
+  background: #7a3cff;
+  color: white;
 }
 
 .sort-select {
@@ -215,27 +289,6 @@ async function toggleComplete(task) {
   background: white;
   cursor: pointer;
 }
-
-.filters {
-  display: flex;
-  gap: 8px;
-}
-
-.filter-pill {
-  padding: 8px 14px;
-  border-radius: 20px;
-  border: 1px solid #e0e0e0;
-  background: white;
-  cursor: pointer;
-  font-weight: 500;
-}
-
-.filter-pill.active {
-  background: #f1ebff;
-  border-color: #7a3cff;
-  color: #7a3cff;
-}
-
 </style>
 
 
