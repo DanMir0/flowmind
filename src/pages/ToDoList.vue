@@ -7,6 +7,7 @@ import TaskCard from '@/components/TaskCard.vue'
 import AddTaskModal from '@/components/AddTaskModal.vue'
 import ConfirmDeleteModal from '@/components/ConfirmDeleteTaskModal.vue'
 import EditTaskModal from '@/components/EditTaskModal.vue'
+import EmptyState from '@/components/EmptyState.vue'
 
 const tasksStore = useTasksStore()
 const { tasks, loading, error } = storeToRefs(tasksStore)
@@ -103,6 +104,29 @@ async function confirmDelete() {
 async function toggleComplete(task) {
   await tasksStore.toggleTaskCompleted(task.id, !task.completed)
 }
+
+const emptyType = computed(() => {
+  if (loading.value) return null
+
+  if (!tasks.value.length) {
+    return 'no-tasks'
+  }
+
+  if (
+    tasks.value.length > 0 &&
+    visibleTasks.value.length === 0 &&
+    statusFilter.value === 'active'
+  ) {
+    return 'all-completed'
+  }
+
+  if (visibleTasks.value.length === 0) {
+    return 'filtered'
+  }
+
+  return null
+})
+
 </script>
 
 <template>
@@ -169,14 +193,22 @@ async function toggleComplete(task) {
       </div>
 
     </div>
-    <p v-if="!visibleTasks.length && !loading">
-      No tasks with this priority
-    </p>
 
     <p v-if="loading">Loading...</p>
     <p v-if="error" class="error">{{ error }}</p>
 
-    <div class="tasks-grid">
+    <EmptyState
+      v-if="emptyType"
+      :type="emptyType"
+      @add="showAddModal = true"
+      @resetFilters="() => {
+        priorityFilter = 'all'
+        statusFilter = 'all'
+        sortKey = 'created_desc'
+      }"
+      @showCompleted="statusFilter = 'completed'" />
+
+    <div v-else class="tasks-grid">
       <TaskCard
         v-for="task in visibleTasks"
         :key="task.id"
