@@ -1,55 +1,62 @@
 <script setup>
-defineProps({
+import filteredTaskImg from '@/assets/filteredTaskImg.png'
+import allCompletedTaskImg from '@/assets/allCompletedTaskImg.png'
+import noTaskImg from '@/assets/noTaskImg.png'
+import { computed } from 'vue'
+
+const props = defineProps({
   type: {
     type: String,
     required: true,
     // 'no-tasks' | 'all-completed' | 'filtered'
   },
 })
+defineEmits(['add', 'showCompleted', 'resetFilters'])
 
 const contentMap = {
   'no-tasks': {
-    emoji: '🗂️',
+    image: noTaskImg,
     title: 'No tasks yet',
     subtitle: 'Create your first task to get started',
     action: 'add',
     actionLabel: 'Add Task',
   },
   'all-completed': {
-    emoji: '🎉',
+    image: allCompletedTaskImg,
     title: 'All tasks completed!',
     subtitle: 'Great job! You’ve finished everything.',
     action: 'showCompleted',
     actionLabel: 'View completed',
   },
   filtered: {
-    emoji: '🔍',
+    image: filteredTaskImg,
     title: 'No tasks found',
     subtitle: 'Try changing filters or sorting',
     action: 'resetFilters',
     actionLabel: 'Reset filters',
   },
 }
+
+const content = computed(() => contentMap[props.type])
 </script>
 
 <template>
-  <div class="empty-state">
-    <div class="emoji">{{ contentMap[type].emoji }}</div>
+  <div v-if="content" class="empty-state">
+    <div class="illustration">
+      <img
+        :src="content.image"
+        :alt="content.title" />
+    </div>
 
-    <h3 class="title">
-      {{ contentMap[type].title }}
-    </h3>
+    <h3 class="title">{{ content.title }}</h3>
 
-    <p class="subtitle">
-      {{ contentMap[type].subtitle }}
-    </p>
+    <p class="subtitle">{{ content.subtitle }}</p>
 
     <button
-      v-if="contentMap[type].action"
+      v-if="content.action"
       class="primary-btn"
-      @click="$emit(contentMap[type].action)"
-    >
-      {{ contentMap[type].actionLabel }}
+      @click="$emit(content.action)">
+      {{ content.actionLabel }}
     </button>
   </div>
 </template>
@@ -63,9 +70,16 @@ const contentMap = {
   animation: fadeIn 0.25s ease;
 }
 
-.emoji {
-  font-size: 64px;
-  margin-bottom: 12px;
+.illustration {
+  display: flex;
+  margin-bottom: 16px;
+  justify-content: center;
+}
+
+.illustration img {
+  width: 180px;
+  max-width: 100%;
+  opacity: 0.95;
 }
 
 .title {
