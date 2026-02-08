@@ -2,7 +2,7 @@
 import filteredTaskImg from '@/assets/filteredTaskImg.png'
 import allCompletedTaskImg from '@/assets/allCompletedTaskImg.png'
 import noTaskImg from '@/assets/noTaskImg.png'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 
 const props = defineProps({
   type: {
@@ -12,6 +12,8 @@ const props = defineProps({
   },
 })
 defineEmits(['add', 'showCompleted', 'resetFilters'])
+
+const imageLoaded = ref(false)
 
 const contentMap = {
   'no-tasks': {
@@ -45,7 +47,9 @@ const content = computed(() => contentMap[props.type])
     <div class="illustration">
       <img
         :src="content.image"
-        :alt="content.title" />
+        @load="imageLoaded = true"
+        :alt="content.title"
+        :class="{ loaded: imageLoaded }"/>
     </div>
 
     <h3 class="title">{{ content.title }}</h3>
@@ -72,14 +76,19 @@ const content = computed(() => contentMap[props.type])
 
 .illustration {
   display: flex;
-  margin-bottom: 16px;
   justify-content: center;
 }
 
 .illustration img {
   width: 180px;
-  max-width: 100%;
-  opacity: 0.95;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.illustration img.loaded {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .title {
