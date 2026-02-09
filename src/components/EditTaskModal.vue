@@ -266,16 +266,6 @@ textarea {
   background: rgba(122, 60, 255, 0.12);
 }
 
-.files-section {
-  margin-bottom: 12px;
-}
-
-.label {
-  font-size: 13px;
-  font-weight: 600;
-  margin-bottom: 6px;
-}
-
 .file-preview {
   display: flex;
   justify-content: space-between;
