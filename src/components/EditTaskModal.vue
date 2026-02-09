@@ -117,9 +117,7 @@ async function save() {
 
       <input type="date" v-model="deadline" />
 
-      <div v-if="existingFiles.length" class="files-section">
-        <p class="label">Attached files</p>
-
+      <TransitionGroup name="file" tag="div">
         <div
           v-for="file in existingFiles.filter(
       f => !filesToDelete.some(d => d.id === f.id)
@@ -137,7 +135,8 @@ async function save() {
             ✕
           </button>
         </div>
-      </div>
+      </TransitionGroup>
+
 
       <!-- ADD FILES -->
       <label class="file-btn">
@@ -151,21 +150,23 @@ async function save() {
       </label>
 
       <!-- NEW FILES PREVIEW -->
-      <div
-        v-for="(file, index) in newFiles"
-        :key="file.name + index"
-        class="file-preview"
-      >
-        <span class="file-name">{{ file.name }}</span>
-
-        <button
-          class="remove-file"
-          @click="removeNewFile(index)"
-          type="button"
+      <TransitionGroup name="file" tag="div">
+        <div
+          v-for="file in newFiles"
+          :key="file.name + file.size"
+          class="file-preview"
         >
-          ✕
-        </button>
-      </div>
+          <span class="file-name">{{ file.name }}</span>
+
+          <button
+            class="remove-file"
+            @click="removeNewFile(newFiles.indexOf(file))"
+            type="button"
+          >
+            ✕
+          </button>
+        </div>
+      </TransitionGroup>
 
       <div class="actions">
         <button class="btn save" @click="save">Save</button>
@@ -300,4 +301,22 @@ textarea {
   cursor: pointer;
   color: #e53935;
 }
+
+/* file list animations */
+.file-enter-active,
+.file-leave-active,
+.file-move {
+  transition: all 0.2s ease;
+}
+
+.file-enter-from {
+  opacity: 0;
+  transform: translateY(-6px);
+}
+
+.file-leave-to {
+  opacity: 0;
+  transform: translateX(6px);
+}
+
 </style>

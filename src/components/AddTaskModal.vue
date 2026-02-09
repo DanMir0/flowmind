@@ -106,7 +106,7 @@ onUnmounted(() => {
           <TransitionGroup name="file" tag="div">
             <div
               v-for="(file, index) in newFiles"
-              :key="file.name + index"
+              :key="file.name + file.size"
               class="file-preview">
               <span class="file-name">{{ file.name }}</span>
 
@@ -254,7 +254,8 @@ onUnmounted(() => {
 
 /* animations */
 .file-enter-active,
-.file-leave-active {
+.file-leave-active,
+.file-move {
   transition: all 0.2s ease;
 }
 
@@ -267,4 +268,5 @@ onUnmounted(() => {
   opacity: 0;
   transform: translateX(6px);
 }
+
 </style>
