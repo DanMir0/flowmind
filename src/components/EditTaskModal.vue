@@ -29,6 +29,7 @@ const newFiles = ref([])
 const filesToDelete = ref([])
 
 const saving = ref(false)
+const filesLoading = ref(false)
 
 /* реактивно берём файлы ИЗ STORE */
 const existingFiles = computed(() => task.value?.task_files || [])
@@ -54,7 +55,13 @@ watch(
 
 /* lazy-load файлов */
 onMounted(async () => {
-  await tasksStore.loadTaskFiles(props.task.id)
+  filesLoading.value = true
+
+  try {
+    await tasksStore.loadTaskFiles(props.task.id)
+  } finally {
+    filesLoading.value = false
+  }
 })
 
 function onFileChange(e) {
@@ -117,26 +124,44 @@ async function save() {
 
       <input type="date" v-model="deadline" />
 
-      <TransitionGroup name="file" tag="div">
-        <div
-          v-for="file in existingFiles.filter(
-      f => !filesToDelete.some(d => d.id === f.id)
-    )"
-          :key="file.id"
-          class="file-preview"
-        >
-          <span class="file-name">{{ file.file_name }}</span>
+      <!-- EXISTING FILES -->
+      <div class="files-section">
+        <p class="label">Attached files</p>
 
-          <button
-            class="remove-file"
-            type="button"
-            @click="markFileForDelete(file)"
-          >
-            ✕
-          </button>
+        <!-- loading -->
+        <div v-if="filesLoading">
+          <div
+            v-for="i in 2"
+            :key="i"
+            class="file-skeleton"
+          />
         </div>
-      </TransitionGroup>
 
+        <!-- files -->
+        <TransitionGroup
+          v-else
+          name="file"
+          tag="div"
+        >
+          <div
+            v-for="file in existingFiles.filter(
+              f => !filesToDelete.some(d => d.id === f.id)
+            )"
+            :key="file.id"
+            class="file-preview"
+          >
+            <span class="file-name">{{ file.file_name }}</span>
+
+            <button
+              class="remove-file"
+              type="button"
+              @click="markFileForDelete(file)"
+            >
+              ✕
+            </button>
+          </div>
+        </TransitionGroup>
+      </div>
 
       <!-- ADD FILES -->
       <label class="file-btn">
@@ -149,8 +174,11 @@ async function save() {
         📎 Add files
       </label>
 
-      <!-- NEW FILES PREVIEW -->
-      <TransitionGroup name="file" tag="div">
+      <!-- NEW FILES -->
+      <TransitionGroup
+        name="file"
+        tag="div"
+      >
         <div
           v-for="file in newFiles"
           :key="file.name + file.size"
@@ -160,8 +188,8 @@ async function save() {
 
           <button
             class="remove-file"
-            @click="removeNewFile(newFiles.indexOf(file))"
             type="button"
+            @click="removeNewFile(newFiles.indexOf(file))"
           >
             ✕
           </button>
@@ -170,7 +198,10 @@ async function save() {
 
       <div class="actions">
         <button class="btn save" @click="save">Save</button>
-        <button class="btn cancel" @click="emit('close')">
+        <button
+          class="btn cancel"
+          @click="emit('close')"
+        >
           Cancel
         </button>
       </div>
@@ -292,7 +323,41 @@ textarea {
   color: #e53935;
 }
 
-/* file list animations */
+.files-section {
+  margin-bottom: 12px;
+}
+
+.label {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+/* skeleton loader */
+.file-skeleton {
+  height: 36px;
+  border-radius: 12px;
+  margin-bottom: 6px;
+  background: linear-gradient(
+    90deg,
+    #f0f0f0 25%,
+    #e6e6e6 37%,
+    #f0f0f0 63%
+  );
+  background-size: 400% 100%;
+  animation: shimmer 1.2s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: 0 0;
+  }
+}
+
+/* TransitionGroup animations */
 .file-enter-active,
 .file-leave-active,
 .file-move {
