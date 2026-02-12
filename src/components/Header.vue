@@ -43,7 +43,6 @@ async function logout() {
   background: white;
   border-bottom: 1px solid #eee;
   position: relative;
-  z-index: 10;
 }
 
 .logo {
@@ -78,6 +77,6 @@ async function logout() {
 }
 button {
   position: relative;
-  z-index: 1000;
+  z-index: 80;
 }
 </style>

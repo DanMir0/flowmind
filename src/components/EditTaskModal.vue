@@ -10,7 +10,7 @@ const props = defineProps({
   },
   onSave: {
     type: Function
-  },
+  }
 })
 
 const emit = defineEmits(['close'])
@@ -55,6 +55,7 @@ watch(
 
 /* lazy-load файлов */
 onMounted(async () => {
+
   filesLoading.value = true
 
   try {
@@ -94,144 +95,143 @@ async function save() {
       filesToDelete: filesToDelete.value
     })
 
-    emit('close')
+  emit('close')
   } finally {
     saving.value = false
     newFiles.value = []
   }
 }
+
+function close() {
+  if (saving.value) return
+  emit('close')
+}
+
 </script>
 
 <template>
-  <Loader :visible="saving" />
+  <div class="modal-wrapper">
+      <Loader :visible="saving" />
+      <div
+        class="modal-backdrop"
+        @click.self="emit('close')">
+        <div class="modal">
+          <h2>Edit Task</h2>
 
-  <div class="modal-backdrop" @click.self="!saving && emit('close')">
-    <div class="modal">
-      <h2>Edit Task</h2>
+          <input v-model="title" placeholder="Title" />
 
-      <input v-model="title" placeholder="Title" />
+          <textarea
+            v-model="description"
+            placeholder="Description" />
 
-      <textarea
-        v-model="description"
-        placeholder="Description"
-      />
+          <select v-model="priority">
+            <option :value="1">High</option>
+            <option :value="2">Medium</option>
+            <option :value="3">Low</option>
+          </select>
 
-      <select v-model="priority">
-        <option :value="1">High</option>
-        <option :value="2">Medium</option>
-        <option :value="3">Low</option>
-      </select>
+          <input type="date" v-model="deadline" />
 
-      <input type="date" v-model="deadline" />
+          <!-- EXISTING FILES -->
+          <div class="files-section">
+            <p class="label">Attached files</p>
 
-      <!-- EXISTING FILES -->
-      <div class="files-section">
-        <p class="label">Attached files</p>
+            <!-- loading -->
+            <div v-if="filesLoading">
+              <div
+                v-for="i in 2"
+                :key="i"
+                class="file-skeleton" />
+            </div>
 
-        <!-- loading -->
-        <div v-if="filesLoading">
-          <div
-            v-for="i in 2"
-            :key="i"
-            class="file-skeleton"
-          />
-        </div>
-
-        <!-- files -->
-        <TransitionGroup
-          v-else
-          name="file"
-          tag="div"
-        >
-          <div
-            v-for="file in existingFiles.filter(
+            <!-- files -->
+            <TransitionGroup
+              v-else
+              name="file"
+              tag="div">
+              <div
+                v-for="file in existingFiles.filter(
               f => !filesToDelete.some(d => d.id === f.id)
             )"
-            :key="file.id"
-            class="file-preview"
-          >
-            <span class="file-name">{{ file.file_name }}</span>
+                :key="file.id"
+                class="file-preview">
+                <span class="file-name">{{ file.file_name }}</span>
 
+                <button
+                  class="remove-file"
+                  type="button"
+                  @click="markFileForDelete(file)">
+                  ✕
+                </button>
+              </div>
+            </TransitionGroup>
+          </div>
+
+          <!-- ADD FILES -->
+          <label class="file-btn">
+            <input
+              type="file"
+              multiple
+              class="hidden-input"
+              @change="onFileChange" />
+            📎 Add files
+          </label>
+
+          <!-- NEW FILES -->
+          <TransitionGroup
+            name="file"
+            tag="div">
+            <div
+              v-for="(file, index) in newFiles"
+              :key="file.name + file.size"
+              class="file-preview">
+              <span class="file-name">{{ file.name }}</span>
+
+              <button
+                class="remove-file"
+                type="button"
+                @click="removeNewFile(newFiles.indexOf(file))">
+                ✕
+              </button>
+            </div>
+          </TransitionGroup>
+
+          <div class="actions">
+            <button class="btn save" @click="save">Save</button>
             <button
-              class="remove-file"
-              type="button"
-              @click="markFileForDelete(file)"
-            >
-              ✕
+              class="btn cancel"
+              @click="close">
+              Cancel
             </button>
           </div>
-        </TransitionGroup>
-      </div>
-
-      <!-- ADD FILES -->
-      <label class="file-btn">
-        <input
-          type="file"
-          multiple
-          class="hidden-input"
-          @change="onFileChange"
-        />
-        📎 Add files
-      </label>
-
-      <!-- NEW FILES -->
-      <TransitionGroup
-        name="file"
-        tag="div"
-      >
-        <div
-          v-for="file in newFiles"
-          :key="file.name + file.size"
-          class="file-preview"
-        >
-          <span class="file-name">{{ file.name }}</span>
-
-          <button
-            class="remove-file"
-            type="button"
-            @click="removeNewFile(newFiles.indexOf(file))"
-          >
-            ✕
-          </button>
         </div>
-      </TransitionGroup>
-
-      <div class="actions">
-        <button class="btn save" @click="save">Save</button>
-        <button
-          class="btn cancel"
-          @click="emit('close')"
-        >
-          Cancel
-        </button>
       </div>
-    </div>
   </div>
 </template>
 
 <style scoped>
 .modal {
   position: relative; /* 👈 критично для overlay */
-}
-
-.modal-backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.45);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
-}
-
-.modal {
-  background: white;
+  will-change: transform, opacity;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
   padding: 28px;
   border-radius: 20px;
   width: 420px;
   display: flex;
   flex-direction: column;
   gap: 14px;
+  box-shadow: 0 40px 80px rgba(0, 0, 0, 0.12),
+  0 15px 30px rgba(0, 0, 0, 0.08);
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .modal h2 {
@@ -356,7 +356,9 @@ textarea {
     background-position: 0 0;
   }
 }
+</style>
 
+<style>
 /* TransitionGroup animations */
 .file-enter-active,
 .file-leave-active,
@@ -374,4 +376,29 @@ textarea {
   transform: translateX(6px);
 }
 
+.modal-enter-active,
+.modal-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.modal-enter-from,
+.modal-leave-to {
+  opacity: 0;
+}
+
+.modal-enter-active .modal-backdrop .modal,
+.modal-leave-active .modal-backdrop .modal {
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+  opacity 0.25s ease;
+}
+
+.modal-enter-from .modal-backdrop .modal {
+  transform: translateY(60px) scale(0.9);
+  opacity: 0;
+}
+
+.modal-leave-to .modal-backdrop .modal {
+  transform: translateY(30px) scale(0.95);
+  opacity: 0;
+}
 </style>

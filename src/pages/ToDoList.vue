@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, nextTick, watch } from 'vue'
 import { useTasksStore } from '@/store/tasks'
 import { storeToRefs } from 'pinia'
 
@@ -79,16 +79,15 @@ const  visibleTasks = computed(() => {
   }
 })
 
-onMounted(() => {
-  tasksStore.fetchTasks()
-})
-
 function requestDelete(task) {
   taskToDelete.value = task
 }
 
 function requestEdit(task) {
-  taskToEdit.value = task
+  taskToEdit.value = null
+  nextTick(() => {
+    taskToEdit.value = { ...task }
+  })
 }
 
 async function saveEdit(payload) {
@@ -127,9 +126,21 @@ const emptyType = computed(() => {
   return null
 })
 
+watch(taskToEdit, (val) => {
+  if (val) {
+    document.body.classList.add('modal-open')
+  } else {
+    document.body.classList.remove('modal-open')
+  }
+})
+
+onMounted(() => {
+  tasksStore.fetchTasks()
+})
 </script>
 
 <template>
+
   <div class="page">
 
     <div class="header-row">
@@ -143,8 +154,7 @@ const emptyType = computed(() => {
             v-for="option in priorityFilters"
             :key="option.value"
             :class="['filter-pill', { active: priorityFilter === option.value }]"
-            @click="priorityFilter = option.value"
-          >
+            @click="priorityFilter = option.value">
             {{ option.label }}
           </button>
         </div>
@@ -154,24 +164,21 @@ const emptyType = computed(() => {
           <button
             class="filter-pill"
             :class="{ active: statusFilter === 'active' }"
-            @click="statusFilter = 'active'"
-          >
+            @click="statusFilter = 'active'">
             Active
           </button>
 
           <button
             class="filter-pill"
             :class="{ active: statusFilter === 'completed' }"
-            @click="statusFilter = 'completed'"
-          >
+            @click="statusFilter = 'completed'">
             Completed
           </button>
 
           <button
             class="filter-pill"
             :class="{ active: statusFilter === 'all' }"
-            @click="statusFilter = 'all'"
-          >
+            @click="statusFilter = 'all'">
             All
           </button>
         </div>
@@ -215,28 +222,28 @@ const emptyType = computed(() => {
         :task="task"
         @delete="requestDelete"
         @edit="requestEdit"
-        @toggle-complete="toggleComplete"
-      />
+        @toggle-complete="toggleComplete" />
     </div>
 
     <AddTaskModal
       v-if="showAddModal"
-      @close="showAddModal = false"
-    />
+      @close="showAddModal = false" />
 
-    <EditTaskModal
-      v-if="taskToEdit"
-      :task="taskToEdit"
-      :on-save="saveEdit"
-      @close="taskToEdit = null"
-    />
+    <Teleport to="body">
+      <Transition name="modal">
+        <EditTaskModal
+          v-if="taskToEdit"
+          :task="taskToEdit"
+          :on-save="saveEdit"
+          @close="taskToEdit = null" />
+      </Transition>
+    </Teleport>
 
     <ConfirmDeleteModal
       v-if="taskToDelete"
       :title="taskToDelete.title"
       @confirm="confirmDelete"
-      @cancel="taskToDelete = null"
-    />
+      @cancel="taskToDelete = null" />
   </div>
 </template>
 
@@ -322,6 +329,3 @@ const emptyType = computed(() => {
   cursor: pointer;
 }
 </style>
-
-
-
