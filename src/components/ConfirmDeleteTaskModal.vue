@@ -10,35 +10,36 @@ const emit = defineEmits(['confirm', 'cancel'])
 </script>
 
 <template>
-  <div class="overlay">
-    <div class="modal">
-      <h3>Delete task</h3>
-      <p>
-        Are you sure you want to delete
-        <strong>"{{ title }}"</strong>?
-      </p>
+  <div class="modal-wrapper">
+    <div class="modal-backdrop">
+      <div class="modal">
+        <h3>Delete task</h3>
+        <p>
+          Are you sure you want to delete
+          <strong>"{{ title }}"</strong>?
+        </p>
 
-      <div class="actions">
-        <button class="btn cancel" @click="$emit('cancel')">
-          Cancel
-        </button>
-        <button class="btn danger" @click="$emit('confirm')">
-          Delete
-        </button>
+        <div class="actions">
+          <button class="btn cancel" @click="$emit('cancel')">
+            Cancel
+          </button>
+          <button class="btn danger" @click="$emit('confirm')">
+            Delete
+          </button>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <style scoped>
-.overlay {
+.modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(15, 23, 42, 0.35);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 2000;
 }
 
 .modal {
@@ -84,5 +85,33 @@ const emit = defineEmits(['confirm', 'cancel'])
 
 .btn.danger:hover {
   background: #c62828;
+}
+</style>
+<style>
+.modal-enter-active,
+.modal-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.modal-enter-from,
+.modal-leave-to {
+  opacity: 0;
+}
+
+/* Панель */
+.modal-enter-active .modal,
+.modal-leave-active .modal {
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+  opacity 0.25s ease;
+}
+
+.modal-enter-from .modal {
+  transform: translateY(60px) scale(0.9);
+  opacity: 0;
+}
+
+.modal-leave-to .modal {
+  transform: translateY(30px) scale(0.95);
+  opacity: 0;
 }
 </style>

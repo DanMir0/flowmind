@@ -47,7 +47,7 @@ async function submit() {
       description: description.value,
       deadline: deadline.value || null,
       priority: priority.value,
-      newFiles: newFiles.value,
+      newFiles: newFiles.value
     })
 
     emit('close')
@@ -69,18 +69,17 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <Teleport to="body">
-    <div class="overlay" @click.self="!loading && emit('close')">
+  <div class="modal-wrapper">
+    <div class="modal-backdrop" @click.self="!loading && emit('close')">
       <div class="modal">
-        <Loader :visible="loading"/>
+        <Loader :visible="loading" />
         <h3>Add Task</h3>
 
         <input v-model="title" placeholder="Task title" />
 
         <textarea
           v-model="description"
-          placeholder="Description"
-        />
+          placeholder="Description" />
 
         <input type="date" v-model="deadline" />
 
@@ -98,8 +97,7 @@ onUnmounted(() => {
               type="file"
               multiple
               class="hidden-input"
-              @change="onFileChange"
-            />
+              @change="onFileChange" />
             📎 Attach file
           </label>
 
@@ -130,33 +128,37 @@ onUnmounted(() => {
           <button
             :class="[!canSubmit || !canAddTask ? 'btn-disabled' : 'save']"
             :disabled="!canSubmit || !canAddTask"
-            @click="submit"
-          >
+            @click="submit">
             {{ loading ? 'Saving...' : 'Add Task' }}
           </button>
         </div>
       </div>
     </div>
-  </Teleport>
+  </div>
 </template>
 
 <style scoped>
-.overlay {
+.modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.35);
+  background: rgba(15, 23, 42, 0.35);
   display: flex;
-  justify-content: center;
   align-items: center;
-  z-index: 1000;
+  justify-content: center;
 }
 
 .modal {
-  position: relative;
-  width: 420px;
-  background: white;
+  will-change: transform, opacity;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
   padding: 28px;
-  border-radius: 18px;
+  border-radius: 20px;
+  width: 420px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  box-shadow: 0 40px 80px rgba(0, 0, 0, 0.12),
+  0 15px 30px rgba(0, 0, 0, 0.08);
 }
 
 .modal input,
@@ -251,8 +253,9 @@ onUnmounted(() => {
   cursor: pointer;
   color: #e53935;
 }
-
-/* animations */
+</style>
+<style>
+/* TransitionGroup animations */
 .file-enter-active,
 .file-leave-active,
 .file-move {
@@ -269,4 +272,29 @@ onUnmounted(() => {
   transform: translateX(6px);
 }
 
+.modal-enter-active,
+.modal-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.modal-enter-from,
+.modal-leave-to {
+  opacity: 0;
+}
+
+.modal-enter-active .modal-backdrop .modal,
+.modal-leave-active .modal-backdrop .modal {
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+  opacity 0.25s ease;
+}
+
+.modal-enter-from .modal-backdrop .modal {
+  transform: translateY(60px) scale(0.9);
+  opacity: 0;
+}
+
+.modal-leave-to .modal-backdrop .modal {
+  transform: translateY(30px) scale(0.95);
+  opacity: 0;
+}
 </style>

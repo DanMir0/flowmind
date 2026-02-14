@@ -225,9 +225,14 @@ onMounted(() => {
         @toggle-complete="toggleComplete" />
     </div>
 
-    <AddTaskModal
-      v-if="showAddModal"
-      @close="showAddModal = false" />
+    <Teleport to="body">
+      <Transition name="modal">
+        <AddTaskModal
+          v-if="showAddModal"
+          @close="showAddModal = false" />
+      </Transition>
+    </Teleport>
+
 
     <Teleport to="body">
       <Transition name="modal">
@@ -239,11 +244,16 @@ onMounted(() => {
       </Transition>
     </Teleport>
 
-    <ConfirmDeleteModal
-      v-if="taskToDelete"
-      :title="taskToDelete.title"
-      @confirm="confirmDelete"
-      @cancel="taskToDelete = null" />
+<!--    <Teleport to="body">-->
+      <Transition name="modal">
+        <ConfirmDeleteModal
+          v-if="taskToDelete"
+          :title="taskToDelete.title"
+          @confirm="confirmDelete"
+          @cancel="taskToDelete = null" />
+      </Transition>
+<!--    </Teleport>-->
+
   </div>
 </template>
 
