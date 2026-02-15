@@ -96,6 +96,14 @@ export const useTasksStore = defineStore('tasks', {
       if (payload.newFiles?.length) {
         await this.uploadMultipleFiles(newTask.id, payload.newFiles)
       }
+
+      if (payload.deadline) {
+        const d = new Date(payload.deadline)
+        if (isNaN(d.getTime())) {
+          throw new Error('Invalid date')
+        }
+      }
+
     },
 
     async updateTask(taskId, payload) {

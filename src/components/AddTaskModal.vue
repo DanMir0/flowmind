@@ -18,12 +18,38 @@ const newFiles = ref([])
 const loading = ref(false)
 const error = ref('')
 
+const dateTouched = ref(false)
+
+const isValidDate = computed(() => {
+  if (!deadline.value) return true
+
+  const pattern = /^\d{4}-\d{2}-\d{2}$/
+  if (!pattern.test(deadline.value)) return false
+
+  const date = new Date(deadline.value)
+  if (isNaN(date.getTime())) return false
+
+  const now = new Date()
+
+  // запрещаем прошлые даты
+  if (date < now.setHours(0,0,0,0)) return false
+
+  // ограничим верхний диапазон
+  const max = new Date()
+  max.setFullYear(max.getFullYear() + 20)
+
+  if (date > max) return false
+
+  return true
+})
+
+
 const canAddTask = computed(() =>
   auth.initialized && auth.user
 )
 
 const canSubmit = computed(() =>
-  title.value.trim().length > 0
+  title.value.trim().length > 0 && isValidDate.value
 )
 
 function onFileChange(e) {
@@ -36,6 +62,10 @@ function removeNewFile(index) {
 }
 
 async function submit() {
+  if (!isValidDate.value) {
+    error.value = 'Invalid deadline date'
+    return
+  }
   if (!canSubmit.value || loading.value) return
 
   loading.value = true
@@ -81,7 +111,10 @@ onUnmounted(() => {
           v-model="description"
           placeholder="Description" />
 
-        <input type="date" v-model="deadline" />
+        <input type="date" v-model="deadline" @blur="dateTouched = true"/>
+        <p v-if="dateTouched && !isValidDate" class="error">
+          Please enter a valid date
+        </p>
 
         <select v-model="priority">
           <option :value="1">High</option>
