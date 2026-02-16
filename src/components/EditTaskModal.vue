@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import { useTasksStore } from '@/store/tasks'
 import Loader from '@/components/Loader.vue'
 
@@ -65,9 +65,14 @@ onMounted(async () => {
   }
 })
 
-function onFileChange(e) {
+async function onFileChange(e) {
   newFiles.value.push(...Array.from(e.target.files))
   e.target.value = ''
+
+  await nextTick()
+
+  const el = document.querySelector('.files-scroll')
+  if (el) el.scrollTop = el.scrollHeight
 }
 
 /* ТОЛЬКО UI */
@@ -111,51 +116,60 @@ function close() {
 
 <template>
   <div class="modal-wrapper">
-      <Loader :visible="saving" />
-      <div
-        class="modal-backdrop"
-        @click.self="emit('close')">
-        <div class="modal">
-          <h2>Edit Task</h2>
+    <Loader :visible="saving" />
 
-          <input v-model="title" placeholder="Title" />
+    <div
+      class="modal-backdrop"
+      @click.self="emit('close')"
+    >
+      <div class="modal">
+        <h2>Edit Task</h2>
 
-          <textarea
-            v-model="description"
-            placeholder="Description" />
+        <input v-model="title" placeholder="Title" />
 
-          <select v-model="priority">
-            <option :value="1">High</option>
-            <option :value="2">Medium</option>
-            <option :value="3">Low</option>
-          </select>
+        <textarea
+          v-model="description"
+          placeholder="Description"
+        />
 
-          <input type="date" v-model="deadline" />
+        <select v-model="priority">
+          <option :value="1">High</option>
+          <option :value="2">Medium</option>
+          <option :value="3">Low</option>
+        </select>
 
-          <!-- EXISTING FILES -->
-          <div class="files-section">
-            <p class="label">Attached files</p>
+        <input type="date" v-model="deadline" />
+
+        <!-- FILES SECTION -->
+        <div class="files-wrapper">
+          <p class="label">Attached files</p>
+
+          <!-- SCROLL AREA (все файлы внутри) -->
+          <div class="files-scroll">
 
             <!-- loading -->
             <div v-if="filesLoading">
               <div
                 v-for="i in 2"
                 :key="i"
-                class="file-skeleton" />
+                class="file-skeleton"
+              />
             </div>
 
-            <!-- files -->
+            <!-- existing files -->
             <TransitionGroup
               v-else
               name="file"
               tag="div">
               <div
                 v-for="file in existingFiles.filter(
-              f => !filesToDelete.some(d => d.id === f.id)
-            )"
-                :key="file.id"
+                  f => !filesToDelete.some(d => d.id === f.id)
+                )"
+                :key="'existing-' + file.id"
                 class="file-preview">
-                <span class="file-name">{{ file.file_name }}</span>
+                <span class="file-name">
+                  {{ file.file_name }}
+                </span>
 
                 <button
                   class="remove-file"
@@ -165,47 +179,60 @@ function close() {
                 </button>
               </div>
             </TransitionGroup>
+
+            <!-- new files -->
+            <TransitionGroup
+              name="file"
+              tag="div">
+              <div
+                v-for="(file, index) in newFiles"
+                :key="'new-' + file.name + file.size"
+                class="file-preview">
+                <span class="file-name">
+                  {{ file.name }}
+                </span>
+
+                <button
+                  class="remove-file"
+                  type="button"
+                  @click="removeNewFile(index)">
+                  ✕
+                </button>
+              </div>
+            </TransitionGroup>
+
           </div>
 
-          <!-- ADD FILES -->
+          <!-- ADD FILE BUTTON (вне scroll) -->
           <label class="file-btn">
             <input
               type="file"
               multiple
               class="hidden-input"
-              @change="onFileChange" />
+              @change="onFileChange"
+            />
             📎 Add files
           </label>
 
-          <!-- NEW FILES -->
-          <TransitionGroup
-            name="file"
-            tag="div">
-            <div
-              v-for="(file, index) in newFiles"
-              :key="file.name + file.size"
-              class="file-preview">
-              <span class="file-name">{{ file.name }}</span>
-
-              <button
-                class="remove-file"
-                type="button"
-                @click="removeNewFile(newFiles.indexOf(file))">
-                ✕
-              </button>
-            </div>
-          </TransitionGroup>
-
-          <div class="actions">
-            <button class="btn save" @click="save">Save</button>
-            <button
-              class="btn cancel"
-              @click="close">
-              Cancel
-            </button>
-          </div>
         </div>
+
+        <!-- ACTIONS -->
+        <div class="actions">
+          <button
+            class="btn save"
+            @click="save">
+            Save
+          </button>
+
+          <button
+            class="btn cancel"
+            @click="close">
+            Cancel
+          </button>
+        </div>
+
       </div>
+    </div>
   </div>
 </template>
 
@@ -223,6 +250,7 @@ function close() {
   gap: 14px;
   box-shadow: 0 40px 80px rgba(0, 0, 0, 0.12),
   0 15px 30px rgba(0, 0, 0, 0.08);
+  transition: height 0.25s ease;
 }
 
 .modal-backdrop {
@@ -323,8 +351,14 @@ textarea {
   color: #e53935;
 }
 
-.files-section {
+.files-wrapper {
   margin-bottom: 12px;
+}
+
+.files-scroll {
+  max-height: 180px;
+  overflow-y: auto;
+  padding-right: 4px;
 }
 
 .label {

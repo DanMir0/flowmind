@@ -134,21 +134,24 @@ onUnmounted(() => {
             📎 Attach file
           </label>
 
-          <TransitionGroup name="file" tag="div">
-            <div
-              v-for="(file, index) in newFiles"
-              :key="file.name + file.size"
-              class="file-preview">
-              <span class="file-name">{{ file.name }}</span>
+          <div class="files-list">
+            <TransitionGroup name="file" tag="div">
+              <div
+                v-for="(file, index) in newFiles"
+                :key="file.name + file.size"
+                class="file-preview">
+                <span class="file-name">{{ file.name }}</span>
 
-              <button
-                class="remove-file"
-                type="button"
-                @click="removeNewFile(index)">
-                ✕
-              </button>
-            </div>
-          </TransitionGroup>
+                <button
+                  class="remove-file"
+                  type="button"
+                  @click="removeNewFile(index)">
+                  ✕
+                </button>
+              </div>
+            </TransitionGroup>
+          </div>
+
         </div>
 
         <p v-if="error" class="error">{{ error }}</p>
@@ -178,6 +181,25 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+.files-list {
+  min-height: 40px;
+  max-height: 160px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.files-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.files-list::-webkit-scrollbar-thumb {
+  background: rgba(122, 60, 255, 0.4);
+  border-radius: 6px;
+}
+
+.files-list::-webkit-scrollbar-track {
+  background: transparent;
 }
 
 .modal {
