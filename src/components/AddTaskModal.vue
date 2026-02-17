@@ -3,11 +3,14 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useTasksStore } from '@/store/tasks'
 import { useAuthStore } from '@/store/auth'
 import Loader from '@/components/Loader.vue'
+import { useModal } from '@/composable/useModal.js'
 
 const emit = defineEmits(['close'])
 
 const tasksStore = useTasksStore()
 const auth = useAuthStore()
+
+const { modalRef } = useModal(emit)
 
 const title = ref('')
 const description = ref('')
@@ -101,7 +104,7 @@ onUnmounted(() => {
 <template>
   <div class="modal-wrapper">
     <div class="modal-backdrop" @click.self="!loading && emit('close')">
-      <div class="modal">
+      <div ref="modalRef" class="modal">
         <Loader :visible="loading" />
         <h3>Add Task</h3>
 

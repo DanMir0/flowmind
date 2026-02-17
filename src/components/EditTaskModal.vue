@@ -3,6 +3,12 @@ import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import { useTasksStore } from '@/store/tasks'
 import Loader from '@/components/Loader.vue'
 import { toast } from 'vue-sonner'
+import { useModal } from '@/composable/useModal.js'
+
+const emit = defineEmits(['close'])
+const tasksStore = useTasksStore()
+
+const { modalRef } = useModal(emit)
 
 const props = defineProps({
   task: {
@@ -13,9 +19,6 @@ const props = defineProps({
     type: Function
   }
 })
-
-const emit = defineEmits(['close'])
-const tasksStore = useTasksStore()
 
 const task = computed(() =>
   tasksStore.tasks.find(t => t.id === props.task.id)
@@ -106,8 +109,6 @@ async function onFileChange(e) {
   if (el) el.scrollTop = el.scrollHeight
 }
 
-
-
 /* ТОЛЬКО UI */
 function markFileForDelete(file) {
   filesToDelete.value.push(file)
@@ -155,7 +156,7 @@ function close() {
       class="modal-backdrop"
       @click.self="emit('close')"
     >
-      <div class="modal">
+      <div ref="modalRef" class="modal">
         <h2>Edit Task</h2>
 
         <input v-model="title" placeholder="Title" />
