@@ -75,7 +75,7 @@ const emit = defineEmits(['confirm', 'cancel'])
 }
 
 .btn.cancel {
-  background: #eee;
+  background: #9e9e9e;
 }
 
 .btn.danger {
