@@ -2,6 +2,7 @@
 import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import { useTasksStore } from '@/store/tasks'
 import Loader from '@/components/Loader.vue'
+import { toast } from 'vue-sonner'
 
 const props = defineProps({
   task: {
@@ -66,7 +67,37 @@ onMounted(async () => {
 })
 
 async function onFileChange(e) {
-  newFiles.value.push(...Array.from(e.target.files))
+  const selectedFiles = Array.from(e.target.files)
+
+  const existingNames = existingFiles.value.map(f => f.file_name)
+  const newNames = newFiles.value.map(f => f.name)
+
+  const duplicates = []
+  const filtered = []
+
+  selectedFiles.forEach(file => {
+    const duplicateInExisting = existingNames.includes(file.name)
+    const duplicateInNew = newNames.includes(file.name)
+
+    if (duplicateInExisting || duplicateInNew) {
+      duplicates.push(file.name)
+    } else {
+      filtered.push(file)
+    }
+  })
+
+  if (duplicates.length) {
+    toast.warning(
+      duplicates.length === 1
+        ? `File "${duplicates[0]}" already added`
+        : `${duplicates.length} files were skipped (already added)`
+    )
+  }
+
+  if (filtered.length) {
+    newFiles.value.push(...filtered)
+  }
+
   e.target.value = ''
 
   await nextTick()
@@ -74,6 +105,8 @@ async function onFileChange(e) {
   const el = document.querySelector('.files-scroll')
   if (el) el.scrollTop = el.scrollHeight
 }
+
+
 
 /* ТОЛЬКО UI */
 function markFileForDelete(file) {

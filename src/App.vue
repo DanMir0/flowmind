@@ -15,6 +15,7 @@ onMounted(async () => {
 <template>
   <Header></Header>
   <router-view />
+  <Toaster position="top-center" theme="dark" :duration="3000"/>
 </template>
 
 <style>
