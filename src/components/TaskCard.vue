@@ -6,6 +6,10 @@ const props = defineProps({
   task: {
     type: Object,
     required: true
+  },
+  class: {
+    type: String,
+    default: ''
   }
 })
 
@@ -62,9 +66,7 @@ const formattedDeadline = computed(() => {
 </script>
 
 <template>
-
-
-  <div class="task-card" :class="[deadlineInfo.state, { completed: task.completed}]">
+  <div class="task-card" :class="[deadlineInfo.state, { completed: task.completed},  $props.class]">
     <div class="task-header">
       <label class="toggle">
         <input
@@ -126,6 +128,15 @@ const formattedDeadline = computed(() => {
 </template>
 
 <style scoped>
+
+.task-card.dragging {
+  opacity: 0.6;
+  transform: scale(0.98) rotate(1deg);
+  box-shadow: 0 20px 30px rgba(0, 0, 0, 0.2);
+  cursor: grabbing;
+  transition: all 0.2s ease;
+}
+
 .task-header {
   display: flex;
   align-items: center;
@@ -246,8 +257,7 @@ const formattedDeadline = computed(() => {
 }
 
 .task-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 16px 30px rgba(0, 0, 0, 0.12);
 }
 
 .task-card h3 {

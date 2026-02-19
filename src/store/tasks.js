@@ -23,7 +23,7 @@ export const useTasksStore = defineStore('tasks', {
         .from('tasks_with_files_count')
         .select('*')
         .eq('user_id', auth.user.id)
-        .order('created_at', { ascending: false })
+        .order('position', { ascending: true })
 
       if (error) throw error
 
@@ -70,7 +70,8 @@ export const useTasksStore = defineStore('tasks', {
           description: payload.description,
           deadline: payload.deadline,
           priority: payload.priority,
-          user_id: auth.user.id
+          user_id: auth.user.id,
+          position: Date.now(),
         })
         .select(`
           id,
@@ -79,7 +80,8 @@ export const useTasksStore = defineStore('tasks', {
           priority,
           deadline,
           created_at,
-          files_count
+          files_count,
+          position
         `)
         .single()
 
@@ -293,6 +295,19 @@ export const useTasksStore = defineStore('tasks', {
         task.completed = prevCompleted
         task.completed_at = prevCompletedAt
         throw error
+      }
+    },
+
+    async updatePositions(list) {
+      for (const item of list) {
+        const { error } = await supabase
+          .from('tasks')
+          .update({ position: item.position })
+          .eq('id', item.id)
+
+        if (error) {
+          console.error(error)
+        }
       }
     }
   }

@@ -16,15 +16,17 @@ const showAddModal = ref(false)
 const taskToDelete = ref(null)
 const taskToEdit = ref(null)
 
-const sortKey = ref('created_desc')
+const sortKey = ref('manual')
 const priorityFilter = ref('all')
 const statusFilter = ref('active')
+const draggedTask = ref(null)
+const draggingId = ref(null)
 
 const priorityFilters = [
   { label: 'All', value: 'all' },
   { label: 'High', value: 1 },
   { label: 'Medium', value: 2 },
-  { label: 'Low', value: 3 },
+  { label: 'Low', value: 3 }
 ]
 
 const sortedTasks = computed(() => {
@@ -53,6 +55,9 @@ const sortedTasks = computed(() => {
         new Date(b.deadline || '0001-01-01') - new Date(a.deadline || '0001-01-01')
       )
 
+    case 'manual':
+      return list.sort((a, b) => a.position - b.position)
+
     default:
       return list
   }
@@ -68,7 +73,7 @@ const priorityFilteredTasks = computed(() => {
   )
 })
 
-const  visibleTasks = computed(() => {
+const visibleTasks = computed(() => {
   switch (statusFilter.value) {
     case 'active':
       return priorityFilteredTasks.value.filter(t => !t.completed)
@@ -78,6 +83,53 @@ const  visibleTasks = computed(() => {
       return priorityFilteredTasks.value
   }
 })
+
+function onDragStart(task) {
+  if (sortKey.value !== 'manual') return
+  draggedTask.value = task
+  draggingId.value = task.id
+}
+
+function onDragEnd() {
+  draggingId.value = null
+  draggedTask.value = null
+}
+
+
+async function onDrop(targetTask) {
+  if (sortKey.value !== 'manual') return
+  if (!draggedTask.value || draggedTask.value.id === targetTask.id) return
+
+  const updated = [...visibleTasks.value]
+
+  const fromIndex = updated.findIndex(t => t.id === draggedTask.value.id)
+  const toIndex = updated.findIndex(t => t.id === targetTask.id)
+
+  const moved = updated.splice(fromIndex, 1)[0]
+  updated.splice(toIndex, 0, moved)
+
+  // обновляем position
+  updated.forEach((task, index) => {
+    task.position = index
+  })
+
+  // локально обновляем store
+  tasksStore.tasks = tasksStore.tasks.map(task => {
+    const found = updated.find(t => t.id === task.id)
+    return found ? found : task
+  })
+
+  // сохраняем в Supabase
+  await tasksStore.updatePositions(
+    updated.map(t => ({
+      id: t.id,
+      position: t.position
+    }))
+  )
+
+  draggedTask.value = null
+}
+
 
 function requestDelete(task) {
   taskToDelete.value = task
@@ -183,8 +235,15 @@ onMounted(() => {
           </button>
         </div>
 
+        <div
+          v-if="sortKey !== 'manual'"
+          class="drag-disabled-warning">
+          Drag & drop available only in Manual mode
+        </div>
+
         <!-- SORT -->
         <select v-model="sortKey" class="sort-select">
+          <option value="manual">Manual</option>
           <option value="created_desc">Newest first</option>
           <option value="created_asc">Oldest first</option>
           <option value="priority_desc">High priority</option>
@@ -196,9 +255,7 @@ onMounted(() => {
         <button class="add-btn" @click="showAddModal = true">
           Add Task
         </button>
-
       </div>
-
     </div>
 
     <p v-if="loading">Loading...</p>
@@ -215,15 +272,22 @@ onMounted(() => {
       }"
       @showCompleted="statusFilter = 'completed'" />
 
-    <div v-else class="tasks-grid">
+    <TransitionGroup name="list" tag="div" class="tasks-grid">
       <TaskCard
         v-for="task in visibleTasks"
         :key="task.id"
         :task="task"
+        :class="{ dragging: draggingId === task.id }"
+        draggable="true"
+        @dragstart="onDragStart(task)"
+        @dragend="onDragEnd"
+        @dragover.prevent
+        @drop="onDrop(task)"
         @delete="requestDelete"
         @edit="requestEdit"
-        @toggle-complete="toggleComplete" />
-    </div>
+        @toggle-complete="toggleComplete"
+      />
+    </TransitionGroup>
 
     <Teleport to="body">
       <Transition name="modal">
@@ -232,7 +296,6 @@ onMounted(() => {
           @close="showAddModal = false" />
       </Transition>
     </Teleport>
-
 
     <Teleport to="body">
       <Transition name="modal">
@@ -244,16 +307,13 @@ onMounted(() => {
       </Transition>
     </Teleport>
 
-<!--    <Teleport to="body">-->
-      <Transition name="modal">
-        <ConfirmDeleteModal
-          v-if="taskToDelete"
-          :title="taskToDelete.title"
-          @confirm="confirmDelete"
-          @cancel="taskToDelete = null" />
-      </Transition>
-<!--    </Teleport>-->
-
+    <Transition name="modal">
+      <ConfirmDeleteModal
+        v-if="taskToDelete"
+        :title="taskToDelete.title"
+        @confirm="confirmDelete"
+        @cancel="taskToDelete = null" />
+    </Transition>
   </div>
 </template>
 
@@ -338,4 +398,21 @@ onMounted(() => {
   background: white;
   cursor: pointer;
 }
+</style>
+<style>
+.list-move {
+  transition: transform 0.25s ease;
+}
+
+.list-enter-active,
+.list-leave-active {
+  transition: all 0.25s ease;
+}
+
+.list-enter-from,
+.list-leave-to {
+  opacity: 0;
+  transform: scale(0.95);
+}
+
 </style>
