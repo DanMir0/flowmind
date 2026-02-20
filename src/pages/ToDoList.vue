@@ -8,6 +8,7 @@ import AddTaskModal from '@/components/AddTaskModal.vue'
 import ConfirmDeleteModal from '@/components/ConfirmDeleteTaskModal.vue'
 import EditTaskModal from '@/components/EditTaskModal.vue'
 import EmptyState from '@/components/EmptyState.vue'
+import * as events from 'events'
 
 const tasksStore = useTasksStore()
 const { tasks, loading, error } = storeToRefs(tasksStore)
@@ -86,6 +87,12 @@ const visibleTasks = computed(() => {
 
 function onDragStart(task) {
   if (sortKey.value !== 'manual') return
+
+  const img = new Image()
+  img.src =
+    'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciLz4='
+
+  event.dataTransfer.setDragImage(img, 0,0)
   draggedTask.value = task
   draggingId.value = task.id
 }
