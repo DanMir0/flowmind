@@ -131,10 +131,10 @@ const formattedDeadline = computed(() => {
 
 .task-card.dragging {
   opacity: 0.6;
-  transform: scale(0.98) rotate(1deg);
-  box-shadow: 0 20px 30px rgba(0, 0, 0, 0.2);
+  transform: scale(0.97);
+  box-shadow: 0 18px 35px rgba(0, 0, 0, 0.25);
   cursor: grabbing;
-  transition: all 0.2s ease;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .task-header {
@@ -205,6 +205,8 @@ const formattedDeadline = computed(() => {
 }
 
 .task-card {
+  cursor: grab;
+  user-select: none;
   position: relative;
   background: white;
   padding: 22px;
@@ -213,7 +215,7 @@ const formattedDeadline = computed(() => {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  transition: transform 0.18s ease,
+  transition: transform 0.15s ease,
   box-shadow 0.18s ease;
 }
 

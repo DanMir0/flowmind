@@ -309,6 +309,32 @@ export const useTasksStore = defineStore('tasks', {
           console.error(error)
         }
       }
-    }
+    },
+
+    async reorderTasks(draggedId, targetId) {
+      const updated = [...this.tasks]
+
+      const fromIndex = updated.findIndex(t => t.id === draggedId)
+      const toIndex = updated.findIndex(t => t.id === targetId)
+
+      const moved = updated.splice(fromIndex, 1)[0]
+      updated.splice(toIndex, 0, moved)
+
+      // пересчитываем position
+      updated.forEach((task, index) => {
+        task.position = index
+      })
+
+      // обновляем store реактивно
+      this.tasks = updated
+
+      // сохраняем в БД
+      await this.updatePositions(
+        updated.map(t => ({
+          id: t.id,
+          position: t.position
+        }))
+      )
+    },
   }
 })

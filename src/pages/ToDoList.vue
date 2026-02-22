@@ -85,16 +85,17 @@ const visibleTasks = computed(() => {
   }
 })
 
-function onDragStart(task) {
+function onDragStart(task, event) {
   if (sortKey.value !== 'manual') return
 
+  draggingId.value = task.id
+  draggedTask.value = task
   const img = new Image()
   img.src =
     'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciLz4='
 
   event.dataTransfer.setDragImage(img, 0,0)
-  draggedTask.value = task
-  draggingId.value = task.id
+  event.dataTransfer.effectAllowed = 'move'
 }
 
 function onDragEnd() {
@@ -102,41 +103,17 @@ function onDragEnd() {
   draggedTask.value = null
 }
 
-
 async function onDrop(targetTask) {
   if (sortKey.value !== 'manual') return
   if (!draggedTask.value || draggedTask.value.id === targetTask.id) return
 
-  const updated = [...visibleTasks.value]
-
-  const fromIndex = updated.findIndex(t => t.id === draggedTask.value.id)
-  const toIndex = updated.findIndex(t => t.id === targetTask.id)
-
-  const moved = updated.splice(fromIndex, 1)[0]
-  updated.splice(toIndex, 0, moved)
-
-  // обновляем position
-  updated.forEach((task, index) => {
-    task.position = index
-  })
-
-  // локально обновляем store
-  tasksStore.tasks = tasksStore.tasks.map(task => {
-    const found = updated.find(t => t.id === task.id)
-    return found ? found : task
-  })
-
-  // сохраняем в Supabase
-  await tasksStore.updatePositions(
-    updated.map(t => ({
-      id: t.id,
-      position: t.position
-    }))
+  await tasksStore.reorderTasks(
+    draggedTask.value.id,
+    targetTask.id
   )
 
   draggedTask.value = null
 }
-
 
 function requestDelete(task) {
   taskToDelete.value = task
@@ -286,7 +263,7 @@ onMounted(() => {
         :task="task"
         :class="{ dragging: draggingId === task.id }"
         draggable="true"
-        @dragstart="onDragStart(task)"
+        @dragstart="onDragStart(task, $event)"
         @dragend="onDragEnd"
         @dragover.prevent
         @drop="onDrop(task)"
