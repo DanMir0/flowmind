@@ -29,7 +29,7 @@ watch(
   () => auth.user,
   (user) => {
     if (user) {
-      tasksStore.fetchTasks()
+      tasksStore.initTasks()
     }
   },
   { immediate: true }

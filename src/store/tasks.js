@@ -2,11 +2,12 @@ import { defineStore } from 'pinia'
 import { supabase } from '@/services/supabase'
 import { useAuthStore } from './auth'
 
+const MAX_ACTIVE_TASKS = 500;
 export const useTasksStore = defineStore('tasks', {
   state: () => ({
     tasks: [],
     loading: false,
-    error: null
+    error: null,
   }),
 
   actions: {
@@ -23,6 +24,7 @@ export const useTasksStore = defineStore('tasks', {
         .from('tasks_with_files_count')
         .select('*')
         .eq('user_id', auth.user.id)
+        .eq('archived', false)
         .order('position', { ascending: true })
 
       if (error) throw error
@@ -49,6 +51,7 @@ export const useTasksStore = defineStore('tasks', {
         .from('task_files')
         .select('*')
         .eq('task_id', taskId)
+        .eq('archived', false)
         .order('uploaded_at', { ascending: true })
 
       if (error) throw error
@@ -62,6 +65,10 @@ export const useTasksStore = defineStore('tasks', {
     async addTask(payload) {
       const auth = useAuthStore()
       if (!auth.user) throw new Error('Not authenticated')
+
+      if (this.tasks.length >= MAX_ACTIVE_TASKS) {
+        throw new Error('Active tasks limit reached (500). Archive old tasks.')
+      }
 
       const { data: task, error } = await supabase
         .from('tasks')
@@ -336,5 +343,63 @@ export const useTasksStore = defineStore('tasks', {
         }))
       )
     },
+
+    async autoArchiveOldCompleted() {
+      const thirtyDaysAgo = new Date()
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
+
+      const { error } = await supabase
+        .from('tasks')
+        .update({ archived: true })
+        .eq('user_id', useAuthStore().user.id)
+        .eq('completed', true)
+        .lte('completed_at', thirtyDaysAgo.toISOString())
+
+      if (error) throw error
+    },
+
+    async initTasks() {
+      this.loading = true
+      await this.autoArchiveOldCompleted()
+      await this.fetchTasks()
+      this.loading = false
+    },
+
+    async fetchArchivedTasks() {
+      const auth = useAuthStore()
+      if (!auth.user) return
+
+      this.loading = true
+
+      const { data, error } = await supabase
+        .from('tasks_with_files_count')
+        .select('*')
+        .eq('user_id', auth.user.id)
+        .eq('archived', true)
+        .order('completed_at', { ascending: false })
+
+      if (error) throw error
+
+      this.tasks = data
+      this.loading = false
+    },
+
+    async restoreTask(taskId) {
+      const { error } = await supabase
+        .from('tasks')
+        .update({
+          archived: false,
+          position: Date.now()
+        })
+        .eq('id', taskId)
+
+      if (error) {
+        throw error
+      }
+
+      // удаляем из текущего списка (архива)
+      this.tasks = this.tasks.filter(t => t.id !== taskId)
+      await this.fetchArchivedTasks()
+    }
   }
 })

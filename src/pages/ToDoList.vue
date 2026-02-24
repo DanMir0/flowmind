@@ -170,8 +170,8 @@ watch(taskToEdit, (val) => {
   }
 })
 
-onMounted(() => {
-  tasksStore.fetchTasks()
+onMounted(async () => {
+  await tasksStore.initTasks()
 })
 </script>
 
@@ -242,7 +242,7 @@ onMounted(() => {
       </div>
     </div>
 
-    <p v-if="loading">Loading...</p>
+    <p v-if="tasksStore.loading">Loading...</p>
     <p v-if="error" class="error">{{ error }}</p>
 
     <EmptyState

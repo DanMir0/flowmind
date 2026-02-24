@@ -22,6 +22,7 @@ async function logout() {
       <router-link to="/calendar">Calendar</router-link>
       <router-link to="/timer">Timer</router-link>
       <router-link to="/settings">Settings</router-link>
+      <router-link to="/archive">Arhive</router-link>
       <button v-if="auth.user" @click="logout">Log out</button>
 
       <template v-else>
