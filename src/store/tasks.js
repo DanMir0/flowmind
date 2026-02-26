@@ -8,6 +8,7 @@ export const useTasksStore = defineStore('tasks', {
     tasks: [],
     loading: false,
     error: null,
+    isInitialized: false,
   }),
 
   actions: {
@@ -18,24 +19,28 @@ export const useTasksStore = defineStore('tasks', {
       const auth = useAuthStore()
       if (!auth.user) return
 
-      this.loading = true
+      try {
+        this.loading = true
 
-      const { data, error } = await supabase
-        .from('tasks_with_files_count')
-        .select('*')
-        .eq('user_id', auth.user.id)
-        .eq('archived', false)
-        .order('position', { ascending: true })
+        const { data, error } = await supabase
+          .from('tasks_with_files_count')
+          .select('*')
+          .eq('user_id', auth.user.id)
+          .eq('archived', false)
+          .order('position', { ascending: true })
 
-      if (error) throw error
+        if (error) throw error
 
-      this.tasks = data.map(task => ({
-        ...task,
-        task_files: undefined, // lazy load
-        completed: Boolean(task.completed),
-      }))
-
-      this.loading = false
+        this.tasks = data.map(task => ({
+          ...task,
+          task_files: undefined, // lazy load
+          completed: Boolean(task.completed),
+        }))
+      } catch (e) {
+        this.error = e.message
+      } finally {
+        this.loading = false
+      }
     },
 
     /* =========================
@@ -359,10 +364,14 @@ export const useTasksStore = defineStore('tasks', {
     },
 
     async initTasks() {
-      this.loading = true
-      await this.autoArchiveOldCompleted()
+      if (this.isInitialized) return
+
+      const auth = useAuthStore()
+      if (!auth.user) return
+
+      this.isInitialized = true
       await this.fetchTasks()
-      this.loading = false
+      this.autoArchiveOldCompleted()
     },
 
     async fetchArchivedTasks() {

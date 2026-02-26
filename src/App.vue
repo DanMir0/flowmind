@@ -2,12 +2,15 @@
 import { useAuthStore } from '@/store/auth.js'
 import Header from '@/components/Header.vue'
 import { onMounted } from 'vue'
+import {useTasksStore} from '@/store/tasks.js'
 
+const taskStore = useTasksStore()
 const auth = useAuthStore()
 
 onMounted(async () => {
   await auth.init()
   await auth.fetchProfile()
+  await taskStore.initTasks()
 })
 
 </script>

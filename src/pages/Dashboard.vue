@@ -24,40 +24,39 @@ async function goToTimerPage() {
 async function goToTodoPage() {
   if (auth.goToLoginIfGuest(router)) await router.push({ name: 'todo' })
 }
-
-watch(
-  () => auth.user,
-  (user) => {
-    if (user) {
-      tasksStore.initTasks()
-    }
-  },
-  { immediate: true }
-)
-
 </script>
 
 <template>
   <div class="dashboard">
-    <!-- Main content -->
     <main class="content">
 
       <!-- To Do -->
       <section class="section section-todo">
         <h2 @click="goToTodoPage">To-Do List</h2>
 
-        <div>
-          <div v-if="!auth.user">
-            <div @click="goToTodoPage" v-for="card of defaultTasks" :key="card.id" class="card">
-              <h3>{{ card.title }}</h3>
-              <p> {{ card.deadline }}</p>
-            </div>
+        <!-- Гость -->
+        <div v-if="!auth.user">
+          <div
+            v-for="card in defaultTasks"
+            :key="card.id"
+            @click="goToTodoPage"
+            class="card"
+          >
+            <h3>{{ card.title }}</h3>
+            <p>{{ card.deadline }}</p>
           </div>
-          <div v-else>
-            <p v-if="tasksStore.loading">Loading tasks...</p>
+        </div>
 
+        <!-- Авторизован -->
+        <div v-else>
+          <!-- Ждём первую загрузку -->
+          <div v-if="!tasksStore.isInitialized">
+            <div v-for="n in 2" :key="n" class="card placeholder"></div>
+          </div>
+
+          <!-- Есть задачи -->
+          <div v-else-if="tasksStore.tasks.length">
             <div
-              v-else-if="tasksStore.tasks.length"
               v-for="card in tasksStore.tasks"
               :key="card.id"
               class="card"
@@ -65,10 +64,10 @@ watch(
               <h3>{{ card.title }}</h3>
               <p>{{ card.deadline }}</p>
             </div>
-
-            <p v-else>No tasks yet</p>
           </div>
 
+          <!-- Реально пусто -->
+          <p v-else>No tasks yet</p>
         </div>
       </section>
 
@@ -77,7 +76,11 @@ watch(
         <h2 @click="goToCalendarPage">Calendar</h2>
 
         <div class="card image-card">
-          <img @click="goToCalendarPage" src="../assets/calendar.png" alt="calendar image">
+          <img
+            @click="goToCalendarPage"
+            src="../assets/calendar.png"
+            alt="calendar image"
+          >
         </div>
       </section>
 
@@ -88,9 +91,15 @@ watch(
         <div class="card timer-card">
           <p>Work Session Timer</p>
 
-          <img @click="goToTimerPage" src="../assets/timer.png" alt="timer image">
+          <img
+            @click="goToTimerPage"
+            src="../assets/timer.png"
+            alt="timer image"
+          >
 
-          <button @click="goToTimerPage" class="btn">Start</button>
+          <button @click="goToTimerPage" class="btn">
+            Start
+          </button>
         </div>
       </section>
 
@@ -98,7 +107,8 @@ watch(
 
     <!-- Footer -->
     <footer class="footer">
-      <p>© 2026 TaskMaster. All rights reserved. |
+      <p>
+        © 2026 TaskMaster. All rights reserved. |
         <a href="#">Privacy Policy</a> |
         <a href="#">Terms of Service</a>
       </p>
@@ -107,8 +117,12 @@ watch(
   </div>
 </template>
 
-
 <style scoped>
+.placeholder {
+  height: 90px;
+  background: transparent;
+}
+
 .dashboard {
   font-family: Arial, sans-serif;
   background: #fff;

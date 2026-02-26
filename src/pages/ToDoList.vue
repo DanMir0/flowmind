@@ -1,14 +1,13 @@
 <script setup>
-import { ref, onMounted, computed, nextTick, watch } from 'vue'
+import { ref, computed, nextTick, watch } from 'vue'
 import { useTasksStore } from '@/store/tasks'
 import { storeToRefs } from 'pinia'
-
 import TaskCard from '@/components/TaskCard.vue'
 import AddTaskModal from '@/components/AddTaskModal.vue'
 import ConfirmDeleteModal from '@/components/ConfirmDeleteTaskModal.vue'
 import EditTaskModal from '@/components/EditTaskModal.vue'
 import EmptyState from '@/components/EmptyState.vue'
-import * as events from 'events'
+import Loader from '@/components/Loader.vue'
 
 const tasksStore = useTasksStore()
 const { tasks, loading, error } = storeToRefs(tasksStore)
@@ -170,9 +169,6 @@ watch(taskToEdit, (val) => {
   }
 })
 
-onMounted(async () => {
-  await tasksStore.initTasks()
-})
 </script>
 
 <template>
@@ -242,7 +238,7 @@ onMounted(async () => {
       </div>
     </div>
 
-    <p v-if="tasksStore.loading">Loading...</p>
+    <Loader v-if="tasksStore.loading">Loading...</Loader>
     <p v-if="error" class="error">{{ error }}</p>
 
     <EmptyState
