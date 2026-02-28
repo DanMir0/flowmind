@@ -11,7 +11,7 @@ let interval = null
 
 /* ====== Circle config ====== */
 const size = 420
-const stroke = 22
+const stroke = 30
 const center = size / 2
 const radius = center - stroke
 const circumference = 2 * Math.PI * radius
@@ -67,9 +67,11 @@ onUnmounted(stop)
 
       <svg :width="size" :height="size" class="progress-ring">
         <defs>
-          <linearGradient id="purpleGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stop-color="#c9b6ff" />
-            <stop offset="100%" stop-color="#7a3cff" />
+          <linearGradient id="purpleGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#3d03a1" />
+            <stop offset="25%" stop-color="#756cab" />
+            <stop offset="50%" stop-color="#ba9fe3" />
+            <stop offset="75%" stop-color="#8c5fcf" />
           </linearGradient>
         </defs>
 
@@ -162,7 +164,7 @@ onUnmounted(stop)
 .time {
   font-size: 88px;
   font-weight: 600;
-  color: #5a3dff;
+  color: #3925a7;
   letter-spacing: 2px;
   margin-bottom: 28px;
 }
@@ -173,7 +175,6 @@ onUnmounted(stop)
   display: flex;
   background: #ffffff;
   border-radius: 999px;
-  padding: 6px;
   box-shadow: 0 10px 30px rgba(0,0,0,0.06);
 }
 
@@ -188,7 +189,6 @@ button {
 }
 
 /* Start */
-
 .primary {
   background: linear-gradient(135deg, #7a3cff, #9d6bff);
   color: white;
@@ -196,7 +196,7 @@ button {
 }
 
 .primary:hover {
-  transform: translateY(-2px);
+  background: linear-gradient(135deg, #6045a8, #a87ff6);
 }
 
 /* Reset */
@@ -210,3 +210,5 @@ button {
   background: #f2f2f7;
 }
 </style>
+
+
