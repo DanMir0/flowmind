@@ -1,12 +1,15 @@
 <script setup>
-import { ref, computed, onUnmounted } from 'vue'
+import { ref, computed, onUnmounted, nextTick } from 'vue'
 
 /* ====== Settings ====== */
-const WORK_DURATION = 25 * 60
+const workDuration = ref(30 * 60) // 30 минут по умолчанию
 
-/* ====== State ====== */
-const timeLeft = ref(WORK_DURATION)
+const timeLeft = ref(workDuration.value)
 const isRunning = ref(false)
+const isEditing = ref(false)
+const editValue = ref('')
+const timeInput = ref(null)
+
 let interval = null
 
 /* ====== Circle config ====== */
@@ -17,7 +20,7 @@ const radius = center - stroke
 const circumference = 2 * Math.PI * radius
 
 /* ====== Computed ====== */
-const progress = computed(() => timeLeft.value / WORK_DURATION)
+const progress = computed(() => timeLeft.value / workDuration.value)
 
 const dashOffset = computed(() =>
   circumference * (1 - progress.value)
@@ -26,12 +29,67 @@ const dashOffset = computed(() =>
 const formattedTime = computed(() => {
   const minutes = Math.floor(timeLeft.value / 60)
   const seconds = timeLeft.value % 60
-  return `${String(minutes).padStart(2,'0')}:${String(seconds).padStart(2,'0')}`
+  return `
+  ${String(minutes).padStart(2, '0')}:
+  ${String(seconds).padStart(2, '0')}`
 })
 
-/* ====== Methods ====== */
+const limitInput = () => {
+  // Убираем всё кроме цифр
+  editValue.value = editValue.value.replace(/\D/g, '')
+
+  // Жёстко обрезаем до 4 символов
+  if (editValue.value.length > 4) {
+    editValue.value = editValue.value.slice(0, 4)
+  }
+}
+
+const enableEdit = async () => {
+  if (isRunning.value) return
+
+  // Заполняем цифрами без двоеточия
+  const minutes = Math.floor(timeLeft.value / 60)
+  const seconds = timeLeft.value % 60
+
+  editValue.value =
+    String(minutes).padStart(2, '0') +
+    String(seconds).padStart(2, '0')
+
+  isEditing.value = true
+
+  await nextTick()
+  timeInput.value.focus()
+  timeInput.value.select()
+}
+
+const applyEdit = () => {
+  if (!editValue.value) {
+    isEditing.value = false
+    return
+  }
+
+  const digits = editValue.value.padStart(4, '0')
+
+  let minutes = parseInt(digits.slice(0, 2))
+  let seconds = parseInt(digits.slice(2, 4))
+
+  if (seconds > 59) seconds = 59
+
+  let total = minutes * 60 + seconds
+
+  if (total < 60) total = 60
+  if (total > 4 * 60 * 60) total = 4 * 60 * 60
+
+  workDuration.value = total
+  timeLeft.value = total
+
+  isEditing.value = false
+}
+
+/* ====== Timer Logic ====== */
 const start = () => {
-  if (interval) return
+  if (interval || isEditing.value) return
+
   isRunning.value = true
 
   interval = setInterval(() => {
@@ -55,7 +113,12 @@ const toggle = () => {
 
 const reset = () => {
   stop()
-  timeLeft.value = WORK_DURATION
+  timeLeft.value = workDuration.value
+}
+
+/* ====== Edit Mode ====== */
+const cancelEdit = () => {
+  isEditing.value = false
 }
 
 onUnmounted(stop)
@@ -82,8 +145,7 @@ onUnmounted(stop)
           :cx="center"
           :cy="center"
           :stroke-width="stroke"
-          fill="transparent"
-        />
+          fill="transparent" />
 
         <!-- Progress ring -->
         <circle
@@ -95,13 +157,34 @@ onUnmounted(stop)
           fill="transparent"
           stroke="url(#purpleGradient)"
           :stroke-dasharray="circumference"
-          :stroke-dashoffset="dashOffset"
-        />
+          :stroke-dashoffset="dashOffset" />
       </svg>
 
       <div class="content">
         <div class="time">
-          {{ formattedTime }}
+
+          <!-- отображение -->
+          <div
+            v-if="!isEditing"
+            class="time-display"
+            @click="enableEdit">
+            {{ formattedTime }}
+          </div>
+
+          <!-- редактирование -->
+          <input
+            v-else
+            ref="timeInput"
+            v-model="editValue"
+            class="time-input"
+            inputmode="numeric"
+            pattern="[0-9]*"
+            maxlength="4"
+            @input="limitInput"
+            @keyup.enter="applyEdit"
+            @keyup.esc="cancelEdit"
+            @blur="applyEdit" />
+
         </div>
 
         <div class="actions">
@@ -119,8 +202,24 @@ onUnmounted(stop)
 </template>
 
 <style scoped>
+.time-display {
+  cursor: pointer;
+}
+
+.time-input {
+  font-size: 88px;
+  font-weight: 600;
+  text-align: center;
+  border: none;
+  background: transparent;
+  color: #3925a7;
+  outline: none;
+  width: 260px;
+  letter-spacing: 2px;
+}
+
 .timer-page {
-  min-height: 100vh;
+  height: calc(100vh - 80px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -128,7 +227,6 @@ onUnmounted(stop)
 }
 
 /* ===== Circle ===== */
-
 .circle-wrapper {
   position: relative;
   width: 420px;
@@ -149,7 +247,6 @@ onUnmounted(stop)
 }
 
 /* ===== Content inside circle ===== */
-
 .content {
   position: absolute;
   inset: 0;
@@ -160,7 +257,6 @@ onUnmounted(stop)
 }
 
 /* ===== Time ===== */
-
 .time {
   font-size: 88px;
   font-weight: 600;
@@ -170,12 +266,11 @@ onUnmounted(stop)
 }
 
 /* ===== Buttons ===== */
-
 .actions {
   display: flex;
   background: #ffffff;
   border-radius: 999px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
 }
 
 button {
@@ -200,7 +295,6 @@ button {
 }
 
 /* Reset */
-
 .secondary {
   background: transparent;
   color: #6b6b6b;
