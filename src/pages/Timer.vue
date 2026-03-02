@@ -10,7 +10,9 @@ const isEditing = ref(false)
 const editValue = ref('')
 const timeInput = ref(null)
 
-let interval = null
+let endTime = null
+let startTime = null
+let rafId = null
 
 /* ====== Circle config ====== */
 const size = 420
@@ -18,20 +20,12 @@ const stroke = 30
 const center = size / 2
 const radius = center - stroke
 const circumference = 2 * Math.PI * radius
-
-/* ====== Computed ====== */
-const progress = computed(() => timeLeft.value / workDuration.value)
-
-const dashOffset = computed(() =>
-  circumference * (1 - progress.value)
-)
+const dashOffset = ref(0)
 
 const formattedTime = computed(() => {
   const minutes = Math.floor(timeLeft.value / 60)
   const seconds = timeLeft.value % 60
-  return `
-  ${String(minutes).padStart(2, '0')}:
-  ${String(seconds).padStart(2, '0')}`
+  return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
 })
 
 const limitInput = () => {
@@ -77,7 +71,7 @@ const applyEdit = () => {
 
   let total = minutes * 60 + seconds
 
-  if (total < 60) total = 60
+  if (total < 1) total = 1
   if (total > 4 * 60 * 60) total = 4 * 60 * 60
 
   workDuration.value = total
@@ -87,23 +81,41 @@ const applyEdit = () => {
 }
 
 /* ====== Timer Logic ====== */
+const tick = () => {
+  const now = Date.now()
+  const remainingMs = endTime - now
+
+  if (remainingMs <= 0) {
+    timeLeft.value = 0
+    dashOffset.value = circumference
+    stop()
+    return
+  }
+
+  const remainingSeconds = Math.ceil(remainingMs / 1000)
+  timeLeft.value = remainingSeconds
+
+  const progressRatio = remainingMs / (workDuration.value * 1000)
+  dashOffset.value = circumference * (1 - progressRatio)
+
+  rafId = requestAnimationFrame(tick)
+}
 const start = () => {
-  if (interval || isEditing.value) return
+  if (isRunning.value || isEditing.value) return
 
   isRunning.value = true
 
-  interval = setInterval(() => {
-    if (timeLeft.value > 0) {
-      timeLeft.value--
-    } else {
-      stop()
-    }
-  }, 1000)
+  startTime = Date.now()
+  endTime = startTime + timeLeft.value * 1000
+
+  tick()
 }
 
 const stop = () => {
-  clearInterval(interval)
-  interval = null
+  if (rafId) {
+    cancelAnimationFrame(rafId)
+    rafId = null
+  }
   isRunning.value = false
 }
 
@@ -113,6 +125,9 @@ const toggle = () => {
 
 const reset = () => {
   stop()
+  dashOffset.value = 0
+  rafId = null
+  endTime = null
   timeLeft.value = workDuration.value
 }
 
@@ -243,7 +258,6 @@ onUnmounted(stop)
 
 .progress-bar {
   stroke-linecap: round;
-  transition: stroke-dashoffset 1s linear;
 }
 
 /* ===== Content inside circle ===== */
