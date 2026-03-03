@@ -11,7 +11,6 @@ const editValue = ref('')
 const timeInput = ref(null)
 
 let endTime = null
-let startTime = null
 let rafId = null
 
 /* ====== Circle config ====== */
@@ -33,21 +32,14 @@ const limitInput = () => {
   editValue.value = editValue.value.replace(/\D/g, '')
 
   // Жёстко обрезаем до 4 символов
-  if (editValue.value.length > 4) {
-    editValue.value = editValue.value.slice(0, 4)
+  if (editValue.value.length > 5) {
+    editValue.value = editValue.value.slice(0, 5)
   }
 }
 
 const enableEdit = async () => {
   if (isRunning.value) return
-
-  // Заполняем цифрами без двоеточия
-  const minutes = Math.floor(timeLeft.value / 60)
-  const seconds = timeLeft.value % 60
-
-  editValue.value =
-    String(minutes).padStart(2, '0') +
-    String(seconds).padStart(2, '0')
+  editValue.value = ''
 
   isEditing.value = true
 
@@ -62,10 +54,10 @@ const applyEdit = () => {
     return
   }
 
-  const digits = editValue.value.padStart(4, '0')
+  const digits = editValue.value
 
-  let minutes = parseInt(digits.slice(0, 2))
-  let seconds = parseInt(digits.slice(2, 4))
+  let minutes = parseInt(digits.slice(0, -2) || 0)
+  let seconds = parseInt(digits.slice(-2) || 0)
 
   if (seconds > 59) seconds = 59
 
@@ -105,8 +97,7 @@ const start = () => {
 
   isRunning.value = true
 
-  startTime = Date.now()
-  endTime = startTime + timeLeft.value * 1000
+  endTime = Date.now() + timeLeft.value * 1000
 
   tick()
 }
@@ -193,13 +184,13 @@ onUnmounted(stop)
             v-model="editValue"
             class="time-input"
             inputmode="numeric"
+            placeholder="MM:SS"
             pattern="[0-9]*"
-            maxlength="4"
+            maxlength="5"
             @input="limitInput"
             @keyup.enter="applyEdit"
             @keyup.esc="cancelEdit"
             @blur="applyEdit" />
-
         </div>
 
         <div class="actions">
@@ -231,6 +222,13 @@ onUnmounted(stop)
   outline: none;
   width: 260px;
   letter-spacing: 2px;
+}
+
+.time-input::placeholder {
+  color: #b8b8c8;
+  opacity: 0.6;
+  font-weight: 500;
+  font-size: 72px;
 }
 
 .timer-page {
@@ -318,5 +316,3 @@ button {
   background: #f2f2f7;
 }
 </style>
-
-
