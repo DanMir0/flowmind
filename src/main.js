@@ -5,9 +5,9 @@ import router from './router/router.js'
 import './style.css'
 import {Toaster} from 'vue-sonner'
 import 'vue-sonner/style.css'
+import { useSettingsStore } from '@/store/settings.js'
 
 const app = createApp(App)
-
 const pinia = createPinia()
 
 app.use(pinia)
@@ -16,4 +16,5 @@ app.use(pinia)
   .mount('#app')
 
 
-
+const settingStore = useSettingsStore()
+settingStore.loadFromStorage()

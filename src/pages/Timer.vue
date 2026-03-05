@@ -1,5 +1,12 @@
 <script setup>
-import { ref, computed, onUnmounted, nextTick } from 'vue'
+import { ref, computed, onUnmounted, nextTick, onMounted } from 'vue'
+import { useQuotes } from '@/composable/useQuotes.js'
+
+const {
+  displayedQuote,
+  loading,
+  loadQuote
+} = useQuotes()
 
 /* ====== Settings ====== */
 const workDuration = ref(30 * 60) // 30 минут по умолчанию
@@ -127,6 +134,11 @@ const cancelEdit = () => {
   isEditing.value = false
 }
 
+console.log('quote loaded', displayedQuote.value)
+
+onMounted(async () => {
+  await loadQuote()
+})
 onUnmounted(stop)
 </script>
 
@@ -204,10 +216,109 @@ onUnmounted(stop)
       </div>
 
     </div>
+    <div class="quote-card" v-if="loading || displayedQuote">
+
+      <template v-if="loading">
+        <div class="quote-skeleton-text"></div>
+        <div class="quote-skeleton-author"></div>
+      </template>
+
+      <template v-else-if="displayedQuote">
+        <div class="quote-text">
+          "{{ displayedQuote.text }}"
+        </div>
+
+        <div class="quote-author">
+          — {{ displayedQuote.author || 'Unknown' }}
+        </div>
+
+        <button class="quote-settings">
+          ⚙️
+        </button>
+      </template>
+
+    </div>
   </div>
 </template>
 
 <style scoped>
+.quote-card {
+  margin-top: 40px;
+  max-width: 520px;
+  padding: 22px 28px;
+  margin-left: auto;
+  margin-right: auto;
+
+  background: white;
+  border-radius: 16px;
+
+  box-shadow: 0 10px 25px rgba(0,0,0,0.06);
+
+  position: relative;
+  text-align: center;
+}
+
+.quote-text {
+  font-size: 16px;
+  color: #5f5f6a;
+  line-height: 1.6;
+}
+
+.quote-author {
+  margin-top: 8px;
+  font-size: 14px;
+  color: #8a8a98;
+}
+
+.quote-settings {
+  position: absolute;
+  right: 16px;
+  bottom: 14px;
+
+  border: none;
+  background: transparent;
+  cursor: pointer;
+
+  font-size: 18px;
+  color: #7b5cff;
+}
+
+.quote-settings:hover {
+  transform: rotate(20deg);
+}
+
+/* Skeleton */
+
+.quote-skeleton-text {
+  height: 18px;
+  width: 100%;
+  background: linear-gradient(
+    90deg,
+    #ececf3 25%,
+    #f5f5fa 50%,
+    #ececf3 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton 1.4s infinite;
+  border-radius: 6px;
+  margin-bottom: 12px;
+}
+
+.quote-skeleton-author {
+  height: 16px;
+  width: 120px;
+  margin: auto;
+  background: #ececf3;
+  border-radius: 6px;
+}
+
+@keyframes skeleton {
+  0% { background-position: 200% 0 }
+  100% { background-position: -200% 0 }
+}
+
+
+
 .time-display {
   cursor: pointer;
 }
@@ -234,6 +345,7 @@ onUnmounted(stop)
 .timer-page {
   height: calc(100vh - 80px);
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   background: #f4f4f7;
