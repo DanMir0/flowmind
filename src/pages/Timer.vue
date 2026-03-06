@@ -223,17 +223,13 @@ onUnmounted(stop)
         <div class="quote-skeleton-author"></div>
       </template>
 
-      <template v-else-if="displayedQuote">
-        <div class="quote-text">
-          "{{ displayedQuote.text }}"
-        </div>
-
-        <div class="quote-author">
-          — {{ displayedQuote.author || 'Unknown' }}
+      <template v-else>
+        <div class="quote-block">
+          <p class="quote-text">"{{ displayedQuote.text }}" — <span class="quote-author">{{ displayedQuote.author || 'Unknown' }}</span> </p>
         </div>
 
         <button class="quote-settings">
-          ⚙️
+          <img src="../assets/settings-quotes.svg">
         </button>
       </template>
 
@@ -243,44 +239,40 @@ onUnmounted(stop)
 
 <style scoped>
 .quote-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   margin-top: 40px;
   max-width: 520px;
+  gap: 20px;
   padding: 22px 28px;
   margin-left: auto;
   margin-right: auto;
-
-  background: white;
+  background: #ffffff;
   border-radius: 16px;
-
-  box-shadow: 0 10px 25px rgba(0,0,0,0.06);
-
-  position: relative;
-  text-align: center;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.06);
 }
 
 .quote-text {
+  flex: 1;
   font-size: 16px;
   color: #5f5f6a;
   line-height: 1.6;
 }
 
 .quote-author {
-  margin-top: 8px;
-  font-size: 14px;
   color: #8a8a98;
 }
 
 .quote-settings {
-  position: absolute;
-  right: 16px;
-  bottom: 14px;
-
+  flex-shrink: 0;
   border: none;
   background: transparent;
   cursor: pointer;
-
   font-size: 18px;
   color: #7b5cff;
+  transition: transform 0.2s ease;
+  padding: 0;
 }
 
 .quote-settings:hover {
