@@ -1,6 +1,17 @@
 <script setup>
 import { ref, computed, onUnmounted, nextTick, onMounted } from 'vue'
 import { useQuotes } from '@/composable/useQuotes.js'
+import { useSubscriptionStore } from '@/store/subscription'
+import QuoteActionsSheet from '@/components/QuoteActionsSheet.vue'
+
+const subscriptionStore = useSubscriptionStore()
+
+const showQuoteMenu = ref(false)
+
+const toggleQuoteMenu = () => {
+  showQuoteMenu.value = !showQuoteMenu.value
+}
+const showQuoteActions = ref(false)
 
 const {
   displayedQuote,
@@ -137,6 +148,7 @@ const cancelEdit = () => {
 console.log('quote loaded', displayedQuote.value)
 
 onMounted(async () => {
+  subscriptionStore.setPro(true) // после теста удалить
   await loadQuote()
 })
 onUnmounted(stop)
@@ -216,6 +228,25 @@ onUnmounted(stop)
       </div>
 
     </div>
+<!--    <div class="quote-card" v-if="loading || displayedQuote">-->
+
+<!--      <template v-if="loading">-->
+<!--        <div class="quote-skeleton-text"></div>-->
+<!--        <div class="quote-skeleton-author"></div>-->
+<!--      </template>-->
+
+<!--      <template v-else>-->
+<!--        <div class="quote-block">-->
+<!--          <p class="quote-text">"{{ displayedQuote.text }}" — <span class="quote-author">{{ displayedQuote.author || 'Unknown' }}</span> </p>-->
+<!--        </div>-->
+
+<!--        <button class="quote-settings">-->
+<!--          <img src="../assets/settings-quotes.svg">-->
+<!--        </button>-->
+<!--      </template>-->
+
+<!--    </div>-->
+
     <div class="quote-card" v-if="loading || displayedQuote">
 
       <template v-if="loading">
@@ -224,16 +255,54 @@ onUnmounted(stop)
       </template>
 
       <template v-else>
-        <div class="quote-block">
-          <p class="quote-text">"{{ displayedQuote.text }}" — <span class="quote-author">{{ displayedQuote.author || 'Unknown' }}</span> </p>
+
+        <div class="quote-text">
+          "{{ displayedQuote.text }}" <span class="quote-author"> — {{ displayedQuote.author || 'Unknown' }}</span>
         </div>
 
-        <button class="quote-settings">
-          <img src="../assets/settings-quotes.svg">
+        <button
+          class="quote-settings"
+          @click="showQuoteActions = true">
+          ⚙️
         </button>
+
+        <div
+          v-if="showQuoteMenu"
+          class="quote-menu">
+
+          <template v-if="subscriptionStore.isPro">
+
+            <button class="quote-menu-item">
+              Add quote
+            </button>
+
+            <button class="quote-menu-item">
+              My quotes
+            </button>
+
+            <button class="quote-menu-item">
+              Pin this quote
+            </button>
+
+          </template>
+
+          <template v-else>
+
+            <button class="quote-menu-item pro">
+              🔒 Unlock custom quotes
+            </button>
+
+          </template>
+
+        </div>
+
       </template>
 
     </div>
+
+    <QuoteActionsSheet
+    :open="showQuoteActions"
+    @close="showQuoteActions = false"/>
   </div>
 </template>
 
@@ -253,8 +322,42 @@ onUnmounted(stop)
   box-shadow: 0 12px 30px rgba(0,0,0,0.06);
 }
 
+.quote-menu {
+  position: absolute;
+  right: 10px;
+  bottom: 40px;
+
+  background: white;
+  border-radius: 12px;
+
+  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+
+  padding: 8px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.quote-menu-item {
+  border: none;
+  background: transparent;
+  padding: 8px 12px;
+  text-align: left;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+.quote-menu-item:hover {
+  background: #f4f4f9;
+}
+
+.quote-menu-item.pro {
+  color: #7b5cff;
+  font-weight: 500;
+}
+
 .quote-text {
-  flex: 1;
   font-size: 16px;
   color: #5f5f6a;
   line-height: 1.6;
