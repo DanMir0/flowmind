@@ -3,7 +3,7 @@ import { defineStore } from 'pinia'
 export const useSettingsStore = defineStore('settings', {
   state: () => ({
     locale: 'en',      // 'en' | 'ru'
-    theme: 'dark'      // 'dark' | 'light'
+    theme: 'light'      // 'dark' | 'light'
   }),
 
   actions: {
