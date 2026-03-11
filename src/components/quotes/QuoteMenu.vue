@@ -21,27 +21,23 @@ const subscriptionStore = useSubscriptionStore()
   <div
     v-if="open"
     class="sheet-overlay"
-    @click="emit('close')"
-  >
+    @click="emit('close')">
 
     <div
       class="sheet"
-      @click.stop
-    >
+      @click.stop>
 
       <template v-if="subscriptionStore.isPro">
 
         <button
           class="sheet-item"
-          @click="emit('addQuote')"
-        >
+          @click="emit('addQuote')">
           Add quote
         </button>
 
         <button
           class="sheet-item"
-          @click="emit('myQuotes')"
-        >
+          @click="emit('myQuotes')">
           My quotes
         </button>
 

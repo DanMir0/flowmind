@@ -10,6 +10,7 @@ import ResetPassword from '@/pages/auth/ResetPassword.vue'
 import ForgotPassword from '@/pages/auth/ForgotPassword.vue'
 import CheckEmail from '@/pages/auth/CheckEmail.vue'
 import Arhive from '@/pages/Arhive.vue'
+import MyQuotes from '@/pages/MyQuotes.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -24,8 +25,8 @@ const router = createRouter({
     { path: '/forgot-password', name: 'forgotPassword', component: ForgotPassword },
     { path: '/reset-password', name: 'resetPassword', component: ResetPassword },
     { path: '/check-email', name: 'checkEmail', component: CheckEmail },
-    { path: '/archive', name: 'archive', component: Arhive, meta: {requiresAuth: true}}
-
+    { path: '/archive', name: 'archive', component: Arhive, meta: {requiresAuth: true}},
+    { path: '/my-quotes', name: 'myQuotes', component: MyQuotes, meta: {requiresAuth: true}},
   ]
 })
 

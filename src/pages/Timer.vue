@@ -4,13 +4,18 @@ import { useQuotes } from '@/composable/useQuotes.js'
 import { useSubscriptionStore } from '@/store/subscription'
 import QuoteMenu from '@/components/quotes/QuoteMenu.vue'
 import AddQuoteModal from '@/components/quotes/AddQuoteModal.vue'
-import QuoteActionsSheet from '@/components/QuoteActionsSheet.vue'
+import { useRouter } from 'vue-router'
 
 const subscriptionStore = useSubscriptionStore()
 
+const router = useRouter()
 const showQuoteMenu = ref(false)
 const showAddQuote = ref(false)
 
+const openMyQuotes = () => {
+  showQuoteMenu.value = false
+  router.push({name: 'myQuotes'})
+}
 const openAddQuote = () => {
   showQuoteMenu.value = false
   showAddQuote.value = true
@@ -260,7 +265,8 @@ onUnmounted(stop)
     <QuoteMenu
       :open="showQuoteMenu"
       @close="showQuoteMenu = false"
-      @add-quote="openAddQuote"/>
+      @add-quote="openAddQuote"
+      @my-quotes="openMyQuotes"/>
 
     <AddQuoteModal
       :open="showAddQuote"
