@@ -39,13 +39,14 @@ export const getQuoteTranslation = async (quoteId, locale) => {
   return data
 }
 
-export const addUserQuote = async (userId, text, locale) => {
+export const addUserQuote = async (userId, text, locale, author) => {
   const {data} = await supabase
     .from('user_quotes')
     .insert({
       user_id: userId,
       text,
-      locale
+      locale: locale,
+      author: author,
     })
   return data
 }

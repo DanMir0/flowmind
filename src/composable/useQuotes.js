@@ -120,14 +120,15 @@ export function useQuotes() {
     }
   }
 
-  const createUserQuote = async (text) => {
+  const createUserQuote = async (quoteText, authorText) => {
 
     if (!authStore.user) return
 
     await addUserQuote(
       authStore.user.id,
-      text,
-      settingsStore.locale
+      quoteText,
+      settingsStore.locale,
+      authorText,
     )
 
   }

@@ -3,7 +3,7 @@ import { ref, onMounted, watch } from 'vue'
 import { supabase } from '@/services/supabase'
 import { useAuthStore } from '@/store/auth'
 import { useSubscriptionStore } from '@/store/subscription'
-import { deleteUserQuote } from '@/services/userQuotes.js'
+import { deleteUserQuote, pinUserQuote } from '@/services/userQuotes.js'
 
 const authStore = useAuthStore()
 const subscriptionStore = useSubscriptionStore()
@@ -50,6 +50,25 @@ const loadQuotes = async () => {
   loading.value = false
 }
 
+const pinQuote = async (quoteId) => {
+
+  try {
+
+    await pinUserQuote(authStore.user.id, quoteId)
+
+    // обновляем UI
+    quotes.value = quotes.value.map(q => ({
+      ...q,
+      is_pinned: q.id === quoteId
+    }))
+
+  } catch (err) {
+
+    console.error(err)
+    alert('Failed to pin quote')
+
+  }
+}
 onMounted(() => {
   if (subscriptionStore.isPro) {
     loadQuotes()
@@ -129,8 +148,18 @@ watch(
 
           <div class="actions">
 
-            <button class="pin-btn">
-              📌 Pin
+            <button
+              class="pin-btn"
+              @click="pinQuote(quote.id)">
+
+              <span v-if="quote.is_pinned">
+                📌 Pinned
+              </span>
+
+              <span v-else>
+                📌 Pin
+              </span>
+
             </button>
 
             <button class="delete-btn" @click="deleteQuote(quote.id)">
@@ -258,4 +287,24 @@ watch(
   color:#888;
 }
 
+.pin-btn{
+  border:none;
+  padding:8px 12px;
+  border-radius:8px;
+  cursor:pointer;
+  background:#f3f3f7;
+}
+
+.pin-btn:hover{
+  background:#e9e9f3;
+}
+
+.pin-btn:active{
+  transform:scale(0.97);
+}
+
+.pinned{
+  background:#7b5cff;
+  color:white;
+}
 </style>
