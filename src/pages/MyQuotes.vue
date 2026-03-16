@@ -4,6 +4,7 @@ import { supabase } from '@/services/supabase'
 import { useAuthStore } from '@/store/auth'
 import { useSubscriptionStore } from '@/store/subscription'
 import { deleteUserQuote, pinUserQuote } from '@/services/userQuotes.js'
+import QuoteItem from '@/components/quotes/QuoteItem.vue'
 
 const authStore = useAuthStore()
 const subscriptionStore = useSubscriptionStore()
@@ -133,42 +134,12 @@ watch(
       <!-- Quotes list -->
       <div v-else>
 
-        <div
+        <QuoteItem
           v-for="quote in quotes"
           :key="quote.id"
-          class="quote-card">
-
-          <div class="text">
-            "{{ quote.text }}"
-          </div>
-
-          <div class="author">
-            — {{ quote.author || 'Unknown' }}
-          </div>
-
-          <div class="actions">
-
-            <button
-              class="pin-btn"
-              @click="pinQuote(quote.id)">
-
-              <span v-if="quote.is_pinned">
-                📌 Pinned
-              </span>
-
-              <span v-else>
-                📌 Pin
-              </span>
-
-            </button>
-
-            <button class="delete-btn" @click="deleteQuote(quote.id)">
-              🗑 Delete
-            </button>
-
-          </div>
-
-        </div>
+          :quote="quote"
+          @pin="pinQuote"
+          @delete="deleteQuote"/>
 
         <div
           v-if="!quotes.length"
@@ -187,7 +158,6 @@ watch(
 
 
 <style scoped>
-
 .page{
   max-width:720px;
   margin:auto;
@@ -219,43 +189,6 @@ watch(
   cursor:pointer;
 }
 
-/* QUOTES */
-
-.quote-card{
-  background:white;
-  border-radius:16px;
-  padding:20px;
-  margin-top:20px;
-  box-shadow:0 8px 20px rgba(0,0,0,0.05);
-}
-
-.text{
-  font-size:16px;
-  line-height:1.5;
-}
-
-.author{
-  margin-top:8px;
-  color:#777;
-}
-
-/* ACTIONS */
-
-.actions{
-  margin-top:14px;
-  display:flex;
-  gap:10px;
-}
-
-.pin-btn,
-.delete-btn{
-  border:none;
-  padding:8px 12px;
-  border-radius:8px;
-  cursor:pointer;
-  background:#f3f3f7;
-}
-
 /* SKELETON */
 
 .quote-skeleton{
@@ -285,26 +218,5 @@ watch(
   text-align:center;
   margin-top:40px;
   color:#888;
-}
-
-.pin-btn{
-  border:none;
-  padding:8px 12px;
-  border-radius:8px;
-  cursor:pointer;
-  background:#f3f3f7;
-}
-
-.pin-btn:hover{
-  background:#e9e9f3;
-}
-
-.pin-btn:active{
-  transform:scale(0.97);
-}
-
-.pinned{
-  background:#7b5cff;
-  color:white;
 }
 </style>
