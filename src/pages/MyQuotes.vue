@@ -5,6 +5,7 @@ import { useAuthStore } from '@/store/auth'
 import { useSubscriptionStore } from '@/store/subscription'
 import { deleteUserQuote, pinUserQuote } from '@/services/userQuotes.js'
 import QuoteItem from '@/components/quotes/QuoteItem.vue'
+import ConfirmDeleteModal from '@/components/ConfirmDeleteModal.vue'
 
 const authStore = useAuthStore()
 const subscriptionStore = useSubscriptionStore()
@@ -12,25 +13,11 @@ const subscriptionStore = useSubscriptionStore()
 const quotes = ref([])
 const loading = ref(true)
 
+const showDeleteModal = ref(false)
+const quoteToDelete = ref(null)
 const deleteQuote = async (quoteId) => {
-
-  const confirmDelete = confirm('Delete this quote?')
-
-  if (!confirmDelete) return
-
-  try {
-
-    await deleteUserQuote(quoteId)
-
-    // обновляем UI без reload
-    quotes.value = quotes.value.filter(q => q.id !== quoteId)
-
-  } catch (err) {
-
-    console.error(err)
-    alert('Failed to delete quote')
-
-  }
+  quoteToDelete.value = quotes.value.find(q => q.id == quoteId)
+  showDeleteModal.value = true
 }
 const loadQuotes = async () => {
 
@@ -49,6 +36,30 @@ const loadQuotes = async () => {
   }
 
   loading.value = false
+}
+
+const confirmDelete = async () => {
+
+  if (!quoteToDelete.value) return
+
+  try {
+
+    await deleteUserQuote(quoteToDelete.value.id)
+
+    quotes.value = quotes.value.filter(
+      q => q.id !== quoteToDelete.value.id
+    )
+
+  } catch (err) {
+
+    console.error(err)
+    alert('Failed to delete quote')
+
+  }
+
+  showDeleteModal.value = false
+  quoteToDelete.value = null
+
 }
 
 const pinQuote = async (quoteId) => {
@@ -153,7 +164,15 @@ watch(
 
     </div>
 
+    <ConfirmDeleteModal
+      v-if="showDeleteModal"
+      entity="quote"
+      :title="quoteToDelete?.text.slice(0, 30) + '...'"
+      @confirm="confirmDelete"
+      @cancel="showDeleteModal=false"
+    />
   </div>
+
 </template>
 
 

@@ -1,37 +1,87 @@
+<!--<script setup>-->
+<!--defineProps({-->
+<!--  title: {-->
+<!--    type: String,-->
+<!--    required: true-->
+<!--  }-->
+<!--})-->
+
+<!--const emit = defineEmits(['confirm', 'cancel'])-->
+<!--</script>-->
+
+<!--<template>-->
+<!--  <div class="modal-wrapper">-->
+<!--    <div class="modal-backdrop">-->
+<!--      <div class="modal">-->
+<!--        <h3>Delete task</h3>-->
+<!--        <p>-->
+<!--          Are you sure you want to delete-->
+<!--          <strong>"{{ title }}"</strong>?-->
+<!--        </p>-->
+
+<!--        <div class="actions">-->
+<!--          <button class="btn cancel" @click="$emit('cancel')">-->
+<!--            Cancel-->
+<!--          </button>-->
+<!--          <button class="btn danger" @click="$emit('confirm')">-->
+<!--            Delete-->
+<!--          </button>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--  </div>-->
+<!--</template>-->
 <script setup>
+
 defineProps({
   title: {
     type: String,
     required: true
+  },
+  entity: {
+    type: String,
+    default: 'item'
   }
 })
 
-const emit = defineEmits(['confirm', 'cancel'])
+const emit = defineEmits(['confirm','cancel'])
+
 </script>
 
 <template>
+
   <div class="modal-wrapper">
+
     <div class="modal-backdrop">
+
       <div class="modal">
-        <h3>Delete task</h3>
+
+        <h3>Delete {{ entity }}</h3>
+
         <p>
           Are you sure you want to delete
           <strong>"{{ title }}"</strong>?
         </p>
 
         <div class="actions">
-          <button class="btn cancel" @click="$emit('cancel')">
+
+          <button class="btn cancel" @click="emit('cancel')">
             Cancel
           </button>
-          <button class="btn danger" @click="$emit('confirm')">
+
+          <button class="btn danger" @click="emit('confirm')">
             Delete
           </button>
-        </div>
-      </div>
-    </div>
-  </div>
-</template>
 
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</template>
 <style scoped>
 .modal-backdrop {
   position: fixed;
@@ -75,7 +125,7 @@ const emit = defineEmits(['confirm', 'cancel'])
 }
 
 .btn.cancel {
-  background: #9e9e9e;
+  background: #7a3cff;
 }
 
 .btn.danger {

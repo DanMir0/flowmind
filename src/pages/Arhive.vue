@@ -1,7 +1,7 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 import { useTasksStore } from '@/store/tasks.js'
-import ConfirmDeleteTaskModal from '@/components/ConfirmDeleteTaskModal.vue'
+import ConfirmDeleteModal from '@/components/ConfirmDeleteModal.vue'
 
 const tasksStore = useTasksStore()
 const showDeleteModal = ref(false)
@@ -85,7 +85,7 @@ function cancelDelete() {
       </div>
     </div>
   </div>
-  <ConfirmDeleteTaskModal
+  <ConfirmDeleteModal
     v-if="showDeleteModal"
     :title="taskToDelete?.title"
     @confirm="confirmDelete"
