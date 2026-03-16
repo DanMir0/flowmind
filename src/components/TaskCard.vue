@@ -64,9 +64,8 @@ const formattedDeadline = computed(() => {
     : '—'
 })
 </script>
-
 <template>
-  <div class="task-card" :class="[deadlineInfo.state, { completed: task.completed},  $props.class]">
+  <div class="task-card" :class="[deadlineInfo.state, { completed: task.completed }, $props.class]">
     <div class="task-header">
       <label class="toggle">
         <input
@@ -93,8 +92,7 @@ const formattedDeadline = computed(() => {
       <span
         v-if="deadlineInfo.label"
         class="deadline-label"
-        :class="deadlineInfo.state"
-      >
+        :class="deadlineInfo.state">
         · {{ deadlineInfo.label }}
       </span>
     </p>
@@ -115,19 +113,38 @@ const formattedDeadline = computed(() => {
       <button
         class="btn edit"
         @click="$emit('edit', task)">
-        Edit
+        <span class="btn-text">Edit</span>
       </button>
 
       <button
         class="btn delete"
         @click="$emit('delete', task)">
-        Delete
+        <span class="btn-text">Delete</span>
       </button>
     </div>
   </div>
 </template>
 
 <style scoped>
+.task-card {
+  position: relative;
+  background: white;
+  padding: 24px;
+  border-radius: 20px;
+  box-shadow: 0 20px 35px -8px rgba(0, 0, 0, 0.1), 0 5px 15px -5px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  transition: transform 0.2s, box-shadow 0.2s;
+  border: 1px solid rgba(139, 92, 246, 0.1);
+  cursor: grab;
+  user-select: none;
+}
+
+.task-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 25px 40px -12px rgba(139, 92, 246, 0.25);
+}
 
 .task-card.dragging {
   opacity: 0.6;
@@ -137,17 +154,29 @@ const formattedDeadline = computed(() => {
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
+/* Completed state */
+.task-card.completed {
+  background: #f9fafb;
+  border-color: rgba(34, 197, 94, 0.2);
+}
+
+.task-card.completed h3 {
+  text-decoration: line-through;
+  color: #9ca3af;
+}
+
+/* Header */
 .task-header {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
 }
 
-/* Toggle container */
+/* Toggle styles (обновленные) */
 .toggle {
   position: relative;
-  width: 42px;
-  height: 22px;
+  width: 46px;
+  height: 24px;
 }
 
 .toggle input {
@@ -156,7 +185,6 @@ const formattedDeadline = computed(() => {
   height: 0;
 }
 
-/* Track */
 .slider {
   position: absolute;
   inset: 0;
@@ -164,14 +192,14 @@ const formattedDeadline = computed(() => {
   border-radius: 999px;
   cursor: pointer;
   transition: background 0.25s;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
-/* Knob */
 .slider::before {
   content: '';
   position: absolute;
-  height: 18px;
-  width: 18px;
+  height: 20px;
+  width: 20px;
   left: 2px;
   top: 2px;
   background: white;
@@ -180,173 +208,249 @@ const formattedDeadline = computed(() => {
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
 
-/* Checked */
 .toggle input:checked + .slider {
-  background: #22c55e;
+  background: linear-gradient(145deg, #22c55e, #16a34a);
 }
 
 .toggle input:checked + .slider::before {
-  transform: translateX(20px);
+  transform: translateX(22px);
 }
 
 .toggle-label {
   font-size: 13px;
   font-weight: 600;
   color: #6b7280;
+  letter-spacing: 0.3px;
 }
 
-.completed {
-  background: #f3f4f6;
-  opacity: 0.75;
-}
-
-.task-card.completed h3 {
-  text-decoration: line-through;
-}
-
-.task-card {
-  cursor: grab;
-  user-select: none;
-  position: relative;
-  background: white;
-  padding: 22px;
-  border-radius: 20px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  transition: transform 0.15s ease,
-  box-shadow 0.18s ease;
-}
-
-/* DEADLINE STATES */
-.task-card.soon {
-  border: 1.5px solid #ffb703;
-  background: rgba(255, 183, 3, 0.06);
-}
-
-.task-card.overdue {
-  border: 1.5px solid #ff4d4f;
-  background: rgba(255, 77, 79, 0.06);
-}
-
-/* OVERDUE BADGE */
-.overdue-badge {
-  position: absolute;
-  top: -10px;
-  right: 16px;
-  background: #ff4d4f;
-  color: white;
-  font-size: 12px;
-  font-weight: 700;
-  padding: 6px 12px;
-  border-radius: 999px;
-}
-
-/* DEADLINE TEXT */
-.deadline {
-  font-size: 14px;
-}
-
-.deadline-label.soon {
-  color: #f59e0b;
-  font-weight: 600;
-}
-
-.deadline-label.overdue {
-  color: #ff4d4f;
-  font-weight: 700;
-}
-
-.task-card:hover {
-  box-shadow: 0 16px 30px rgba(0, 0, 0, 0.12);
-}
-
+/* Title */
 .task-card h3 {
   font-size: 18px;
   font-weight: 700;
   color: #1f2937;
-  margin-bottom: 6px;
-  line-height: 1.3;
+  line-height: 1.4;
+  margin: 0;
 }
 
-/* overdue badge */
-.badge-overdue {
-  display: block !important; /* На всякий случай */
-  opacity: 1 !important;
-  visibility: visible !important;
-  position: absolute;
-  top: 14px;
-  right: 14px;
-  background: #e53935;
-  color: white;
-  font-size: 12px;
-  font-weight: 700;
-  padding: 4px 10px;
+/* Deadline */
+.deadline {
+  font-size: 14px;
+  color: #4b5563;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: 0;
+}
+
+.deadline-label {
+  font-weight: 600;
+}
+
+.deadline-label.soon {
+  color: #f59e0b;
+  background: rgba(245, 158, 11, 0.1);
+  padding: 2px 8px;
   border-radius: 999px;
+  font-size: 12px;
 }
 
+.deadline-label.overdue {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.1);
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+}
+
+/* Priority Badge (обновленный) */
 .priority-badge {
   display: inline-flex;
   align-items: center;
-  padding: 6px 12px;
+  padding: 6px 14px;
   border-radius: 999px;
   font-size: 13px;
   font-weight: 600;
   width: fit-content;
-
+  transition: all 0.2s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .priority-badge span {
   margin-right: 6px;
+  font-size: 14px;
 }
 
-/* High */
 .priority-badge.high {
-  background: rgba(229, 57, 53, 0.12);
+  background: linear-gradient(145deg, #fff5f5, #ffe5e5);
   color: #e53935;
+  border: 1px solid rgba(229, 57, 53, 0.2);
 }
 
-/* Medium */
 .priority-badge.medium {
-  background: rgba(255, 167, 38, 0.15);
-  color: #ffa726;
+  background: linear-gradient(145deg, #fff9e6, #fff2d9);
+  color: #f59e0b;
+  border: 1px solid rgba(245, 158, 11, 0.2);
 }
 
-/* Low */
 .priority-badge.low {
-  background: rgba(67, 160, 71, 0.15);
-  color: #43a047;
+  background: linear-gradient(145deg, #f0fdf4, #e6f7e6);
+  color: #22c55e;
+  border: 1px solid rgba(34, 197, 94, 0.2);
 }
 
+/* Files indicator */
+.files-indicator {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  background: #f3f4f6;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #4b5563;
+  width: fit-content;
+  gap: 4px;
+}
+
+/* Deadline state borders */
+.task-card.soon {
+  border: 1.5px solid #f59e0b;
+  background: rgba(245, 158, 11, 0.02);
+}
+
+.task-card.overdue {
+  border: 1.5px solid #ef4444;
+  background: rgba(239, 68, 68, 0.02);
+}
+
+/* Overdue badge (обновленный) */
+.overdue-badge {
+  position: absolute;
+  top: -10px;
+  right: 20px;
+  background: linear-gradient(145deg, #ef4444, #dc2626);
+  color: white;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 16px;
+  border-radius: 999px;
+  box-shadow: 0 8px 16px rgba(239, 68, 68, 0.3);
+  letter-spacing: 0.3px;
+}
+
+/* Actions (обновленные) */
 .actions {
-  margin-top: auto;
+  margin-top: 8px;
   display: flex;
-  justify-content: space-between;
+  gap: 12px;
 }
 
 .btn {
-  padding: 8px 20px;
-  border-radius: 12px;
   border: none;
-  font-size: 14px;
+  padding: 10px 20px;
+  border-radius: 40px;
   cursor: pointer;
-  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  transition: all 0.25s ease;
+  position: relative;
+  overflow: hidden;
+  flex: 1;
+  max-width: 100px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .btn.edit {
-  background: #7a3cff;
+  background: linear-gradient(145deg, #8B5CF6, #7C3AED);
+  color: white;
+  border: 1px solid rgba(139, 92, 246, 0.2);
 }
 
 .btn.edit:hover {
-  background: #5e2fd1;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 22px rgba(139, 92, 246, 0.3);
+}
+
+.btn.edit:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2);
 }
 
 .btn.delete {
-  background: #e53935;
+  background: linear-gradient(145deg, #fff5f5, #ffe5e5);
+  color: #e53e3e;
+  border: 1px solid rgba(229, 62, 62, 0.2);
 }
 
 .btn.delete:hover {
-  background: #c62828;
+  background: linear-gradient(145deg, #e53e3e, #c53030);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 22px rgba(229, 62, 62, 0.25);
+}
+
+.btn.delete:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 12px rgba(229, 62, 62, 0.15);
+}
+
+/* Button text animation */
+.btn-text {
+  display: inline-block;
+  transition: transform 0.2s;
+}
+
+.btn:hover .btn-text {
+  transform: scale(1.02);
+}
+
+/* Ripple effect */
+.btn::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.5);
+  opacity: 0;
+  border-radius: 100%;
+  transform: scale(1, 1) translate(-50%);
+  transform-origin: 50% 50%;
+}
+
+.btn:focus:not(:active)::after {
+  animation: ripple 0.6s ease-out;
+}
+
+@keyframes ripple {
+  0% {
+    transform: scale(0, 0);
+    opacity: 0.5;
+  }
+  20% {
+    transform: scale(25, 25);
+    opacity: 0.3;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(40, 40);
+  }
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .task-card {
+    padding: 20px;
+  }
+
+  .actions {
+    flex-direction: column;
+  }
+
+  .btn {
+    max-width: 100%;
+  }
 }
 </style>
