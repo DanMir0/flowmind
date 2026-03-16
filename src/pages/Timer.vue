@@ -24,7 +24,8 @@ const openAddQuote = () => {
 const {
   displayedQuote,
   loading,
-  loadQuote
+  pinQuote,
+  loadQuote,
 } = useQuotes()
 
 /* ====== Settings ====== */
@@ -153,12 +154,11 @@ const cancelEdit = () => {
   isEditing.value = false
 }
 
-console.log('quote loaded', displayedQuote.value)
-
 onMounted(async () => {
   subscriptionStore.setPro(true) // после теста удалить
   await loadQuote()
 })
+
 onUnmounted(stop)
 </script>
 
@@ -264,9 +264,11 @@ onUnmounted(stop)
 
     <QuoteMenu
       :open="showQuoteMenu"
+      :quote-id="displayedQuote?.id"
       @close="showQuoteMenu = false"
       @add-quote="openAddQuote"
-      @my-quotes="openMyQuotes"/>
+      @my-quotes="openMyQuotes"
+      @pin-quote="pinQuote"/>
 
     <AddQuoteModal
       :open="showAddQuote"

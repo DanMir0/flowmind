@@ -2,7 +2,8 @@
 import { useSubscriptionStore } from '@/store/subscription'
 
 defineProps({
-  open: Boolean
+  open: Boolean,
+  quoteId: String,
 })
 
 const emit = defineEmits([
@@ -43,8 +44,7 @@ const subscriptionStore = useSubscriptionStore()
 
         <button
           class="sheet-item"
-          @click="emit('pinQuote')"
-        >
+          @click="emit('pinQuote', quoteId)">
           Pin this quote
         </button>
 
@@ -60,8 +60,7 @@ const subscriptionStore = useSubscriptionStore()
 
       <button
         class="sheet-cancel"
-        @click="emit('close')"
-      >
+        @click="emit('close')">
         Cancel
       </button>
 
