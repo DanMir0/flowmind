@@ -1,86 +1,43 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue'
-import { supabase } from '@/services/supabase'
 import { useAuthStore } from '@/store/auth'
 import { useSubscriptionStore } from '@/store/subscription'
-import { deleteUserQuote, pinUserQuote } from '@/services/userQuotes.js'
+import { useUserQuotes } from '@/composable/useUserQuotes.js'
 import QuoteItem from '@/components/quotes/QuoteItem.vue'
 import ConfirmDeleteModal from '@/components/ConfirmDeleteModal.vue'
 
 const authStore = useAuthStore()
 const subscriptionStore = useSubscriptionStore()
 
-const quotes = ref([])
-const loading = ref(true)
+const {
+  quotes,
+  loading,
+  loadQuotes,
+  removeQuote,
+  pinQuote
+} = useUserQuotes(authStore.user?.id)
 
+/* DELETE MODAL */
 const showDeleteModal = ref(false)
 const quoteToDelete = ref(null)
-const deleteQuote = async (quoteId) => {
-  quoteToDelete.value = quotes.value.find(q => q.id == quoteId)
+
+const deleteQuote = (quoteId) => {
+  quoteToDelete.value = quotes.value.find(q => q.id === quoteId)
   showDeleteModal.value = true
-}
-const loadQuotes = async () => {
-
-  if (!authStore.user) return
-
-  loading.value = true
-
-  const { data, error } = await supabase
-    .from('user_quotes')
-    .select('*')
-    .eq('user_id', authStore.user.id)
-    .order('created_at', { ascending:false })
-
-  if (!error) {
-    quotes.value = data
-  }
-
-  loading.value = false
 }
 
 const confirmDelete = async () => {
 
   if (!quoteToDelete.value) return
 
-  try {
-
-    await deleteUserQuote(quoteToDelete.value.id)
-
-    quotes.value = quotes.value.filter(
-      q => q.id !== quoteToDelete.value.id
-    )
-
-  } catch (err) {
-
-    console.error(err)
-    alert('Failed to delete quote')
-
-  }
+  await removeQuote(quoteToDelete.value.id)
 
   showDeleteModal.value = false
   quoteToDelete.value = null
-
 }
 
-const pinQuote = async (quoteId) => {
+/* LOAD */
 
-  try {
-
-    await pinUserQuote(authStore.user.id, quoteId)
-
-    // обновляем UI
-    quotes.value = quotes.value.map(q => ({
-      ...q,
-      is_pinned: q.id === quoteId
-    }))
-
-  } catch (err) {
-
-    console.error(err)
-    alert('Failed to pin quote')
-
-  }
-}
 onMounted(() => {
   if (subscriptionStore.isPro) {
     loadQuotes()
@@ -88,16 +45,16 @@ onMounted(() => {
 })
 
 watch(
-  () => subscriptionStore.isPro,
-  (isPro) => {
-    if (isPro) {
-      loadQuotes()
+  () => authStore.user,
+  (user) => {
+    if (user && subscriptionStore.isPro) {
+      loadQuotes(user.id)
     }
-  }
+  },
+  {immediate: true}
 )
+
 </script>
-
-
 <template>
   <div class="page">
 
@@ -105,7 +62,6 @@ watch(
     <div v-if="subscriptionStore.loading" class="loading">
       Loading...
     </div>
-
 
     <!-- NOT PRO -->
     <div
@@ -124,12 +80,10 @@ watch(
 
     </div>
 
-
     <!-- PRO USER -->
     <div v-else>
 
       <h1>My Quotes</h1>
-
 
       <!-- Skeleton loading -->
       <div v-if="loading">
@@ -140,7 +94,6 @@ watch(
           class="quote-skeleton"/>
 
       </div>
-
 
       <!-- Quotes list -->
       <div v-else>

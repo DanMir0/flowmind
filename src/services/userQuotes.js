@@ -6,6 +6,7 @@ export const getUserQuotes = async (userId) => {
     .from('user_quotes')
     .select('*')
     .eq('user_id', userId)
+    .order('is_pinned', { ascending: false })
     .order('created_at', { ascending: false })
 
   if (error) throw error
@@ -23,19 +24,12 @@ export const deleteUserQuote = async (id) => {
   if (error) throw error
 }
 
-export const pinUserQuote = async (userId, quoteId) => {
+export const togglePin = async (userId, quoteId) => {
 
-  // сначала снимаем pin со всех
-  await supabase
-    .from('user_quotes')
-    .update({ is_pinned: false })
-    .eq('user_id', userId)
-
-  // ставим pin нужной
-  const { error } = await supabase
-    .from('user_quotes')
-    .update({ is_pinned: true })
-    .eq('id', quoteId)
+  const { error } = await supabase.rpc('toggle_pin', {
+    p_user_id: userId,
+    p_quote_id: quoteId
+  })
 
   if (error) throw error
 }
