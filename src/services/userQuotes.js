@@ -1,7 +1,8 @@
 import { supabase } from '@/services/supabase'
+import {handleSupabaseError} from '@/utils/appError.js'
 
 export const getUserQuotes = async (userId) => {
-
+  // throw new Error('Test error: loading quotes failed')
   const { data, error } = await supabase
     .from('user_quotes')
     .select('*')
@@ -9,7 +10,7 @@ export const getUserQuotes = async (userId) => {
     .order('is_pinned', { ascending: false })
     .order('created_at', { ascending: false })
 
-  if (error) throw error
+  if (error) handleSupabaseError(error, 'getUserQuotes')
 
   return data
 }
@@ -21,7 +22,7 @@ export const deleteUserQuote = async (id) => {
     .delete()
     .eq('id', id)
 
-  if (error) throw error
+  if (error) handleSupabaseError(error, 'deleteUserQuote')
 }
 
 export const togglePin = async (userId, quoteId) => {
@@ -31,5 +32,5 @@ export const togglePin = async (userId, quoteId) => {
     p_quote_id: quoteId
   })
 
-  if (error) throw error
+  if (error) handleSupabaseError(error, 'togglePin')
 }

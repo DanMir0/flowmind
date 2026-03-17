@@ -12,10 +12,11 @@ const subscriptionStore = useSubscriptionStore()
 const {
   quotes,
   loading,
+  errorMessage,
   loadQuotes,
   removeQuote,
   pinQuote
-} = useUserQuotes(authStore.user?.id)
+} = useUserQuotes()
 
 /* DELETE MODAL */
 const showDeleteModal = ref(false)
@@ -84,6 +85,10 @@ watch(
     <div v-else>
 
       <h1>My Quotes</h1>
+
+      <div v-if="errorMessage" class="error">
+        {{ errorMessage }}
+      </div>
 
       <!-- Skeleton loading -->
       <div v-if="loading">
