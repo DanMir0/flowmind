@@ -20,8 +20,7 @@ const emit = defineEmits([
       <button
         class="pin-btn"
         :class="{ 'pinned': quote.is_pinned }"
-        @click="emit('pin', quote.id)"
-      >
+        @click="emit('pin', quote.id)">
         <span class="btn-text">{{ quote.is_pinned ? 'Pinned' : 'Pin' }}</span>
       </button>
 

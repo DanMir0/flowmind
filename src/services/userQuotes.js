@@ -2,7 +2,6 @@ import { supabase } from '@/services/supabase'
 import {handleSupabaseError} from '@/utils/appError.js'
 
 export const getUserQuotes = async (userId) => {
-  // throw new Error('Test error: loading quotes failed')
   const { data, error } = await supabase
     .from('user_quotes')
     .select('*')
