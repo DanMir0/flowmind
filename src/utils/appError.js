@@ -1,5 +1,5 @@
 // /utils/appError.js
-
+import { toast } from 'vue-sonner'
 /**
  * Унифицированная ошибка приложения
  */
@@ -34,7 +34,7 @@ export const handleSupabaseError = (error, context = '') => {
 
   console.error('[Supabase Error]', context, error)
 
-  throw new AppError(
+  const appError = new AppError(
     normalizeSupabaseMessage(error),
     {
       code: error.code || 'SUPABASE_ERROR',
@@ -43,6 +43,10 @@ export const handleSupabaseError = (error, context = '') => {
       context
     }
   )
+
+  toast.error(appError.message)
+
+  throw appError
 }
 
 /**

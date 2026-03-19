@@ -1,5 +1,5 @@
 import { ref } from 'vue'
-
+import {toast} from 'vue-sonner'
 import {
   getUserQuotes,
   deleteUserQuote,
@@ -35,8 +35,9 @@ export function useUserQuotes() {
       quotes.value = quotes.value.filter(
         q => q.id !== quoteId
       )
+      toast.success('Quote delete')
     } catch (err) {
-      errorMessage.value = err.message || 'Failed to delete quote'
+      toast.error(err.message || 'Failed to delete quote')
     }
   }
 
@@ -68,7 +69,7 @@ export function useUserQuotes() {
       }
 
     } catch (err) {
-      errorMessage.value = err.message || 'Failed to update pin'
+      toast.error(err.message || 'Failed to update pin')
     }
   }
 
