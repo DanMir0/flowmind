@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { supabase } from '@/services/supabase'
 import { useAuthStore } from './auth'
+import { handleSupabaseError } from '@/utils/appError.js'
 
 const MAX_ACTIVE_TASKS = 500;
 export const useTasksStore = defineStore('tasks', {
@@ -29,7 +30,7 @@ export const useTasksStore = defineStore('tasks', {
           .eq('archived', false)
           .order('position', { ascending: true })
 
-        if (error) throw error
+        if (error) handleSupabaseError(error, 'fetchTasks')
 
         this.tasks = data.map(task => ({
           ...task,
@@ -37,7 +38,7 @@ export const useTasksStore = defineStore('tasks', {
           completed: Boolean(task.completed),
         }))
       } catch (e) {
-        this.error = e.message
+        this.error = e.message || 'Failed to load tasks'
       } finally {
         this.loading = false
       }
@@ -75,17 +76,18 @@ export const useTasksStore = defineStore('tasks', {
         throw new Error('Active tasks limit reached (500). Archive old tasks.')
       }
 
-      const { data: task, error } = await supabase
-        .from('tasks')
-        .insert({
-          title: payload.title,
-          description: payload.description,
-          deadline: payload.deadline,
-          priority: payload.priority,
-          user_id: auth.user.id,
-          position: Date.now(),
-        })
-        .select(`
+      try {
+        const { data: task, error } = await supabase
+          .from('tasks')
+          .insert({
+            title: payload.title,
+            description: payload.description,
+            deadline: payload.deadline,
+            priority: payload.priority,
+            user_id: auth.user.id,
+            position: Date.now(),
+          })
+          .select(`
           id,
           title,
           description,
@@ -95,27 +97,30 @@ export const useTasksStore = defineStore('tasks', {
           files_count,
           position
         `)
-        .single()
+          .single()
 
-      if (error) throw error
+        if (error) handleSupabaseError(error, 'addTask')
 
-      const newTask = {
-        ...task,
-        task_files: []
-      }
-
-      this.tasks.unshift(newTask)
-
-      /* upload files (if any) */
-      if (payload.newFiles?.length) {
-        await this.uploadMultipleFiles(newTask.id, payload.newFiles)
-      }
-
-      if (payload.deadline) {
-        const d = new Date(payload.deadline)
-        if (isNaN(d.getTime())) {
-          throw new Error('Invalid date')
+        const newTask = {
+          ...task,
+          task_files: []
         }
+
+        this.tasks.unshift(newTask)
+
+        /* upload files (if any) */
+        if (payload.newFiles?.length) {
+          await this.uploadMultipleFiles(newTask.id, payload.newFiles)
+        }
+
+        if (payload.deadline) {
+          const d = new Date(payload.deadline)
+          if (isNaN(d.getTime())) {
+            throw new Error('Invalid date')
+          }
+        }
+      } catch (e) {
+        throw e
       }
 
     },
@@ -237,7 +242,7 @@ export const useTasksStore = defineStore('tasks', {
         } catch (e) {
           /* rollback */
           task.task_files = task.task_files.filter(f => f.id !== tempId)
-          throw e
+          handleSupabaseError(e, 'uploadMultipleFiles')
         }
       }
     },
@@ -270,14 +275,18 @@ export const useTasksStore = defineStore('tasks', {
        DELETE TASK
     ========================= */
     async deleteTask(taskId) {
-      const { error } = await supabase
-        .from('tasks')
-        .delete()
-        .eq('id', taskId)
+     try {
+       const { error } = await supabase
+         .from('tasks')
+         .delete()
+         .eq('id', taskId)
 
-      if (error) throw error
+       if (error) handleSupabaseError(error, 'deleteTask')
 
-      this.tasks = this.tasks.filter(t => t.id !== taskId)
+       this.tasks = this.tasks.filter(t => t.id !== taskId)
+     } catch (e) {
+       throw e
+     }
     },
 
     async toggleTaskCompleted(taskId) {
@@ -306,7 +315,7 @@ export const useTasksStore = defineStore('tasks', {
         // rollback
         task.completed = prevCompleted
         task.completed_at = prevCompletedAt
-        throw error
+        handleSupabaseError(error, 'toggleTaskCompleted')
       }
     },
 

@@ -8,6 +8,7 @@ import ConfirmDeleteModal from '@/components/ConfirmDeleteModal.vue'
 import EditTaskModal from '@/components/EditTaskModal.vue'
 import EmptyState from '@/components/EmptyState.vue'
 import Loader from '@/components/Loader.vue'
+import {toast} from 'vue-sonner'
 
 const tasksStore = useTasksStore()
 const { tasks, loading, error } = storeToRefs(tasksStore)
@@ -128,11 +129,13 @@ function requestEdit(task) {
 async function saveEdit(payload) {
   await tasksStore.updateTask(payload.id, payload)
   taskToEdit.value = null
+  toast.success('Task save!')
 }
 
 async function confirmDelete() {
   await tasksStore.deleteTask(taskToDelete.value.id)
   taskToDelete.value = null
+  toast.success('Task deleted!')
 }
 
 async function toggleComplete(task) {
@@ -238,11 +241,32 @@ watch(taskToEdit, (val) => {
       </div>
     </div>
 
-    <Loader v-if="tasksStore.loading">Loading...</Loader>
-    <p v-if="error" class="error">{{ error }}</p>
+    <Loader v-if="loading">Loading...</Loader>
+    <div v-else-if="error" class="error-wrapper">
+      <div class="error-card">
+        <h2 class="error-title">Connection error!</h2>
+
+        <div class="error-illustration"></div>
+
+        <p class="error-text">
+          {{ error}}
+        </p>
+
+        <p class="error-subtext">
+          Please try again.
+        </p>
+
+        <button
+          class="error-btn"
+          @click="tasksStore.fetchTasks()">
+          Retry
+        </button>
+
+      </div>
+    </div>
 
     <EmptyState
-      v-if="emptyType"
+      v-else-if="emptyType"
       :type="emptyType"
       @add="showAddModal = true"
       @resetFilters="() => {
@@ -252,7 +276,7 @@ watch(taskToEdit, (val) => {
       }"
       @showCompleted="statusFilter = 'completed'" />
 
-    <TransitionGroup name="list" tag="div" class="tasks-grid">
+    <TransitionGroup v-else  name="list" tag="div" class="tasks-grid">
       <TaskCard
         v-for="task in visibleTasks"
         :key="task.id"
@@ -330,10 +354,6 @@ watch(taskToEdit, (val) => {
   gap: 25px;
 }
 
-.error {
-  color: #e53935;
-}
-
 .controls {
   display: flex;
   align-items: center;
@@ -377,6 +397,100 @@ watch(taskToEdit, (val) => {
   font-weight: 500;
   background: white;
   cursor: pointer;
+}
+.error-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 60px;
+}
+
+/* карточка */
+.error-card {
+  width: 100%;
+  max-width: 720px;
+  padding: 40px 30px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  box-shadow:
+    0 10px 30px rgba(0,0,0,0.08),
+    inset 0 1px 0 rgba(255,255,255,0.6);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  animation: fadeIn 0.4s ease;
+}
+
+/* фоновая иллюстрация */
+.error-illustration {
+  width: 100%;
+  height: 255px;
+  background-image: url("@/assets/errorFatch.png");
+  background-size: cover;
+  background-position: bottom;
+  opacity: 0.9;
+}
+
+/* заголовок */
+.error-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #5b4dff;
+  margin-bottom: 12px;
+}
+
+/* основной текст */
+.error-text {
+  font-size: 15px;
+  color: #444;
+  margin-bottom: 6px;
+}
+
+/* вторичный текст */
+.error-subtext {
+  font-size: 14px;
+  color: #888;
+  margin-bottom: 18px;
+}
+
+/* кнопка */
+.error-btn {
+  padding: 12px 26px;
+  border: none;
+  border-radius: 14px;
+
+  background: linear-gradient(135deg, #7b5cff, #5b4dff);
+  color: white;
+
+  font-size: 15px;
+  font-weight: 600;
+
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  box-shadow: 0 6px 18px rgba(91,77,255,0.35);
+}
+
+.error-btn:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 10px 24px rgba(91,77,255,0.45);
+}
+
+.error-btn:active {
+  transform: scale(0.97);
+}
+
+/* анимация появления */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 </style>
 <style>
