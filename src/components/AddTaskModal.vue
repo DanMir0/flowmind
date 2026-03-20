@@ -87,7 +87,7 @@ async function submit() {
     emit('close')
 
   } catch (e) {
-    error.value = e.message || 'Failed to add task'
+    toast.error('Failed to add task')
   } finally {
     loading.value = false
     newFiles.value = []
