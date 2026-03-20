@@ -27,4 +27,8 @@ html, body {
   padding: 0;
   font-family: sans-serif;
 }
+
+.sonner-toast {
+  z-index: 99999 !important;
+}
 </style>

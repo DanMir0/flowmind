@@ -4,6 +4,7 @@ import { useTasksStore } from '@/store/tasks'
 import { useAuthStore } from '@/store/auth'
 import Loader from '@/components/Loader.vue'
 import { useModal } from '@/composable/useModal.js'
+import {toast} from 'vue-sonner'
 
 const emit = defineEmits(['close'])
 
@@ -82,8 +83,9 @@ async function submit() {
       priority: priority.value,
       newFiles: newFiles.value
     })
-
+    toast.success('Task added!')
     emit('close')
+
   } catch (e) {
     error.value = e.message || 'Failed to add task'
   } finally {
