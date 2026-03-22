@@ -46,8 +46,7 @@ function cancelDelete() {
       <div
         v-for="task in tasksStore.tasks"
         :key="task.id"
-        class="task-card archived"
-      >
+        class="task-card archived">
         <div class="task-top">
           <span class="badge archived-badge">
             Archived
@@ -70,15 +69,13 @@ function cancelDelete() {
         <div class="task-actions">
           <button
             class="btn-primary"
-            @click="tasksStore.restoreTask(task.id)"
-          >
+            @click="tasksStore.restoreTask(task.id)">
             Restore
           </button>
 
           <button
             class="btn-danger"
-            @click="openDeleteModal(task)"
-          >
+            @click="openDeleteModal(task)">
             Delete
           </button>
         </div>
