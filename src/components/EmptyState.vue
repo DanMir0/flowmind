@@ -58,9 +58,9 @@ const content = computed(() => contentMap[props.type])
 
     <button
       v-if="content.action"
-      class="primary-btn"
+      class="empty-state-btn"
       @click="$emit(content.action)">
-      {{ content.actionLabel }}
+      <span class="btn-text">{{ content.actionLabel }}</span>
     </button>
   </div>
 </template>
@@ -77,6 +77,7 @@ const content = computed(() => contentMap[props.type])
 .illustration {
   display: flex;
   justify-content: center;
+  margin-bottom: 24px;
 }
 
 .illustration img {
@@ -93,28 +94,90 @@ const content = computed(() => contentMap[props.type])
 
 .title {
   font-size: 22px;
-  font-weight: 600;
-  margin-bottom: 6px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: #1f2937;
 }
 
 .subtitle {
   font-size: 15px;
-  opacity: 0.8;
-  margin-bottom: 20px;
+  color: #6b7280;
+  margin-bottom: 28px;
+  line-height: 1.5;
 }
 
-.primary-btn {
-  padding: 10px 20px;
-  border-radius: 20px;
+/* Button styles matching TaskCard */
+.empty-state-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 24px;
   border: none;
-  background: #7a3cff;
-  color: #fff;
+  border-radius: 40px;
+  font-size: 14px;
   font-weight: 600;
+  letter-spacing: 0.3px;
   cursor: pointer;
+  transition: all 0.25s ease;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  background: linear-gradient(145deg, #8B5CF6, #7C3AED);
+  color: white;
+  border: 1px solid rgba(139, 92, 246, 0.2);
 }
 
-.primary-btn:hover {
-  background: #5e2fd1;
+.empty-state-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 22px rgba(139, 92, 246, 0.3);
+}
+
+.empty-state-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.btn-text {
+  display: inline-block;
+  transition: transform 0.2s;
+}
+
+.empty-state-btn:hover .btn-text {
+  transform: scale(1.02);
+}
+
+/* Ripple effect */
+.empty-state-btn::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.5);
+  opacity: 0;
+  border-radius: 100%;
+  transform: scale(1, 1) translate(-50%);
+  transform-origin: 50% 50%;
+}
+
+.empty-state-btn:focus:not(:active)::after {
+  animation: ripple 0.6s ease-out;
+}
+
+@keyframes ripple {
+  0% {
+    transform: scale(0, 0);
+    opacity: 0.5;
+  }
+  20% {
+    transform: scale(25, 25);
+    opacity: 0.3;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(40, 40);
+  }
 }
 
 @keyframes fadeIn {
@@ -125,6 +188,31 @@ const content = computed(() => contentMap[props.type])
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .empty-state {
+    margin: 40px auto;
+    padding: 0 20px;
+  }
+
+  .illustration img {
+    width: 140px;
+  }
+
+  .title {
+    font-size: 20px;
+  }
+
+  .subtitle {
+    font-size: 14px;
+  }
+
+  .empty-state-btn {
+    padding: 8px 20px;
+    font-size: 13px;
   }
 }
 </style>
