@@ -11,7 +11,7 @@ import Loader from '@/components/Loader.vue'
 import {toast} from 'vue-sonner'
 
 const tasksStore = useTasksStore()
-const { tasks, loading, error } = storeToRefs(tasksStore)
+const { tasks, loading, error, isInitialized } = storeToRefs(tasksStore)
 
 const showAddModal = ref(false)
 const taskToDelete = ref(null)
@@ -241,7 +241,31 @@ watch(taskToEdit, (val) => {
       </div>
     </div>
 
-    <Loader v-if="loading">Loading...</Loader>
+
+    <div v-if="loading || !isInitialized" class="tasks-grid">
+      <div v-for="i in 5" :key="i" class="task-card skeleton">
+
+        <!-- toggle -->
+        <div class="skeleton-toggle"></div>
+
+        <!-- title -->
+        <div class="skeleton-title"></div>
+
+        <!-- deadline -->
+        <div class="skeleton-deadline"></div>
+
+        <!-- priority -->
+        <div class="skeleton-priority"></div>
+
+        <!-- buttons -->
+        <div class="skeleton-buttons">
+          <div class="skeleton-btn primary"></div>
+          <div class="skeleton-btn danger"></div>
+        </div>
+
+      </div>
+    </div>
+
     <div v-else-if="error" class="error-wrapper">
       <div class="error-card">
         <h2 class="error-title">Connection error!</h2>
@@ -491,6 +515,75 @@ watch(taskToEdit, (val) => {
     opacity: 1;
     transform: translateY(0) scale(1);
   }
+}
+
+.skeleton {
+  position: relative;
+  overflow: hidden;
+}
+
+.skeleton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255,255,255,0.6),
+    transparent
+  );
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%) }
+  100% { transform: translateX(100%) }
+}
+
+/* элементы */
+
+.skeleton-toggle {
+  width: 50px;
+  height: 24px;
+  border-radius: 20px;
+  background: #eee;
+  margin-bottom: 12px;
+}
+
+.skeleton-title {
+  width: 60%;
+  height: 18px;
+  background: #eee;
+  border-radius: 6px;
+  margin-bottom: 10px;
+}
+
+.skeleton-deadline {
+  width: 30%;
+  height: 12px;
+  background: #eee;
+  border-radius: 6px;
+  margin-bottom: 12px;
+}
+
+.skeleton-priority {
+  width: 80px;
+  height: 28px;
+  background: #eee;
+  border-radius: 20px;
+  margin-bottom: 16px;
+}
+
+.skeleton-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.skeleton-btn {
+  width: 80px;
+  height: 36px;
+  border-radius: 20px;
+  background: #eee;
 }
 </style>
 <style>

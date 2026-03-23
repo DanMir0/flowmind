@@ -378,9 +378,9 @@ export const useTasksStore = defineStore('tasks', {
       const auth = useAuthStore()
       if (!auth.user) return
 
-      this.isInitialized = true
       await this.fetchTasks()
       this.autoArchiveOldCompleted()
+      this.isInitialized = true
     },
 
     async fetchArchivedTasks() {
