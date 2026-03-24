@@ -108,23 +108,22 @@ const content = computed(() => contentMap[props.type])
 
 /* Button styles matching TaskCard */
 .empty-state-btn {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 10px 24px;
-  border: none;
+  background: linear-gradient(145deg, #f5f3ff, #ede9fe);
+  color: #6d4fa8;
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.15);
+  padding: 12px 28px;
   border-radius: 40px;
+  cursor: pointer;
   font-size: 14px;
   font-weight: 600;
   letter-spacing: 0.3px;
-  cursor: pointer;
   transition: all 0.25s ease;
+  position: relative;
   overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  background: linear-gradient(145deg, #8B5CF6, #7C3AED);
-  color: white;
-  border: 1px solid rgba(139, 92, 246, 0.2);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .empty-state-btn:hover {
@@ -134,7 +133,7 @@ const content = computed(() => contentMap[props.type])
 
 .empty-state-btn:active {
   transform: translateY(0);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2);
 }
 
 .btn-text {
@@ -154,7 +153,7 @@ const content = computed(() => contentMap[props.type])
   left: 50%;
   width: 5px;
   height: 5px;
-  background: rgba(255, 255, 255, 0.5);
+  background: rgba(139, 92, 246, 0.5);
   opacity: 0;
   border-radius: 100%;
   transform: scale(1, 1) translate(-50%);
@@ -211,7 +210,7 @@ const content = computed(() => contentMap[props.type])
   }
 
   .empty-state-btn {
-    padding: 8px 20px;
+    padding: 10px 24px;
     font-size: 13px;
   }
 }

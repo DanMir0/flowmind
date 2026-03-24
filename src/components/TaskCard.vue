@@ -346,6 +346,7 @@ const formattedDeadline = computed(() => {
 }
 
 .btn {
+  flex: 1;
   border: none;
   padding: 10px 20px;
   border-radius: 40px;
@@ -356,14 +357,14 @@ const formattedDeadline = computed(() => {
   transition: all 0.25s ease;
   position: relative;
   overflow: hidden;
-  flex: 1;
   max-width: 100px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
+/* Edit Button Styles */
 .btn.edit {
-  background: linear-gradient(145deg, #8B5CF6, #7C3AED);
-  color: white;
+  background: linear-gradient(145deg, #f5f3ff, #ede9fe);
+  color: #6d4fa8;
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.15);
   border: 1px solid rgba(139, 92, 246, 0.2);
 }
 
@@ -377,10 +378,12 @@ const formattedDeadline = computed(() => {
   box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2);
 }
 
+/* Delete Button Styles */
 .btn.delete {
   background: linear-gradient(145deg, #fff5f5, #ffe5e5);
   color: #e53e3e;
   border: 1px solid rgba(229, 62, 62, 0.2);
+  box-shadow: 0 4px 12px rgba(229, 62, 62, 0.1);
 }
 
 .btn.delete:hover {
@@ -388,6 +391,7 @@ const formattedDeadline = computed(() => {
   color: white;
   transform: translateY(-2px);
   box-shadow: 0 12px 22px rgba(229, 62, 62, 0.25);
+  border-color: transparent;
 }
 
 .btn.delete:active {
