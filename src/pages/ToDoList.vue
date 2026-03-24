@@ -7,8 +7,7 @@ import AddTaskModal from '@/components/AddTaskModal.vue'
 import ConfirmDeleteModal from '@/components/ConfirmDeleteModal.vue'
 import EditTaskModal from '@/components/EditTaskModal.vue'
 import EmptyState from '@/components/EmptyState.vue'
-import Loader from '@/components/Loader.vue'
-import {toast} from 'vue-sonner'
+import { showSuccess } from '@/utils/toast.js'
 
 const tasksStore = useTasksStore()
 const { tasks, loading, error, isInitialized } = storeToRefs(tasksStore)
@@ -129,13 +128,13 @@ function requestEdit(task) {
 async function saveEdit(payload) {
   await tasksStore.updateTask(payload.id, payload)
   taskToEdit.value = null
-  toast.success('Task save!')
+  showSuccess('Task save!')
 }
 
 async function confirmDelete() {
   await tasksStore.deleteTask(taskToDelete.value.id)
   taskToDelete.value = null
-  toast.success('Task deleted!')
+  showSuccess('Task deleted!')
 }
 
 async function toggleComplete(task) {

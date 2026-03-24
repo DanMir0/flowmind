@@ -6,6 +6,7 @@ import {
   togglePin
 } from '@/services/userQuotes'
 import { useAuthStore } from '@/store/auth.js'
+import { showSuccess, showError} from '@/utils/toast.js'
 
 export function useUserQuotes() {
 
@@ -35,9 +36,9 @@ export function useUserQuotes() {
       quotes.value = quotes.value.filter(
         q => q.id !== quoteId
       )
-      toast.success('Quote delete')
+      showSuccess('Quote delete')
     } catch (err) {
-      toast.error(err.message || 'Failed to delete quote')
+      showError(err.message || 'Failed to delete quote')
     }
   }
 
@@ -69,7 +70,7 @@ export function useUserQuotes() {
       }
 
     } catch (err) {
-      toast.error(err.message || 'Failed to update pin')
+      showError(err.message || 'Failed to update pin')
     }
   }
 
