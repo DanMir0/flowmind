@@ -38,13 +38,13 @@ function cancelDelete() {
       Loading archive...
     </div>
 
-    <div v-else-if="tasksStore.tasks.length === 0" class="state">
+    <div v-else-if="tasksStore.archivedTasks.length === 0" class="state">
       Archive is empty
     </div>
 
     <div v-else class="tasks-grid">
       <div
-        v-for="task in tasksStore.tasks"
+        v-for="task in tasksStore.archivedTasks"
         :key="task.id"
         class="task-card archived">
         <div class="task-top">

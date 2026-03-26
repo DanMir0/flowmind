@@ -7,6 +7,7 @@ const MAX_ACTIVE_TASKS = 500;
 export const useTasksStore = defineStore('tasks', {
   state: () => ({
     tasks: [],
+    archivedTasks: [],
     loading: false,
     error: null,
     isInitialized: false,
@@ -106,7 +107,6 @@ export const useTasksStore = defineStore('tasks', {
           task_files: []
         }
 
-        this.tasks.unshift(newTask)
 
         /* upload files (if any) */
         if (payload.newFiles?.length) {
@@ -359,17 +359,44 @@ export const useTasksStore = defineStore('tasks', {
     },
 
     async autoArchiveOldCompleted() {
-      const thirtyDaysAgo = new Date()
-      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
+      const thirtySecondsAgo = new Date()
+      thirtySecondsAgo.setSeconds(thirtySecondsAgo.getSeconds() - 30)
 
+      // 1. найдём какие задачи уйдут в архив
+      const toArchive = this.tasks.filter(t =>
+        t.completed &&
+        new Date(t.completed_at) <= thirtySecondsAgo
+      )
+
+      if (!toArchive.length) return
+
+      const ids = toArchive.map(t => t.id)
+
+      // 2. ОПТИМИСТИЧНО убираем из UI
+      this.tasks = this.tasks.filter(t => !ids.includes(t.id))
+
+      // (опционально) добавляем в архив локально
+      this.archivedTasks.unshift(...toArchive.map(t => ({
+        ...t,
+        archived: true
+      })))
+
+      // 3. отправляем в БД
       const { error } = await supabase
         .from('tasks')
         .update({ archived: true })
-        .eq('user_id', useAuthStore().user.id)
-        .eq('completed', true)
-        .lte('completed_at', thirtyDaysAgo.toISOString())
+        .in('id', ids)
 
-      if (error) throw error
+      // 4. rollback если ошибка
+      if (error) {
+        console.error(error)
+
+        // возвращаем назад
+        this.tasks.push(...toArchive)
+        this.archivedTasks = this.archivedTasks.filter(t => !ids.includes(t.id))
+
+        throw error
+      }
     },
 
     async initTasks() {
@@ -379,7 +406,8 @@ export const useTasksStore = defineStore('tasks', {
       if (!auth.user) return
 
       await this.fetchTasks()
-      this.autoArchiveOldCompleted()
+      this.setupRealtime()
+
       this.isInitialized = true
     },
 
@@ -398,11 +426,19 @@ export const useTasksStore = defineStore('tasks', {
 
       if (error) throw error
 
-      this.tasks = data
+      this.archivedTasks = data
       this.loading = false
     },
 
     async restoreTask(taskId) {
+      const task = this.archivedTasks.find(t => t.id === taskId)
+      if (!task) return
+
+      // 1. сразу обновляем UI
+      this.archivedTasks = this.archivedTasks.filter(t => t.id !== taskId)
+      this.tasks.unshift({ ...task, archived: false })
+
+      // 2. запрос в БД
       const { error } = await supabase
         .from('tasks')
         .update({
@@ -411,13 +447,75 @@ export const useTasksStore = defineStore('tasks', {
         })
         .eq('id', taskId)
 
+      // 3. rollback если ошибка
       if (error) {
+        console.error(error)
+
+        this.tasks = this.tasks.filter(t => t.id !== taskId)
+        this.archivedTasks.unshift(task)
+
         throw error
       }
+    },
 
-      // удаляем из текущего списка (архива)
-      this.tasks = this.tasks.filter(t => t.id !== taskId)
-      await this.fetchArchivedTasks()
+    handleRealtime(payload) {
+      const { eventType, new: newRow, old: oldRow } = payload
+
+      if (eventType === 'UPDATE') {
+        this.handleUpdate(newRow)
+      }
+
+      if (eventType === 'INSERT') {
+        const exists = this.tasks.some(t => t.id === newRow.id)
+        if (!exists) {
+          this.tasks.unshift(newRow)
+        }
+      }
+
+      if (eventType === 'DELETE') {
+        if (!oldRow) return
+        this.tasks = this.tasks.filter(t => t.id !== oldRow.id)
+        this.archivedTasks = this.archivedTasks.filter(t => t.id !== oldRow.id)
+      }
+    },
+
+    handleUpdate(task) {
+      const isArchived = task.archived
+
+      // удалить из обычных задач
+      this.tasks = this.tasks.filter(t => t.id !== task.id)
+
+      // удалить из архива
+      this.archivedTasks = this.archivedTasks.filter(t => t.id !== task.id)
+
+      if (isArchived) {
+        this.archivedTasks.unshift(task)
+      } else {
+        this.tasks.unshift(task)
+      }
+    },
+
+    setupRealtime() {
+      const auth = useAuthStore()
+      if (!auth.user) return
+
+      const channel = supabase
+        .channel('tasks-realtime')
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'tasks',
+            filter: `user_id=eq.${auth.user.id}`
+    },
+      (payload) => {
+        this.handleRealtime(payload)
+      }
+    )
+    .subscribe()
+
+      this.channel = channel
     }
   }
 })
