@@ -1,7 +1,7 @@
 <script setup>
 import router from '@/router/router.js'
 import { useAuthStore } from '@/store/auth.js'
-import { ref, watch } from 'vue'
+import { ref } from 'vue'
 import { useTasksStore } from '@/store/tasks.js'
 
 const defaultTasks = ref([
@@ -24,6 +24,7 @@ async function goToTimerPage() {
 async function goToTodoPage() {
   if (auth.goToLoginIfGuest(router)) await router.push({ name: 'todo' })
 }
+
 </script>
 
 <template>
@@ -60,6 +61,7 @@ async function goToTodoPage() {
               v-for="card in tasksStore.tasks"
               :key="card.id"
               class="card"
+              @click="goToTodoPage"
             >
               <h3>{{ card.title }}</h3>
               <p>{{ card.deadline }}</p>
