@@ -1,7 +1,7 @@
 <script setup>
 import router from '@/router/router.js'
 import { useAuthStore } from '@/store/auth.js'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useTasksStore } from '@/store/tasks.js'
 
 const defaultTasks = ref([
@@ -12,6 +12,8 @@ const defaultTasks = ref([
 
 const auth = useAuthStore()
 const tasksStore = useTasksStore()
+
+const tasks = computed(() => tasksStore.tasks.filter(t => !t.completed))
 
 async function goToCalendarPage() {
   if (auth.goToLoginIfGuest(router)) await router.push({ name: 'calendar' })
@@ -56,9 +58,9 @@ async function goToTodoPage() {
           </div>
 
           <!-- Есть задачи -->
-          <div v-else-if="tasksStore.tasks.length">
+          <div v-else-if="tasks.length">
             <div
-              v-for="card in tasksStore.tasks"
+              v-for="card in tasks"
               :key="card.id"
               class="card"
               @click="goToTodoPage"
