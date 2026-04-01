@@ -141,23 +141,30 @@ function nextMonth() {
 
     <!-- 🟣 Левая панель -->
     <div class="sidebar">
-      <h3>
-        {{ selectedDate ? formatDateLocal(selectedDate) : 'Select a day' }}
-      </h3>
 
-      <div v-if="selectedTasks.length">
-        <div
-          v-for="task in selectedTasks"
-          :key="task.id"
-          class="sidebar-task"
-        >
-          {{ task.title }}
+      <section class="card">
+        <h4>Monthly Summary</h4>
+        <div class="big">{{tasksStore.tasks.length}} Tasks</div>
+
+        <template v-if="selectedTasks.length">
+            <div
+              v-for="task in selectedTasks"
+              :key="task.id"
+              class="sidebar-task">
+              <p><b>{{task.title}}</b></p>
+              <p class="task-time">{{task.deadline}}</p>
+            </div>
+        </template>
+        <div v-else class="empty">
+          No tasks
         </div>
-      </div>
+      </section>
 
-      <div v-else class="empty">
-        No tasks
-      </div>
+      <section>
+
+      </section>
+
+
     </div>
 
     <!-- 🔵 Календарь -->
@@ -223,20 +230,21 @@ function nextMonth() {
 <style scoped>
 .calendar-layout {
   display: grid;
-  grid-template-columns: 260px 1fr;
-  gap: 16px;
+  grid-template-columns: 300px 1fr;
+  gap: 24px;
+  padding: 24px;
 }
 
 .sidebar {
-  background: #fafafa;
-  border-radius: 16px;
-  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
 .sidebar-task {
-  padding: 8px;
-  border-radius: 8px;
-  background: white;
+  padding: 10px;
+  border-radius: 10px;
+  background: #f8f2ff;
   margin-bottom: 8px;
   font-size: 13px;
 }
@@ -247,33 +255,49 @@ function nextMonth() {
 }
 
 .calendar {
-  max-width: 800px;
+  background: white;
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.04);
 }
 
 .header {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 10px;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.header span {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.header button {
+  background: transparent;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
 }
 
 .grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 6px;
+  gap: 10px;
 }
 
 .date {
   font-size: 12px;
   font-weight: 600;
-  opacity: 0.7;
+  color: #64748b;
 }
 
 .weekdays {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  margin-bottom: 6px;
-  font-weight: 600;
-  opacity: 0.7;
+  margin-bottom: 10px;
+  font-size: 12px;
+  color: #9ca3af;
 }
 
 .task {
@@ -281,48 +305,89 @@ function nextMonth() {
   background: #ede9fe;
   color: #5b21b6;
   border-radius: 999px;
-  padding: 2px 8px;
-  white-space: nowrap;
+  padding: 3px 8px;
+  max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .day {
-  border: 1px solid #eee;
-  padding: 8px;
-  min-height: 100px;
+  padding: 10px;
+  min-height: 110px;
   border-radius: 14px;
-  background: white;
+  background: #fafafa;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
   transition: 0.2s;
 }
 
 .day:hover {
-  background: #f9fafb;
+  background: #f1f5f9;
 }
 
-/* сегодняшний день */
-.today {
-  border: 2px solid #7c3aed;
+.today .date {
+  background: #7c3aed;
+  color: white;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
 }
-
 /* выбранный день (главный фокус) */
 .selected {
   background: linear-gradient(135deg, #7c3aed, #6d28d9);
   color: white;
 }
 
-.selected .task {
-  background: rgba(255,255,255,0.2);
+.selected .date {
   color: white;
 }
 
+.selected .task {
+  background: white;
+  color: #6d28d9;
+}
 /* чужой месяц */
 .other-month {
-  opacity: 0.3;
+  opacity: 0.35;
+  background: #e5deff;
 }
 
+.more {
+  font-size: 11px;
+  color: #6b7280;
+  cursor: pointer;
+}
 
+.more:hover {
+  text-decoration: underline;
+}
+
+.card {
+  background: white;
+  border-radius: 20px;
+  padding: 16px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+  border: 2px solid #c5aada;
+}
+
+.card h4 {
+  font-size: 13px;
+  color: #6b7280;
+  margin-bottom: 10px;
+}
+
+.big {
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.task-time {
+  color: #9539ff;
+  font-size: 14px;
+  font-weight: 500;
+}
 </style>
