@@ -7,6 +7,23 @@ const tasksStore = useTasksStore()
 const currentDate = ref(new Date())
 const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 const selectedDate = ref(new Date())
+const now = new Date();
+
+const upcomingTasks = computed(() => {
+  return tasksStore.tasks
+    .filter(task => {
+      if (!task.deadline) return false
+
+      const d = new Date(task.deadline)
+
+      return (
+        d >= startOfDay(now) &&
+        d.getMonth() === currentDate.value.getMonth() &&
+        d.getFullYear() === currentDate.value.getFullYear()
+      )
+    })
+    .sort((a, b) => new Date(a.deadline) - new Date(b.deadline))
+})
 
 const days = computed(() => getCalendarDays(currentDate.value))
 
@@ -33,12 +50,33 @@ const tasksByDate = computed(() => {
   return map
 })
 
-const selectedTasks = computed(() => {
-  if (!selectedDate.value) return []
+const monthTasksCount = computed(() => {
+  return tasksStore.tasks.filter(task => {
+    if (!task.deadline) return false
 
-  const key = formatDateLocal(selectedDate.value)
-  return tasksByDate.value[key] || []
+    const d = new Date(task.deadline)
+
+    return (
+      d.getMonth() === currentDate.value.getMonth() &&
+      d.getFullYear() === currentDate.value.getFullYear()
+    )
+  }).length
 })
+
+function startOfDay(date) {
+  const d = new Date(date)
+  d.setHours(0, 0, 0, 0)
+  return d
+}
+
+function endOfMonth(date) {
+  return new Date(
+    date.getFullYear(),
+    date.getMonth() + 1,
+    0,
+    23, 59, 59, 999
+  )
+}
 
 function getVisibleTasks(day) {
   return getTasks(day).slice(0, TASK_LIMIT)
@@ -69,7 +107,6 @@ function formatDateLocal(date) {
 
   return `${year}-${month}-${day}`
 }
-
 
 function getTasks(day) {
   const key = formatDateLocal(day.date)
@@ -144,11 +181,11 @@ function nextMonth() {
 
       <section class="card">
         <h4>Monthly Summary</h4>
-        <div class="big">{{tasksStore.tasks.length}} Tasks</div>
+        <div class="big">{{monthTasksCount}} Tasks</div>
 
-        <template v-if="selectedTasks.length">
+        <template v-if="upcomingTasks.length">
             <div
-              v-for="task in selectedTasks"
+              v-for="task in upcomingTasks"
               :key="task.id"
               class="sidebar-task">
               <p><b>{{task.title}}</b></p>
@@ -257,8 +294,9 @@ function nextMonth() {
 .calendar {
   background: white;
   border-radius: 20px;
-  padding: 20px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+  padding: 24px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+  border: 1px solid #c5aada;
 }
 
 .header {
@@ -302,24 +340,21 @@ function nextMonth() {
 
 .task {
   font-size: 11px;
-  background: #ede9fe;
+  background: #f3e8ff;
   color: #5b21b6;
   border-radius: 999px;
   padding: 3px 8px;
-  max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .day {
-  padding: 10px;
+  padding: 12px;
   min-height: 110px;
-  border-radius: 14px;
-  background: #fafafa;
+  border-radius: 16px;
+  background: #f8f9fc;
   display: flex;
   flex-direction: column;
   gap: 6px;
-  transition: 0.2s;
+  transition: all 0.2s ease;
 }
 
 .day:hover {
@@ -340,6 +375,9 @@ function nextMonth() {
 .selected {
   background: linear-gradient(135deg, #7c3aed, #6d28d9);
   color: white;
+  box-shadow: 0 10px 25px rgba(124, 58, 237, 0.4);
+  transform: scale(1.02);
+
 }
 
 .selected .date {
@@ -371,7 +409,7 @@ function nextMonth() {
   border-radius: 20px;
   padding: 16px;
   box-shadow: 0 4px 20px rgba(0,0,0,0.04);
-  border: 2px solid #c5aada;
+  border: 1px solid #c5aada;
 }
 
 .card h4 {
