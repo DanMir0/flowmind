@@ -69,22 +69,8 @@ function startOfDay(date) {
   return d
 }
 
-function endOfMonth(date) {
-  return new Date(
-    date.getFullYear(),
-    date.getMonth() + 1,
-    0,
-    23, 59, 59, 999
-  )
-}
-
 function getVisibleTasks(day) {
   return getTasks(day).slice(0, TASK_LIMIT)
-}
-
-function getHiddenCount(day) {
-  const total = getTasks(day).length
-  return total > TASK_LIMIT ? total - TASK_LIMIT : 0
 }
 
 function isToday(date) {
@@ -179,12 +165,15 @@ function formatTaskDate(dateString) {
   }).format(date)
 }
 
+function hasOverflowTasks(day) {
+  return getTasks(day).length > TASK_LIMIT
+}
 </script>
 
 <template>
   <div class="calendar-layout">
 
-    <!-- 🟣 Левая панель -->
+    <!-- Левая панель -->
     <div class="sidebar">
 
       <section class="card">
@@ -208,7 +197,6 @@ function formatTaskDate(dateString) {
       <section>
 
       </section>
-
 
     </div>
 
@@ -240,8 +228,7 @@ function formatTaskDate(dateString) {
             'today': isToday(day.date),
             'selected': isSelected(day.date)
           }"
-          @click="selectDay(day)"
-        >
+          @click="selectDay(day)">
           <!-- дата -->
           <div class="date">
             {{ day.date.getDate() }}
@@ -252,17 +239,14 @@ function formatTaskDate(dateString) {
             <div
               v-for="task in getVisibleTasks(day)"
               :key="task.id"
-              class="task"
-            >
+              class="task">
               {{ task.title }}
             </div>
 
-            <div
-              v-if="getHiddenCount(day)"
-              class="more"
-              @click.stop="selectDay(day)"
-            >
-              +{{ getHiddenCount(day) }} more
+            <div v-if="hasOverflowTasks(day)" class="dots">
+              <span></span>
+              <span></span>
+              <span></span>
             </div>
           </div>
         </div>
@@ -305,6 +289,12 @@ function formatTaskDate(dateString) {
   padding: 24px;
   box-shadow: 0 10px 30px rgba(0,0,0,0.05);
   border: 1px solid #c5aada;
+}
+
+.tasks {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
 }
 
 .header {
@@ -352,6 +342,10 @@ function formatTaskDate(dateString) {
   color: #5b21b6;
   border-radius: 999px;
   padding: 3px 8px;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .day {
@@ -396,20 +390,14 @@ function formatTaskDate(dateString) {
   background: white;
   color: #6d28d9;
 }
+
+.selected .dots span {
+  background: white;
+}
 /* чужой месяц */
 .other-month {
   opacity: 0.35;
   background: #e5deff;
-}
-
-.more {
-  font-size: 11px;
-  color: #6b7280;
-  cursor: pointer;
-}
-
-.more:hover {
-  text-decoration: underline;
 }
 
 .card {
@@ -435,5 +423,19 @@ function formatTaskDate(dateString) {
   color: #9539ff;
   font-size: 14px;
   font-weight: 500;
+}
+
+.dots {
+  display: flex;
+  gap: 3px;
+  margin-top: 2px;
+  margin-left: 5px;
+}
+
+.dots span {
+  width: 4px;
+  height: 4px;
+  background: #7c3aed;
+  border-radius: 50%;
 }
 </style>
