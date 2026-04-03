@@ -171,6 +171,14 @@ function nextMonth() {
   )
 }
 
+function formatTaskDate(dateString) {
+  const date = new Date(dateString)
+  return new Intl.DateTimeFormat('en-US', {
+    month: 'long',
+    day: 'numeric'
+  }).format(date)
+}
+
 </script>
 
 <template>
@@ -182,14 +190,14 @@ function nextMonth() {
       <section class="card">
         <h4>Monthly Summary</h4>
         <div class="big">{{monthTasksCount}} Tasks</div>
-
+        <p class="upcoming-due">Upcoming Due</p>
         <template v-if="upcomingTasks.length">
             <div
               v-for="task in upcomingTasks"
               :key="task.id"
               class="sidebar-task">
               <p><b>{{task.title}}</b></p>
-              <p class="task-time">{{task.deadline}}</p>
+              <p class="task-time">{{formatTaskDate(task.deadline)}}</p>
             </div>
         </template>
         <div v-else class="empty">
@@ -282,7 +290,7 @@ function nextMonth() {
   padding: 10px;
   border-radius: 10px;
   background: #f8f2ff;
-  margin-bottom: 8px;
+  margin: 12px 0 8px 0;
   font-size: 13px;
 }
 
@@ -414,13 +422,13 @@ function nextMonth() {
 
 .card h4 {
   font-size: 13px;
-  color: #6b7280;
-  margin-bottom: 10px;
+  color: #9539ff;
 }
 
 .big {
   font-size: 24px;
-  font-weight: 700;
+  font-weight: 500;
+  margin-bottom: 13px;
 }
 
 .task-time {
