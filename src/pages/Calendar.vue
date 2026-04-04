@@ -2,7 +2,9 @@
 import { ref, computed } from 'vue'
 import { useTasksStore } from '@/store/tasks.js'
 
-const TASK_LIMIT = 2;
+const showAllTasks = ref(false)
+const TASK_LIMIT_CALENDAR = 2;
+const TASK_LIMIT_UPCOMING = 3;
 const tasksStore = useTasksStore()
 const currentDate = ref(new Date())
 const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
@@ -23,6 +25,19 @@ const upcomingTasks = computed(() => {
       )
     })
     .sort((a, b) => new Date(a.deadline) - new Date(b.deadline))
+})
+
+const visibleUpcomingTasks = computed(() => {
+  if (showAllTasks.value) return upcomingTasks.value
+  return upcomingTasks.value.slice(0, TASK_LIMIT_UPCOMING)
+})
+
+const hiddenTaskCount = computed(() => {
+  return upcomingTasks.value.length - TASK_LIMIT_UPCOMING
+})
+
+const hasMoreTasks = computed(() => {
+  return upcomingTasks.value.length > TASK_LIMIT_UPCOMING
 })
 
 const days = computed(() => getCalendarDays(currentDate.value))
@@ -70,7 +85,7 @@ function startOfDay(date) {
 }
 
 function getVisibleTasks(day) {
-  return getTasks(day).slice(0, TASK_LIMIT)
+  return getTasks(day).slice(0, TASK_LIMIT_CALENDAR)
 }
 
 function isToday(date) {
@@ -166,7 +181,7 @@ function formatTaskDate(dateString) {
 }
 
 function hasOverflowTasks(day) {
-  return getTasks(day).length > TASK_LIMIT
+  return getTasks(day).length > TASK_LIMIT_CALENDAR
 }
 </script>
 
@@ -181,13 +196,28 @@ function hasOverflowTasks(day) {
         <div class="big">{{monthTasksCount}} Tasks</div>
         <p class="upcoming-due">Upcoming Due</p>
         <template v-if="upcomingTasks.length">
+
+          <div
+            class="tasks-list"
+            :class="{ expanded: showAllTasks }">
             <div
-              v-for="task in upcomingTasks"
+              v-for="task in visibleUpcomingTasks"
               :key="task.id"
               class="sidebar-task">
-              <p><b>{{task.title}}</b></p>
-              <p class="task-time">{{formatTaskDate(task.deadline)}}</p>
+              <p><b>{{ task.title }}</b></p>
+              <p class="task-time">
+                {{ formatTaskDate(task.deadline) }}
+              </p>
             </div>
+          </div>
+
+          <div
+            v-if="hasMoreTasks"
+            class="show-more"
+            @click="showAllTasks = !showAllTasks">
+            {{ showAllTasks ? 'Show less' : `Show ${hiddenTaskCount} more` }}
+          </div>
+
         </template>
         <div v-else class="empty">
           No tasks
@@ -274,7 +304,6 @@ function hasOverflowTasks(day) {
   padding: 10px;
   border-radius: 10px;
   background: #f8f2ff;
-  margin: 12px 0 8px 0;
   font-size: 13px;
 }
 
@@ -438,4 +467,45 @@ function hasOverflowTasks(day) {
   background: #7c3aed;
   border-radius: 50%;
 }
+
+.tasks-list {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 320px;
+  overflow: hidden;
+  transition: all 0.25s ease;
+  padding-bottom: 10px;
+}
+
+/* при раскрытии */
+.tasks-list.expanded {
+  overflow-y: auto;
+}
+
+.tasks-list:not(.expanded)::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 40px;
+  background: linear-gradient(to bottom, transparent, white);
+  pointer-events: none;
+}
+
+/* кнопка */
+.show-more {
+  margin-top: 8px;
+  font-size: 13px;
+  color: #7c3aed;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.show-more:hover {
+  text-decoration: underline;
+}
+
 </style>
