@@ -13,6 +13,9 @@ const auth = useAuthStore()
 
 const { modalRef } = useModal(emit)
 
+const category = ref('')
+const startTime = ref('')
+const endTime = ref('')
 const title = ref('')
 const description = ref('')
 const deadline = ref('')
@@ -23,6 +26,12 @@ const loading = ref(false)
 const error = ref('')
 
 const dateTouched = ref(false)
+
+const isValidTimeRange = computed(() => {
+  if (!startTime.value || !endTime.value) return true
+
+  return startTime.value < endTime.value
+})
 
 const isValidDate = computed(() => {
   if (!deadline.value) return true
@@ -71,9 +80,16 @@ async function submit() {
     return
   }
   if (!canSubmit.value || loading.value) return
-
+  if (!isValidTimeRange.value) {
+    error.value = 'End time must be after start time'
+    return
+  }
   loading.value = true
   error.value = ''
+
+  const timeRange = startTime.value && endTime.value
+    ? `${startTime.value}-${endTime.value}`
+    : null
 
   try {
     await tasksStore.addTask({
@@ -81,7 +97,9 @@ async function submit() {
       description: description.value,
       deadline: deadline.value || null,
       priority: priority.value,
-      newFiles: newFiles.value
+      newFiles: newFiles.value,
+      category: category.value || null,
+      time: timeRange,
     })
     showSuccess('Task added!')
     emit('close')
@@ -126,6 +144,31 @@ onUnmounted(() => {
           <option :value="2">Medium</option>
           <option :value="3">Low</option>
         </select>
+
+        <!-- CATEGORY -->
+        <select v-model="category">
+          <option disabled value="">Select category</option>
+          <option value="Work">Work</option>
+          <option value="Personal">Personal</option>
+          <option value="Study">Study</option>
+        </select>
+
+        <!-- TIME -->
+        <div class="time-range">
+          <input
+            type="time"
+            v-model="startTime"
+            placeholder="Start"
+          />
+
+          <span class="time-separator">—</span>
+
+          <input
+            type="time"
+            v-model="endTime"
+            placeholder="End"
+          />
+        </div>
 
         <!-- File upload -->
         <div class="file-upload">
@@ -380,6 +423,20 @@ onUnmounted(() => {
   font-size: 16px;
   cursor: pointer;
   color: #e53935;
+}
+.time-range {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.time-range input {
+  flex: 1;
+}
+
+.time-separator {
+  font-weight: 600;
+  opacity: 0.6;
 }
 </style>
 <style>
