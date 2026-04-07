@@ -25,8 +25,9 @@ export const useTasksStore = defineStore('tasks', {
         this.loading = true
 
         const { data, error } = await supabase
-          .from('tasks_with_files_count')
-          .select('*')
+          .from('tasks')
+          .select(`*,
+          task_files(id,file_name,file_path)`)
           .eq('user_id', auth.user.id)
           .eq('archived', false)
           .order('position', { ascending: true })
@@ -35,7 +36,6 @@ export const useTasksStore = defineStore('tasks', {
 
         this.tasks = data.map(task => ({
           ...task,
-          task_files: undefined, // lazy load
           completed: Boolean(task.completed),
         }))
       } catch (e) {
@@ -64,7 +64,10 @@ export const useTasksStore = defineStore('tasks', {
       if (error) throw error
 
       task.task_files = data
+
+      return data
     },
+
 
     /* =========================
        ADD TASK
@@ -87,6 +90,8 @@ export const useTasksStore = defineStore('tasks', {
             priority: payload.priority,
             user_id: auth.user.id,
             position: Date.now(),
+            category: payload.category,
+            time: payload.time,
           })
           .select(`
           id,
