@@ -32,6 +32,11 @@ const visibleFiles = computed(() => {
 const hasMoreFiles = computed(() => {
   return files.value.length > 2
 })
+const hasFiles = computed(() => {
+  return (
+    (props.task.files_count && props.task.files_count > 0) || files.value.length > 0
+  )
+})
 
 // helper
 function getFileIconComponent(file) {
@@ -167,7 +172,7 @@ async function openFile(file) {
 
     <!-- FILES -->
     <div
-      v-if="visibleFiles.length || !filesLoaded"
+      v-if="hasFiles"
       class="attachments"
       @mouseenter="loadFiles"
     >
@@ -197,22 +202,20 @@ async function openFile(file) {
     <div class="footer">
       <div class="meta">
         <span class="priority">
-          Priority: {{ priorityLabel }}
+          Priority: <span class="font-bold">{{ priorityLabel }}</span>
         </span>
 
         <span class="dot">•</span>
 
         <span
-          class="date"
-          :class="{ overdue: deadlineInfo.state === 'overdue' }"
-        >
-          Due: {{ formatTaskDate(task.deadline) }}
+          class="date">
+          Due: <span :class="{ overdue: deadlineInfo.state === 'overdue' }"> {{ formatTaskDate(task.deadline) }}</span>
         </span>
       </div>
 
       <!-- TIME -->
       <div v-if="task.time" class="time">
-        Time: {{ task.time }}
+        Time: <span class="font-bold">{{ task.time }}</span>
       </div>
     </div>
 
@@ -331,7 +334,7 @@ async function openFile(file) {
 /* ATTACHMENTS */
 .attachments {
   border-top: 1px solid #eee;
-  padding-top: 10px;
+  padding-top: 8px;
 }
 
 .attachments-title {
@@ -341,10 +344,17 @@ async function openFile(file) {
 }
 
 .file {
+  display: flex;
+  gap: 6px;
+  cursor: pointer;
   font-size: 14px;
   color: #374151;
-  margin-bottom: 4px;
 }
+
+.file:hover {
+  opacity: 0.7;
+}
+
 
 /* FOOTER */
 .footer {
@@ -359,6 +369,10 @@ async function openFile(file) {
 
 .dot {
   margin: 0 6px;
+}
+
+.date span {
+  color: #111827;
 }
 
 .date.overdue {
@@ -412,5 +426,9 @@ async function openFile(file) {
 
 .btn.delete:hover {
   background: #fecaca;
+}
+.font-bold {
+  color: #111827;
+  font-weight: 500;
 }
 </style>
