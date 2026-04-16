@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useTasksStore } from '@/store/tasks'
 import { useAuthStore } from '@/store/auth'
 import Loader from '@/components/Loader.vue'
@@ -26,6 +26,52 @@ const loading = ref(false)
 const error = ref('')
 
 const dateTouched = ref(false)
+const open = ref(false)
+const refEl = ref(null)
+
+const modelValue = ref('')
+const search = ref('')
+const debounced = ref('')
+
+const categories = [
+  'Work','Personal','Study','Workout','Appointments',
+  'Ideas','Health','Home','Social','Travel','Learning',
+  'Deadlines','Shopping','Family','Creative'
+]
+
+/* debounce */
+let timer;
+watch(search, (val) => {
+  clearTimeout(timer)
+  timer = setTimeout(() => {
+    debounced.value = val
+  }, 250)
+})
+
+/* фильтр */
+const filtered = computed(() => {
+  if (!debounced.value) return categories
+
+  return categories.filter(c =>
+    c.toLowerCase().includes(debounced.value.toLowerCase())
+  )
+})
+
+function select(val) {
+  modelValue.value = val
+  search.value = val
+  open.value = false
+}
+
+/* click outside */
+function onClickOutside(e) {
+  if (!refEl.value?.contains(e.target)) {
+    open.value = false
+  }
+}
+
+onMounted(() => document.addEventListener('click', onClickOutside))
+onUnmounted(() => document.removeEventListener('click', onClickOutside))
 
 const isValidTimeRange = computed(() => {
   if (!startTime.value || !endTime.value) return true
@@ -146,12 +192,32 @@ onUnmounted(() => {
         </select>
 
         <!-- CATEGORY -->
-        <select v-model="category">
-          <option disabled value="">Select category</option>
-          <option value="Work">Work</option>
-          <option value="Personal">Personal</option>
-          <option value="Study">Study</option>
-        </select>
+        <div class="select" ref="refEl">
+          <div class="select-trigger" @click="open = true">
+            <input
+              v-model="search"
+              placeholder="Select or type category"
+              @focus="open = true"
+            />
+            <span class="arrow" :class="{ open }">▾</span>
+          </div>
+
+          <div v-if="open" class="select-menu">
+            <div
+              v-for="item in filtered"
+              :key="item"
+              class="select-item"
+              @click="select(item)"
+            >
+              {{ item }}
+            </div>
+
+            <!-- если ничего нет -->
+            <div v-if="!filtered.length" class="empty">
+              No categories found
+            </div>
+          </div>
+        </div>
 
         <!-- TIME -->
         <div class="time-range">
@@ -222,6 +288,10 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
+input, textarea, select {
+  margin-bottom: 0 !important;
+}
+
 .modal-backdrop {
   position: fixed;
   inset: 0;
@@ -437,6 +507,71 @@ onUnmounted(() => {
 .time-separator {
   font-weight: 600;
   opacity: 0.6;
+}
+
+.select {
+  position: relative;
+  width: 100%;
+}
+
+.select-trigger {
+  position: relative;
+  z-index: 2;
+}
+
+.select-trigger input {
+  width: 100%;
+  padding: 12px 40px 12px 14px;
+  border-radius: 12px;
+  border: 1px solid #ddd;
+  outline: none;
+}
+
+.arrow {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  transition: 0.2s;
+}
+
+.arrow.open {
+  transform: translateY(-50%) rotate(180deg);
+}
+
+.select-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+
+  background: white;
+  border: 1px solid #eee;
+  border-radius: 12px;
+
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+
+  max-height: 220px;
+  overflow-y: auto;
+  z-index: 10;
+}
+
+.select-item {
+  padding: 10px 14px;
+  cursor: pointer;
+}
+
+.select-item:hover {
+  background: #f5f3ff;
+}
+
+.empty {
+  padding: 14px;
+  font-size: 13px;
+  color: #9ca3af;
+  text-align: center;
+  border-top: 1px solid #f1f1f1;
+  background: #fafafa;
 }
 </style>
 <style>
