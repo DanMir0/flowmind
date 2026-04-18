@@ -254,9 +254,14 @@ async function openFile(file) {
 
 .show-more {
   font-size: 12px;
-  color: #888;
+  color: #7a3cff;
   cursor: pointer;
-  margin-top: 4px;
+  margin-top: 6px;
+  font-weight: 500;
+}
+
+.show-more:hover {
+  text-decoration: underline;
 }
 
 .task-card {
@@ -375,7 +380,7 @@ async function openFile(file) {
   color: #111827;
 }
 
-.date.overdue {
+.date .overdue {
   color: #dc2626;
   font-weight: 600;
 }
