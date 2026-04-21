@@ -102,7 +102,6 @@ const isValidDate = computed(() => {
   return true
 })
 
-
 const canAddTask = computed(() =>
   auth.initialized && auth.user
 )
@@ -248,7 +247,7 @@ onUnmounted(() => {
             📎 Attach file
           </label>
 
-          <div class="files-list">
+          <div v-if="newFiles.length > 0" class="files-list">
             <TransitionGroup name="file" tag="div">
               <div
                 v-for="(file, index) in newFiles"
