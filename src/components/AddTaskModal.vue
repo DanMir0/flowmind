@@ -5,6 +5,7 @@ import { useAuthStore } from '@/store/auth'
 import Loader from '@/components/Loader.vue'
 import { useModal } from '@/composable/useModal.js'
 import { showSuccess, showError } from '@/utils/toast.js'
+import BaseSelect from '@/components/BaseSelect.vue'
 
 const emit = defineEmits(['close'])
 
@@ -19,59 +20,24 @@ const endTime = ref('')
 const title = ref('')
 const description = ref('')
 const deadline = ref('')
-const priority = ref(3)
+const priority = ref('')
 const newFiles = ref([])
 
 const loading = ref(false)
 const error = ref('')
 
 const dateTouched = ref(false)
-const open = ref(false)
-const refEl = ref(null)
-
-const modelValue = ref('')
-const search = ref('')
-const debounced = ref('')
 
 const categories = [
-  'Work','Personal','Study','Workout','Appointments',
-  'Ideas','Health','Home','Social','Travel','Learning',
-  'Deadlines','Shopping','Family','Creative'
+  'Work', 'Personal', 'Study', 'Workout', 'Appointments',
+  'Ideas', 'Health', 'Home', 'Social', 'Travel', 'Learning',
+  'Deadlines', 'Shopping', 'Family', 'Creative'
 ]
-
-/* debounce */
-let timer;
-watch(search, (val) => {
-  clearTimeout(timer)
-  timer = setTimeout(() => {
-    debounced.value = val
-  }, 250)
-})
-
-/* фильтр */
-const filtered = computed(() => {
-  if (!debounced.value) return categories
-
-  return categories.filter(c =>
-    c.toLowerCase().includes(debounced.value.toLowerCase())
-  )
-})
-
-function select(val) {
-  modelValue.value = val
-  search.value = val
-  open.value = false
-}
-
-/* click outside */
-function onClickOutside(e) {
-  if (!refEl.value?.contains(e.target)) {
-    open.value = false
-  }
-}
-
-onMounted(() => document.addEventListener('click', onClickOutside))
-onUnmounted(() => document.removeEventListener('click', onClickOutside))
+const priorities = [
+  { label: 'High', value: 1},
+  { label: 'Medium', value: 2},
+  { label: 'Low', value: 3},
+]
 
 const isValidTimeRange = computed(() => {
   if (!startTime.value || !endTime.value) return true
@@ -91,7 +57,7 @@ const isValidDate = computed(() => {
   const now = new Date()
 
   // запрещаем прошлые даты
-  if (date < now.setHours(0,0,0,0)) return false
+  if (date < now.setHours(0, 0, 0, 0)) return false
 
   // ограничим верхний диапазон
   const max = new Date()
@@ -144,7 +110,7 @@ async function submit() {
       priority: priority.value,
       newFiles: newFiles.value,
       category: category.value || null,
-      time: timeRange,
+      time: timeRange
     })
     showSuccess('Task added!')
     emit('close')
@@ -184,47 +150,25 @@ onUnmounted(() => {
           Please enter a valid date
         </p>
 
-        <select v-model="priority">
-          <option :value="1">High</option>
-          <option :value="2">Medium</option>
-          <option :value="3">Low</option>
-        </select>
+        <BaseSelect
+          v-model="priority"
+          :options="priorities"
+          labelKey="label"
+          valueKey="value"
+          placeholder="Select priority"/>
 
         <!-- CATEGORY -->
-        <div class="select" ref="refEl">
-          <div class="select-trigger" @click="open = true">
-            <input
-              v-model="search"
-              placeholder="Select or type category"
-              @focus="open = true"
-            />
-            <span class="arrow" :class="{ open }">▾</span>
-          </div>
-
-          <div v-if="open" class="select-menu">
-            <div
-              v-for="item in filtered"
-              :key="item"
-              class="select-item"
-              @click="select(item)"
-            >
-              {{ item }}
-            </div>
-
-            <!-- если ничего нет -->
-            <div v-if="!filtered.length" class="empty">
-              No categories found
-            </div>
-          </div>
-        </div>
+        <BaseSelect
+          v-model="category"
+          :options="categories"
+          placeholder="Select category"/>
 
         <!-- TIME -->
         <div class="time-range">
           <input
             type="time"
             v-model="startTime"
-            placeholder="Start"
-          />
+            placeholder="Start"/>
 
           <span class="time-separator">—</span>
 
@@ -493,6 +437,7 @@ input, textarea, select {
   cursor: pointer;
   color: #e53935;
 }
+
 .time-range {
   display: flex;
   align-items: baseline;
@@ -506,71 +451,6 @@ input, textarea, select {
 .time-separator {
   font-weight: 600;
   opacity: 0.6;
-}
-
-.select {
-  position: relative;
-  width: 100%;
-}
-
-.select-trigger {
-  position: relative;
-  z-index: 2;
-}
-
-.select-trigger input {
-  width: 100%;
-  padding: 12px 40px 12px 14px;
-  border-radius: 12px;
-  border: 1px solid #ddd;
-  outline: none;
-}
-
-.arrow {
-  position: absolute;
-  right: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  transition: 0.2s;
-}
-
-.arrow.open {
-  transform: translateY(-50%) rotate(180deg);
-}
-
-.select-menu {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  width: 100%;
-
-  background: white;
-  border: 1px solid #eee;
-  border-radius: 12px;
-
-  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-
-  max-height: 220px;
-  overflow-y: auto;
-  z-index: 10;
-}
-
-.select-item {
-  padding: 10px 14px;
-  cursor: pointer;
-}
-
-.select-item:hover {
-  background: #f5f3ff;
-}
-
-.empty {
-  padding: 14px;
-  font-size: 13px;
-  color: #9ca3af;
-  text-align: center;
-  border-top: 1px solid #f1f1f1;
-  background: #fafafa;
 }
 </style>
 <style>

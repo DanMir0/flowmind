@@ -4,6 +4,7 @@ import { useTasksStore } from '@/store/tasks'
 import Loader from '@/components/Loader.vue'
 import { toast } from 'vue-sonner'
 import { useModal } from '@/composable/useModal.js'
+import BaseSelect from '@/components/BaseSelect.vue'
 
 const emit = defineEmits(['close'])
 const tasksStore = useTasksStore()
@@ -24,10 +25,24 @@ const task = computed(() =>
   tasksStore.tasks.find(t => t.id === props.task.id)
 )
 
+const categories = [
+  'Work', 'Personal', 'Study', 'Workout', 'Appointments',
+  'Ideas', 'Health', 'Home', 'Social', 'Travel', 'Learning',
+  'Deadlines', 'Shopping', 'Family', 'Creative'
+]
+const priorities = [
+  { label: 'High', value: 1},
+  { label: 'Medium', value: 2},
+  { label: 'Low', value: 3},
+]
+const startTime = ref('')
+const endTime = ref('')
 const title = ref('')
 const description = ref('')
-const priority = ref(3)
+const priority = ref('')
+const category = ref('')
 const deadline = ref(null)
+const error = ref('')
 
 const newFiles = ref([])
 const filesToDelete = ref([])
@@ -38,6 +53,17 @@ const filesLoading = ref(false)
 /* реактивно берём файлы ИЗ STORE */
 const existingFiles = computed(() => task.value?.task_files || [])
 
+const isValidTimeRange = computed(() => {
+  if (!startTime.value || !endTime.value) return true
+  return startTime.value < endTime.value
+})
+watch(startTime, (val) => {
+  if (!endTime.value && val) {
+    const [h, m] = val.split(':')
+    const nextHour = String(Number(h) + 1).padStart(2, '0')
+    endTime.value = `${nextHour}:${m}`
+  }
+})
 /* sync task → form */
 watch(
   task,
@@ -50,6 +76,16 @@ watch(
     deadline.value = task.deadline
       ? task.deadline.slice(0, 10)
       : null
+    category.value = task.category || ''
+
+    if (task.time && task.time.includes('-')) {
+      const [start, end] = task.time.split('-')
+      startTime.value = start
+      endTime.value = end
+    } else {
+      startTime.value = ''
+      endTime.value = ''
+    }
 
     newFiles.value = []
     filesToDelete.value = []
@@ -120,8 +156,16 @@ function removeNewFile(index) {
 
 async function save() {
   if (saving.value) return
-
+  if (!isValidTimeRange.value) {
+    error.value = 'End time must be after start time'
+    return
+  }
   saving.value = true
+
+  const timeRange =
+    startTime.value && endTime.value
+      ? `${startTime.value}-${endTime.value}`
+      : null
 
   try {
     await props.onSave({
@@ -131,7 +175,9 @@ async function save() {
       priority: priority.value,
       deadline: deadline.value,
       newFiles: newFiles.value,
-      filesToDelete: filesToDelete.value
+      filesToDelete: filesToDelete.value,
+      category: category.value || null,
+      time: timeRange
     })
 
   emit('close')
@@ -154,8 +200,7 @@ function close() {
 
     <div
       class="modal-backdrop"
-      @click.self="emit('close')"
-    >
+      @click.self="emit('close')">
       <div ref="modalRef" class="modal">
         <h2>Edit Task</h2>
 
@@ -163,16 +208,40 @@ function close() {
 
         <textarea
           v-model="description"
-          placeholder="Description"
-        />
+          placeholder="Description" />
 
-        <select v-model="priority">
-          <option :value="1">High</option>
-          <option :value="2">Medium</option>
-          <option :value="3">Low</option>
-        </select>
+        <BaseSelect
+          v-model="priority"
+          :options="priorities"
+          labelKey="label"
+          valueKey="value"
+          placeholder="Select priority"/>
+
+        <!-- CATEGORY -->
+        <BaseSelect
+          v-model="category"
+          :options="categories"
+          placeholder="Select category"/>
 
         <input type="date" v-model="deadline" />
+
+        <div class="time-range">
+          <input
+            type="time"
+            v-model="startTime"
+          />
+
+          <span class="time-separator">—</span>
+
+          <input
+            type="time"
+            v-model="endTime"
+          />
+        </div>
+
+        <p v-if="!isValidTimeRange" class="error">
+          End time must be after start time
+        </p>
 
         <!-- FILES SECTION -->
         <div class="files-wrapper">
@@ -249,6 +318,8 @@ function close() {
           </label>
 
         </div>
+
+        <p v-if="error" class="error">{{ error }}</p>
 
         <!-- ACTIONS -->
         <div class="actions">
@@ -423,6 +494,21 @@ textarea {
   100% {
     background-position: 0 0;
   }
+}
+
+.time-range {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.time-range input {
+  flex: 1;
+}
+
+.time-separator {
+  font-weight: 600;
+  opacity: 0.6;
 }
 </style>
 

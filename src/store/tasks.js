@@ -133,7 +133,7 @@ export const useTasksStore = defineStore('tasks', {
     async updateTask(taskId, payload) {
       const auth = useAuthStore()
       if (!auth.user) throw new Error('Not authenticated')
-
+      console.log('Payload', payload)
       /* update task fields */
       await supabase
         .from('tasks')
@@ -142,7 +142,9 @@ export const useTasksStore = defineStore('tasks', {
           description: payload.description,
           priority: payload.priority,
           deadline: payload.deadline,
-          updated_at: new Date()
+          updated_at: new Date(),
+          category: payload.category,
+          time: payload.time
         })
         .eq('id', taskId)
         .eq('user_id', auth.user.id)
@@ -180,8 +182,10 @@ export const useTasksStore = defineStore('tasks', {
       description,
       priority,
       deadline,
+      category,
+      time,
       created_at,
-      files_count
+      files_count,
     `)
         .eq('id', taskId)
         .single()
