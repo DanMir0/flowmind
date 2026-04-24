@@ -58,7 +58,6 @@ export const useTasksStore = defineStore('tasks', {
         .from('task_files')
         .select('*')
         .eq('task_id', taskId)
-        .eq('archived', false)
         .order('uploaded_at', { ascending: true })
 
       if (error) throw error
@@ -80,6 +79,13 @@ export const useTasksStore = defineStore('tasks', {
         throw new Error('Active tasks limit reached (500). Archive old tasks.')
       }
 
+      if (payload.deadline) {
+        const d = new Date(payload.deadline)
+        if (isNaN(d.getTime())) {
+          throw new Error('Invalid date')
+        }
+      }
+
       try {
         const { data: task, error } = await supabase
           .from('tasks')
@@ -99,6 +105,8 @@ export const useTasksStore = defineStore('tasks', {
           description,
           priority,
           deadline,
+          category,
+          time,
           created_at,
           files_count,
           position
@@ -112,18 +120,12 @@ export const useTasksStore = defineStore('tasks', {
           task_files: []
         }
 
-
         /* upload files (if any) */
         if (payload.newFiles?.length) {
-          await this.uploadMultipleFiles(newTask.id, payload.newFiles)
+          await this.uploadMultipleFiles(newTask, payload.newFiles)
         }
 
-        if (payload.deadline) {
-          const d = new Date(payload.deadline)
-          if (isNaN(d.getTime())) {
-            throw new Error('Invalid date')
-          }
-        }
+
       } catch (e) {
         throw e
       }
@@ -185,7 +187,7 @@ export const useTasksStore = defineStore('tasks', {
       category,
       time,
       created_at,
-      files_count,
+      files_count
     `)
         .eq('id', taskId)
         .single()
@@ -201,9 +203,9 @@ export const useTasksStore = defineStore('tasks', {
       }
     },
 
-    async uploadMultipleFiles(taskId, files) {
+    async uploadMultipleFiles(task, files) {
       const auth = useAuthStore()
-      const task = this.tasks.find(t => t.id === taskId)
+
       if (!auth.user || !task || !files?.length) return
 
       task.task_files ??= []
@@ -214,26 +216,32 @@ export const useTasksStore = defineStore('tasks', {
         /* optimistic UI */
         task.task_files.push({
           id: tempId,
-          task_id: taskId,
+          task_id: task.id,
           file_name: file.name,
           uploading: true
         })
 
         const ext = file.name.split('.').pop()
         const safeName = `${Date.now()}-${crypto.randomUUID()}.${ext}`
-        const filePath = `${auth.user.id}/${taskId}/${safeName}`
+        const filePath = `${auth.user.id}/${task.id}/${safeName}`
 
         try {
-          /* upload */
-          await supabase.storage
+          /* 1. upload в storage */
+          const { error: uploadError } = await supabase.storage
             .from('task-files')
             .upload(filePath, file)
 
-          /* insert metadata */
-          const { data: savedFile, error } = await supabase
+          if (uploadError) {
+            console.error("UPLOAD ERROR:", uploadError)
+            throw uploadError
+          }
+
+          /* 2. запись в БД */
+          const { data: savedFile, error: dbError } = await supabase
             .from('task_files')
             .insert({
-              task_id: taskId,
+              task_id: task.id,
+              user_id: auth.user.id,
               file_name: file.name,
               file_path: filePath,
               file_type: file.type,
@@ -242,17 +250,27 @@ export const useTasksStore = defineStore('tasks', {
             .select()
             .single()
 
-          if (error) throw error
+          if (dbError) {
+            console.error('DB ERROR', dbError)
+            throw dbError
+          }
 
-          /* replace temp */
+          /* 3. заменяем временный файл */
           const idx = task.task_files.findIndex(f => f.id === tempId)
-          task.task_files[idx] = savedFile
+          if (idx !== -1) {
+            task.task_files[idx] = savedFile
+          }
 
         } catch (e) {
-          /* rollback */
+          console.error('uploadMultipleFiles error:', e)
+          /* rollback optimistic UI */
           task.task_files = task.task_files.filter(f => f.id !== tempId)
+
+
           handleSupabaseError(e, 'uploadMultipleFiles')
         }
+
+        await this.loadTaskFiles(task.id)
       }
     },
 

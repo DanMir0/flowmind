@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useTasksStore } from '@/store/tasks'
 import { useAuthStore } from '@/store/auth'
 import Loader from '@/components/Loader.vue'
@@ -20,7 +20,7 @@ const endTime = ref('')
 const title = ref('')
 const description = ref('')
 const deadline = ref('')
-const priority = ref('')
+const priority = ref(3)
 const newFiles = ref([])
 
 const loading = ref(false)

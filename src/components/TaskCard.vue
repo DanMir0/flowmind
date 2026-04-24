@@ -173,17 +173,14 @@ async function openFile(file) {
     <!-- FILES -->
     <div
       v-if="hasFiles"
-      class="attachments"
-      @mouseenter="loadFiles"
-    >
+      class="attachments">
       <div class="attachments-title">Attachments:</div>
 
       <div
         v-for="file in visibleFiles"
         :key="file.id"
         class="file"
-        @click="openFile(file)"
-      >
+        @click="openFile(file)">
         <component :is="getFileIconComponent(file)" class="file-icon" />
         <span>{{ file.name || file.file_name }}</span>
       </div>
