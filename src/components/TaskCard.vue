@@ -19,9 +19,6 @@ const props = defineProps({
   }
 })
 
-const tasksStore = useTasksStore()
-const filesLoaded = ref(false)
-const localFiles = ref([])
 const showAllFiles = ref(false)
 
 const visibleFiles = computed(() => {
@@ -48,13 +45,6 @@ function getFileIconComponent(file) {
   if (name.match(/\.(png|jpg|jpeg|webp)$/i)) return ImageIcon
 
   return FileIcon
-}
-async function loadFiles() {
-  if (filesLoaded.value) return
-
-  const files = await tasksStore.loadTaskFiles(props.task.id)
-  localFiles.value = files
-  filesLoaded.value = true
 }
 defineEmits(['edit', 'delete', 'toggle-complete'])
 
@@ -114,7 +104,7 @@ const priorityLabel = computed(() => {
  * Files (из Supabase)
  */
 const files = computed(() => {
-  return props.task.task_files || []
+  return props.task.task_files ?? []
 })
 
 async function openFile(file) {

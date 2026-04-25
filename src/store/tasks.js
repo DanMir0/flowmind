@@ -52,8 +52,6 @@ export const useTasksStore = defineStore('tasks', {
       const task = this.tasks.find(t => t.id === taskId)
       if (!task) return
 
-      if (Array.isArray(task.task_files)) return
-
       const { data, error } = await supabase
         .from('task_files')
         .select('*')
@@ -86,20 +84,19 @@ export const useTasksStore = defineStore('tasks', {
         }
       }
 
-      try {
-        const { data: task, error } = await supabase
-          .from('tasks')
-          .insert({
-            title: payload.title,
-            description: payload.description,
-            deadline: payload.deadline,
-            priority: payload.priority,
-            user_id: auth.user.id,
-            position: Date.now(),
-            category: payload.category,
-            time: payload.time,
-          })
-          .select(`
+      const { data: task, error } = await supabase
+        .from('tasks')
+        .insert({
+          title: payload.title,
+          description: payload.description,
+          deadline: payload.deadline,
+          priority: payload.priority,
+          user_id: auth.user.id,
+          position: Date.now(),
+          category: payload.category,
+          time: payload.time,
+        })
+        .select(`
           id,
           title,
           description,
@@ -111,23 +108,20 @@ export const useTasksStore = defineStore('tasks', {
           files_count,
           position
         `)
-          .single()
+        .single()
 
-        if (error) handleSupabaseError(error, 'addTask')
+      if (error) handleSupabaseError(error, 'addTask')
 
-        const newTask = {
-          ...task,
-          task_files: []
-        }
+      const newTask = {
+        ...task,
+        task_files: []
+      }
 
-        /* upload files (if any) */
-        if (payload.newFiles?.length) {
-          await this.uploadMultipleFiles(newTask, payload.newFiles)
-        }
+      this.tasks.unshift(newTask)
 
-
-      } catch (e) {
-        throw e
+      /* upload files (if any) */
+      if (payload.newFiles?.length) {
+        await this.uploadMultipleFiles(newTask, payload.newFiles)
       }
 
     },
@@ -135,7 +129,7 @@ export const useTasksStore = defineStore('tasks', {
     async updateTask(taskId, payload) {
       const auth = useAuthStore()
       if (!auth.user) throw new Error('Not authenticated')
-      console.log('Payload', payload)
+
       /* update task fields */
       await supabase
         .from('tasks')
@@ -204,73 +198,63 @@ export const useTasksStore = defineStore('tasks', {
     },
 
     async uploadMultipleFiles(task, files) {
+      if (!files?.length) return
+
+      await Promise.all(files.map(file => this.uploadSingleFile(task, file)))
+
+      await this.loadTaskFiles(task.id)
+    },
+
+    async uploadSingleFile(task, file) {
       const auth = useAuthStore()
 
-      if (!auth.user || !task || !files?.length) return
+      const tempId = crypto.randomUUID()
 
-      task.task_files ??= []
+      // optimistic UI
+      task.task_files.push({
+        id: tempId,
+        file_name: file.name,
+        uploading: true
+      })
 
-      for (const file of files) {
-        const tempId = crypto.randomUUID()
+      const ext = file.name.split('.').pop()
+      const safeName = `${Date.now()}-${crypto.randomUUID()}.${ext}`
+      const filePath = `${auth.user.id}/${task.id}/${safeName}`
 
-        /* optimistic UI */
-        task.task_files.push({
-          id: tempId,
-          task_id: task.id,
-          file_name: file.name,
-          uploading: true
-        })
+      try {
+        // 1. upload в storage
+        const { error: uploadError } = await supabase.storage
+          .from('task-files')
+          .upload(filePath, file)
 
-        const ext = file.name.split('.').pop()
-        const safeName = `${Date.now()}-${crypto.randomUUID()}.${ext}`
-        const filePath = `${auth.user.id}/${task.id}/${safeName}`
+        if (uploadError) throw uploadError
 
-        try {
-          /* 1. upload в storage */
-          const { error: uploadError } = await supabase.storage
-            .from('task-files')
-            .upload(filePath, file)
+        // 2. insert в БД
+        const { data, error } = await supabase
+          .from('task_files')
+          .insert({
+            task_id: task.id,
+            user_id: auth.user.id,
+            file_name: file.name,
+            file_path: filePath,
+            file_type: file.type,
+            file_size: file.size
+          })
+          .select()
+          .single()
 
-          if (uploadError) {
-            console.error("UPLOAD ERROR:", uploadError)
-            throw uploadError
-          }
+        if (error) throw error
 
-          /* 2. запись в БД */
-          const { data: savedFile, error: dbError } = await supabase
-            .from('task_files')
-            .insert({
-              task_id: task.id,
-              user_id: auth.user.id,
-              file_name: file.name,
-              file_path: filePath,
-              file_type: file.type,
-              file_size: file.size
-            })
-            .select()
-            .single()
-
-          if (dbError) {
-            console.error('DB ERROR', dbError)
-            throw dbError
-          }
-
-          /* 3. заменяем временный файл */
-          const idx = task.task_files.findIndex(f => f.id === tempId)
-          if (idx !== -1) {
-            task.task_files[idx] = savedFile
-          }
-
-        } catch (e) {
-          console.error('uploadMultipleFiles error:', e)
-          /* rollback optimistic UI */
-          task.task_files = task.task_files.filter(f => f.id !== tempId)
-
-
-          handleSupabaseError(e, 'uploadMultipleFiles')
+        // 3. replace temp
+        const idx = task.task_files.findIndex(f => f.id === tempId)
+        if (idx !== -1) {
+          task.task_files[idx] = data
         }
 
-        await this.loadTaskFiles(task.id)
+      } catch (e) {
+        // rollback
+        task.task_files = task.task_files.filter(f => f.id !== tempId)
+        throw e
       }
     },
 
