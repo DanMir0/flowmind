@@ -160,7 +160,7 @@ export const useTasksStore = defineStore('tasks', {
       /* upload new files */
       await this.uploadMultipleFiles(taskId, payload.newFiles || [])
 
-      /* 🔥 ПЕРЕЗАГРУЖАЕМ ФАЙЛЫ ИЗ БД */
+      /* ПЕРЕЗАГРУЖАЕМ ФАЙЛЫ ИЗ БД */
       const { data: files, error: filesError } = await supabase
         .from('task_files')
         .select('*')
@@ -169,7 +169,7 @@ export const useTasksStore = defineStore('tasks', {
 
       if (filesError) throw filesError
 
-      /* 🔥 ПЕРЕЗАГРУЖАЕМ ЗАДАЧУ */
+      /* ПЕРЕЗАГРУЖАЕМ ЗАДАЧУ */
       const { data: freshTask, error } = await supabase
         .from('tasks')
         .select(`
@@ -181,7 +181,8 @@ export const useTasksStore = defineStore('tasks', {
       category,
       time,
       created_at,
-      files_count
+      files_count,
+      position
     `)
         .eq('id', taskId)
         .single()
