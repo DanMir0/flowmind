@@ -130,6 +130,8 @@ export const useTasksStore = defineStore('tasks', {
       const auth = useAuthStore()
       if (!auth.user) throw new Error('Not authenticated')
 
+      const task = this.tasks.find(t => t.id === taskId)
+
       /* update task fields */
       await supabase
         .from('tasks')
@@ -147,18 +149,11 @@ export const useTasksStore = defineStore('tasks', {
 
       /* delete files */
       for (const file of payload.filesToDelete || []) {
-        await supabase.storage
-          .from('task-files')
-          .remove([file.file_path])
-
-        await supabase
-          .from('task_files')
-          .delete()
-          .eq('id', file.id)
+        await this.deleteFile(file)
       }
 
       /* upload new files */
-      await this.uploadMultipleFiles(taskId, payload.newFiles || [])
+      await this.uploadMultipleFiles(task, payload.newFiles || [])
 
       /* ПЕРЕЗАГРУЖАЕМ ФАЙЛЫ ИЗ БД */
       const { data: files, error: filesError } = await supabase
@@ -260,12 +255,6 @@ export const useTasksStore = defineStore('tasks', {
     },
 
     async deleteFile(file) {
-      const task = this.tasks.find(t => t.id === file.task_id)
-      if (!task) return
-
-      /* optimistic UI */
-      task.task_files = task.task_files.filter(f => f.id !== file.id)
-
       await supabase.storage
         .from('task-files')
         .remove([file.file_path])
@@ -274,31 +263,24 @@ export const useTasksStore = defineStore('tasks', {
         .from('task_files')
         .delete()
         .eq('id', file.id)
-
-      const { data: newCount } = await supabase.rpc(
-        'task_increment_files',
-        { task_id: file.task_id, delta: -1 }
-      )
-
-      task.files_count = Math.max(0, newCount)
     },
 
     /* =========================
        DELETE TASK
     ========================= */
     async deleteTask(taskId) {
-     try {
-       const { error } = await supabase
-         .from('tasks')
-         .delete()
-         .eq('id', taskId)
+      const task = this.tasks.find(t => t.id === taskId)
+      if (!task) return
 
-       if (error) handleSupabaseError(error, 'deleteTask')
 
-       this.tasks = this.tasks.filter(t => t.id !== taskId)
-     } catch (e) {
-       throw e
-     }
+      const {data: files} = await supabase
+        .from('task_files')
+        .select('file_path')
+        .eq('task_id', taskId)
+
+      await Promise.all(files.map(f => this.deleteFile(f)))
+
+      this.tasks = this.tasks.filter(t => t.id !== taskId)
     },
 
     async toggleTaskCompleted(taskId) {
