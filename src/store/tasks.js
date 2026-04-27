@@ -273,12 +273,25 @@ export const useTasksStore = defineStore('tasks', {
       if (!task) return
 
 
-      const {data: files} = await supabase
+      const { data: files, error } = await supabase
         .from('task_files')
-        .select('file_path')
+        .select('id, file_path')
         .eq('task_id', taskId)
 
-      await Promise.all(files.map(f => this.deleteFile(f)))
+      if (error) throw error
+
+      // удаляем файлы
+      if (files?.length) {
+        await Promise.all(files.map(f => this.deleteFile(f)))
+      }
+
+      // удаляем задачу
+      const { error: deleteError } = await supabase
+        .from('tasks')
+        .delete()
+        .eq('id', taskId)
+
+      if (deleteError) throw deleteError
 
       this.tasks = this.tasks.filter(t => t.id !== taskId)
     },
