@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, nextTick, watch } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useTasksStore } from '@/store/tasks'
 import { storeToRefs } from 'pinia'
 import TaskCard from '@/components/TaskCard.vue'
@@ -118,13 +118,16 @@ function requestDelete(task) {
   taskToDelete.value = task
 }
 
-function requestEdit(task) {
-  taskToEdit.value = null
-  nextTick(() => {
-    taskToEdit.value = { ...task }
-  })
-}
+// function requestEdit(task) {
+//   taskToEdit.value = null
+//   nextTick(() => {
+//     taskToEdit.value = { ...task }
+//   })
+// }
 
+function requestEdit(taskId) {
+  taskToEdit.value = taskId
+}
 async function saveEdit(payload) {
   await tasksStore.updateTask(payload.id, payload)
   taskToEdit.value = null
@@ -328,7 +331,7 @@ watch(taskToEdit, (val) => {
       <Transition name="modal">
         <EditTaskModal
           v-if="taskToEdit"
-          :task="taskToEdit"
+          :task-id="taskToEdit"
           :on-save="saveEdit"
           @close="taskToEdit = null" />
       </Transition>

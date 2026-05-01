@@ -1,6 +1,5 @@
 <script setup>
 import { computed, ref } from 'vue'
-import {useTasksStore} from '@/store/tasks.js'
 import { supabase } from '@/services/supabase.js'
 import ExcelIcon from '@/components/icons/ExcelIcon.vue'
 import WordIcon from '@/components/icons/WordIcon.vue'
@@ -22,6 +21,7 @@ const props = defineProps({
 const showAllFiles = ref(false)
 
 const visibleFiles = computed(() => {
+  if (!files.value || files.value.length === 0) return []
   if (showAllFiles.value) return files.value
   return files.value.slice(0, 2)
 })
@@ -30,11 +30,12 @@ const hasMoreFiles = computed(() => {
   return files.value.length > 2
 })
 const hasFiles = computed(() => {
-  return (
-    (props.task.files_count && props.task.files_count > 0) || files.value.length > 0
-  )
+ return  files.value.length > 0
 })
 
+const isLoadingFiles = computed(() => {
+  return props.task.files_count > 0 && files.value.length === 0
+})
 // helper
 function getFileIconComponent(file) {
   const name = file.name || file.file_name || ''
@@ -103,9 +104,9 @@ const priorityLabel = computed(() => {
 /**
  * Files (из Supabase)
  */
-const files = computed(() => {
-  return props.task.task_files ?? []
-})
+const files = computed(() =>
+   props.task.task_files ?? []
+)
 
 async function openFile(file) {
   const { data, error } = await supabase
@@ -120,6 +121,7 @@ async function openFile(file) {
 
   window.open(data.signedUrl, '_blank')
 }
+
 </script>
 <template>
   <div
@@ -162,18 +164,21 @@ async function openFile(file) {
 
     <!-- FILES -->
     <div
-      v-if="hasFiles"
       class="attachments">
       <div class="attachments-title">Attachments:</div>
 
-      <div
-        v-for="file in visibleFiles"
-        :key="file.id"
-        class="file"
-        @click="openFile(file)">
-        <component :is="getFileIconComponent(file)" class="file-icon" />
-        <span>{{ file.name || file.file_name }}</span>
+      <div  v-if="isLoadingFiles">Loading</div>
+      <div v-else-if="hasFiles">
+        <div
+          v-for="file in visibleFiles"
+          :key="file.id || file.tempId"
+          class="file"
+          @click="openFile(file)">
+          <component :is="getFileIconComponent(file)" class="file-icon" />
+          <span>{{ file.file_name }}</span>
+        </div>
       </div>
+
 
       <!-- SHOW MORE -->
       <div
@@ -210,7 +215,7 @@ async function openFile(file) {
     <div class="actions">
       <button
         class="btn edit"
-        @click="$emit('edit', task)"
+        @click="$emit('edit', task.id)"
       >
         Edit
       </button>

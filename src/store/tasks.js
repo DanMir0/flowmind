@@ -26,18 +26,27 @@ export const useTasksStore = defineStore('tasks', {
 
         const { data, error } = await supabase
           .from('tasks')
-          .select(`*,
-          task_files(id,file_name,file_path)`)
+          .select(`*, task_files(*)`)
           .eq('user_id', auth.user.id)
           .eq('archived', false)
           .order('position', { ascending: true })
 
         if (error) handleSupabaseError(error, 'fetchTasks')
 
-        this.tasks = data.map(task => ({
-          ...task,
-          completed: Boolean(task.completed),
-        }))
+        data.forEach(newTask => {
+          const existing = this.tasks.find(t => t.id === newTask.id)
+
+          if (existing) {
+            Object.assign(existing, newTask)
+          } else {
+            this.tasks.push({
+              ...newTask,
+              task_files: newTask.task_files ?? [],
+              _filesLoaded: true,
+              completed: Boolean(newTask.completed)
+            })
+          }
+        })
       } catch (e) {
         this.error = e.message || 'Failed to load tasks'
       } finally {
@@ -52,6 +61,8 @@ export const useTasksStore = defineStore('tasks', {
       const task = this.tasks.find(t => t.id === taskId)
       if (!task) return
 
+      if (task._filesLoaded) return
+
       const { data, error } = await supabase
         .from('task_files')
         .select('*')
@@ -60,11 +71,12 @@ export const useTasksStore = defineStore('tasks', {
 
       if (error) throw error
 
-      task.task_files = data
+      task.task_files ??= []
+      task.task_files.splice(0, task.task_files.length, ...data)
 
+      task._filesLoaded = true
       return data
     },
-
 
     /* =========================
        ADD TASK
@@ -96,32 +108,22 @@ export const useTasksStore = defineStore('tasks', {
           category: payload.category,
           time: payload.time,
         })
-        .select(`
-          id,
-          title,
-          description,
-          priority,
-          deadline,
-          category,
-          time,
-          created_at,
-          files_count,
-          position
-        `)
+        .select('*')
         .single()
 
       if (error) handleSupabaseError(error, 'addTask')
 
-      const newTask = {
+      const storeTask = {
         ...task,
         task_files: []
       }
 
-      this.tasks.unshift(newTask)
+      this.tasks.unshift(storeTask)
 
-      /* upload files (if any) */
+      /* только upload */
       if (payload.newFiles?.length) {
-        await this.uploadMultipleFiles(newTask, payload.newFiles)
+        await this.uploadMultipleFiles(storeTask, payload.newFiles)
+        await this.syncTaskFiles(storeTask.id)
       }
 
     },
@@ -130,102 +132,93 @@ export const useTasksStore = defineStore('tasks', {
       const auth = useAuthStore()
       if (!auth.user) throw new Error('Not authenticated')
 
-      const task = this.tasks.find(t => t.id === taskId)
-
-      /* update task fields */
-      await supabase
+      /* 1. update task */
+      const { error: updateError } = await supabase
         .from('tasks')
         .update({
           title: payload.title,
           description: payload.description,
           priority: payload.priority,
           deadline: payload.deadline,
-          updated_at: new Date(),
           category: payload.category,
-          time: payload.time
+          time: payload.time,
+          updated_at: new Date().toISOString()
         })
         .eq('id', taskId)
         .eq('user_id', auth.user.id)
 
-      /* delete files */
-      for (const file of payload.filesToDelete || []) {
-        await this.deleteFile(file)
+      if (updateError) throw updateError
+
+      /* 2. delete files */
+      if (payload.filesToDelete?.length) {
+        for (const file of payload.filesToDelete) {
+          await supabase.storage
+            .from('task-files')
+            .remove([file.file_path])
+
+          await supabase
+            .from('task_files')
+            .delete()
+            .eq('id', file.id)
+        }
       }
 
-      /* upload new files */
-      await this.uploadMultipleFiles(task, payload.newFiles || [])
+      /* 3. upload files */
+      if (payload.newFiles?.length) {
+        for (const file of payload.newFiles) {
+          const ext = file.name.split('.').pop()
+          const filePath = `${auth.user.id}/${taskId}/${Date.now()}-${crypto.randomUUID()}.${ext}`
 
-      /* ПЕРЕЗАГРУЖАЕМ ФАЙЛЫ ИЗ БД */
-      const { data: files, error: filesError } = await supabase
-        .from('task_files')
-        .select('*')
-        .eq('task_id', taskId)
-        .order('uploaded_at', { ascending: true })
+          const { error: uploadError } = await supabase.storage
+            .from('task-files')
+            .upload(filePath, file)
 
-      if (filesError) throw filesError
+          if (uploadError) throw uploadError
 
-      /* ПЕРЕЗАГРУЖАЕМ ЗАДАЧУ */
-      const { data: freshTask, error } = await supabase
-        .from('tasks')
-        .select(`
-      id,
-      title,
-      description,
-      priority,
-      deadline,
-      category,
-      time,
-      created_at,
-      files_count,
-      position
-    `)
-        .eq('id', taskId)
-        .single()
+          const { error: insertError } = await supabase
+            .from('task_files')
+            .insert({
+              task_id: taskId,
+              user_id: auth.user.id,
+              file_name: file.name,
+              file_path: filePath,
+              file_type: file.type,
+              file_size: file.size
+            })
 
-      if (error) throw error
-
-      /* 🔥 АТОМАРНАЯ ЗАМЕНА */
-      const index = this.tasks.findIndex(t => t.id === taskId)
-
-      this.tasks[index] = {
-        ...freshTask,
-        task_files: files
+          if (insertError) throw insertError
+        }
       }
+      await this.refreshTaskFiles(taskId)
     },
 
     async uploadMultipleFiles(task, files) {
       if (!files?.length) return
 
-      await Promise.all(files.map(file => this.uploadSingleFile(task, file)))
+      // task.task_files ??= []
 
-      await this.loadTaskFiles(task.id)
+      for (const file of files) {
+        await this.uploadSingleFile(task, file)
+      }
+      // await Promise.all(files.map(file => this.uploadSingleFile(task, file)))
     },
 
     async uploadSingleFile(task, file) {
       const auth = useAuthStore()
-
-      const tempId = crypto.randomUUID()
-
-      // optimistic UI
-      task.task_files.push({
-        id: tempId,
-        file_name: file.name,
-        uploading: true
-      })
 
       const ext = file.name.split('.').pop()
       const safeName = `${Date.now()}-${crypto.randomUUID()}.${ext}`
       const filePath = `${auth.user.id}/${task.id}/${safeName}`
 
       try {
-        // 1. upload в storage
+        // 2. upload storage
         const { error: uploadError } = await supabase.storage
           .from('task-files')
           .upload(filePath, file)
 
         if (uploadError) throw uploadError
 
-        // 2. insert в БД
+        // 3. insert DB
         const { data, error } = await supabase
           .from('task_files')
           .insert({
@@ -241,20 +234,34 @@ export const useTasksStore = defineStore('tasks', {
 
         if (error) throw error
 
-        // 3. replace temp
-        const idx = task.task_files.findIndex(f => f.id === tempId)
-        if (idx !== -1) {
-          task.task_files[idx] = data
-        }
+        // 4. replace temp with real id
+        // const idx = task.task_files.findIndex(f => f.id === tempId)
+        //
+        // if (idx !== -1) {
+        //   task.task_files.splice(idx, 1, data)
+        // }
 
       } catch (e) {
-        // rollback
-        task.task_files = task.task_files.filter(f => f.id !== tempId)
+        console.error('UPLOAD FAILED:', e)
+
+        // task.task_files = task.task_files.filter(f => f.id !== tempId)
+
         throw e
       }
     },
 
     async deleteFile(file) {
+      const task = this.tasks.find(t => t.id === file.task_id)
+      if (!task) return
+
+      task.task_files = task.task_files ?? []
+
+      const idx = task.task_files.findIndex(f => f.id === file.id)
+      if (idx !== -1)
+      {
+        task.task_files.splice(idx, 1)
+      }
+
       await supabase.storage
         .from('task-files')
         .remove([file.file_path])
@@ -269,31 +276,38 @@ export const useTasksStore = defineStore('tasks', {
        DELETE TASK
     ========================= */
     async deleteTask(taskId) {
-      const task = this.tasks.find(t => t.id === taskId)
-      if (!task) return
-
-
-      const { data: files, error } = await supabase
-        .from('task_files')
-        .select('id, file_path')
-        .eq('task_id', taskId)
-
-      if (error) throw error
-
-      // удаляем файлы
-      if (files?.length) {
-        await Promise.all(files.map(f => this.deleteFile(f)))
-      }
-
-      // удаляем задачу
-      const { error: deleteError } = await supabase
+      const {error} = await supabase
         .from('tasks')
         .delete()
         .eq('id', taskId)
 
-      if (deleteError) throw deleteError
-
+      if (error) throw error
       this.tasks = this.tasks.filter(t => t.id !== taskId)
+      // const task = this.tasks.find(t => t.id === taskId)
+      // if (!task) return
+      //
+      //
+      // const { data: files, error } = await supabase
+      //   .from('task_files')
+      //   .select('id, file_path')
+      //   .eq('task_id', taskId)
+      //
+      // if (error) throw error
+      //
+      // // удаляем файлы
+      // if (files?.length) {
+      //   await Promise.all(files.map(f => this.deleteFile(f)))
+      // }
+      //
+      // // удаляем задачу
+      // const { error: deleteError } = await supabase
+      //   .from('tasks')
+      //   .delete()
+      //   .eq('id', taskId)
+      //
+      // if (deleteError) throw deleteError
+      //
+      // this.tasks = this.tasks.filter(t => t.id !== taskId)
     },
 
     async toggleTaskCompleted(taskId) {
@@ -465,6 +479,34 @@ export const useTasksStore = defineStore('tasks', {
       }
     },
 
+    async fetchTaskFiles(taskId) {
+      const { data, error } = await supabase
+        .from('task_files')
+        .select('*')
+        .eq('task_id', taskId)
+
+      if (error) throw error
+
+      const task = this.tasks.find(t => t.id === taskId)
+      if (task) {
+        task.task_files = data
+      }
+    },
+
+    async refreshTaskFiles(taskId) {
+      const { data, error } = await supabase
+        .from('task_files')
+        .select('*')
+        .eq('task_id', taskId)
+
+      if (error) throw error
+
+      const task = this.tasks.find(t => t.id === taskId)
+      if (task) {
+        task.task_files = data
+      }
+    },
+
     handleRealtime(payload) {
       const { eventType, new: newRow, old: oldRow } = payload
 
@@ -523,6 +565,94 @@ export const useTasksStore = defineStore('tasks', {
     .subscribe()
 
       this.channel = channel
-    }
+    },
+
+    initRealtime() {
+
+      supabase
+        .channel('task-files-realtime')
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'task_files'
+          },
+          (payload) => {
+            console.log('REALTIME:', payload)
+
+            const { eventType, new: newRow, old: oldRow } = payload
+
+            if (eventType === 'INSERT') {
+              this.onFileInsert(newRow)
+            }
+
+            if (eventType === 'DELETE') {
+              this.onFileDelete(oldRow)
+            }
+          }
+        )
+        .subscribe()
+
+      supabase
+        .channel('tasks-realtime')
+        .on(
+          'postgres_changes',
+          {
+            event: 'UPDATE',
+            schema: 'public',
+            table: 'tasks'
+          },
+          (payload) => {
+            this.onTaskUpdate(payload.new)
+          }
+        )
+        .subscribe()
+    },
+
+    onFileInsert(file) {
+      const task = this.tasks.find(t => t.id === file.task_id)
+      if (!task) return
+
+      task.task_files = task.task_files ?? []
+
+      const exists = task.task_files.some(f => f.id === file.id)
+      if (!exists) {
+        task.task_files.push(file)
+      }
+    },
+
+    onFileDelete(file) {
+      const task = this.tasks.find(t => t.id === file.task_id)
+      if (!task) return
+
+      task.task_files = task.task_files ?? []
+
+      task.task_files = task.task_files.filter(f => f.id !== file.id)
+    },
+
+    onTaskUpdate(updatedTask) {
+      const index = this.tasks.findIndex(t => t.id === updatedTask.id)
+
+      if (index !== -1) {
+        this.tasks[index] = {
+          ...this.tasks[index],
+          ...updatedTask,
+          completed: Boolean(updatedTask.completed)
+        }
+      }
+    },
+
+    async syncTaskFiles(taskId) {
+      const { data } = await supabase
+        .from('task_files')
+        .select('*')
+        .eq('task_id', taskId)
+
+      const task = this.tasks.find(t => t.id === taskId)
+      if (task) {
+        task.task_files = data
+      }
+    },
   }
 })

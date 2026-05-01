@@ -12,8 +12,8 @@ const tasksStore = useTasksStore()
 const { modalRef } = useModal(emit)
 
 const props = defineProps({
-  task: {
-    type: Object,
+  taskId: {
+    type: String,
     required: true
   },
   onSave: {
@@ -21,10 +21,9 @@ const props = defineProps({
   }
 })
 
-const task = computed(() =>
-  tasksStore.tasks.find(t => t.id === props.task.id)
-)
+const task = computed(() => tasksStore.tasks.find(t => t.id === props.taskId))
 
+console.log('IS SAME OBJECT:', props.taskId === tasksStore.tasks.find(t => t.id === props.taskId))
 const categories = [
   'Work', 'Personal', 'Study', 'Workout', 'Appointments',
   'Ideas', 'Health', 'Home', 'Social', 'Travel', 'Learning',
@@ -51,7 +50,7 @@ const saving = ref(false)
 const filesLoading = ref(false)
 
 /* реактивно берём файлы ИЗ STORE */
-const existingFiles = computed(() => task.value?.task_files || [])
+const existingFiles = computed(() => task.value?.task_files ?? [])
 
 const isValidTimeRange = computed(() => {
   if (!startTime.value || !endTime.value) return true
@@ -64,22 +63,26 @@ watch(startTime, (val) => {
     endTime.value = `${nextHour}:${m}`
   }
 })
+onMounted(() => {
+  console.log(task.value)
+  console.log(tasksStore.tasks)
+})
 /* sync task → form */
 watch(
   task,
-  (task) => {
-    if (!task) return
+  (t) => {
+    if (!t) return
 
-    title.value = task.title
-    description.value = task.description || ''
-    priority.value = task.priority
-    deadline.value = task.deadline
-      ? task.deadline.slice(0, 10)
+    title.value = t.title
+    description.value = t.description ?? ''
+    priority.value = t.priority
+    deadline.value = t.deadline
+      ? t.deadline.slice(0, 10)
       : null
-    category.value = task.category || ''
+    category.value = t.category ?? ''
 
-    if (task.time && task.time.includes('-')) {
-      const [start, end] = task.time.split('-')
+    if (t.time && t.time.includes('-')) {
+      const [start, end] = t.time.split('-')
       startTime.value = start
       endTime.value = end
     } else {
@@ -92,19 +95,6 @@ watch(
   },
   { immediate: true }
 )
-
-/* lazy-load файлов */
-onMounted(async () => {
-
-  filesLoading.value = true
-
-  try {
-    await tasksStore.loadTaskFiles(props.task.id)
-  } finally {
-    filesLoading.value = false
-  }
-})
-
 async function onFileChange(e) {
   const selectedFiles = Array.from(e.target.files)
 
@@ -169,7 +159,7 @@ async function save() {
 
   try {
     await props.onSave({
-      id: props.task.id,
+      id: task.value.id,
       title: title.value,
       description: description.value,
       priority: priority.value,

@@ -11,6 +11,7 @@ onMounted(async () => {
   await auth.init()
   await auth.fetchProfile()
   await taskStore.initTasks()
+  await taskStore.initRealtime()
 })
 
 </script>
