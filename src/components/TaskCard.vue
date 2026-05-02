@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { supabase } from '@/services/supabase.js'
 import ExcelIcon from '@/components/icons/ExcelIcon.vue'
 import WordIcon from '@/components/icons/WordIcon.vue'
@@ -33,9 +33,6 @@ const hasFiles = computed(() => {
  return  files.value.length > 0
 })
 
-const isLoadingFiles = computed(() => {
-  return props.task.files_count > 0 && files.value.length === 0
-})
 // helper
 function getFileIconComponent(file) {
   const name = file.name || file.file_name || ''
@@ -48,6 +45,14 @@ function getFileIconComponent(file) {
   return FileIcon
 }
 defineEmits(['edit', 'delete', 'toggle-complete'])
+
+watch(
+  () => props.task.task_files,
+  (val) => {
+    console.log('FILES CHANGED:', val)
+  },
+  { deep: true }
+)
 
 /**
  * Формат даты (March 18)
@@ -122,6 +127,7 @@ async function openFile(file) {
   window.open(data.signedUrl, '_blank')
 }
 
+
 </script>
 <template>
   <div
@@ -163,11 +169,14 @@ async function openFile(file) {
     </p>
 
     <!-- FILES -->
-    <div
-      class="attachments">
+    <div class="attachments">
       <div class="attachments-title">Attachments:</div>
 
-      <div  v-if="isLoadingFiles">Loading</div>
+      <div v-if="task.files_loading">
+        <div class="file-skeleton" v-for="i in 2" :key="i"></div>
+      </div>
+
+<!--      <div class="loading-files" v-if="isLoadingFiles">Loading</div>-->
       <div v-else-if="hasFiles">
         <div
           v-for="file in visibleFiles"
@@ -424,8 +433,28 @@ async function openFile(file) {
 .btn.delete:hover {
   background: #fecaca;
 }
+
 .font-bold {
   color: #111827;
   font-weight: 500;
+}
+
+.file-skeleton {
+  height: 28px;
+  border-radius: 6px;
+  margin-bottom: 6px;
+  background: linear-gradient(
+    90deg,
+    #eee 25%,
+    #ddd 37%,
+    #eee 63%
+  );
+  background-size: 400% 100%;
+  animation: shimmer 1.2s infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: 100% 0 }
+  100% { background-position: -100% 0 }
 }
 </style>

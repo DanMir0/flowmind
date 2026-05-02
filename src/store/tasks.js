@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { supabase } from '@/services/supabase'
 import { useAuthStore } from './auth'
 import { handleSupabaseError } from '@/utils/appError.js'
+import { data } from 'autoprefixer'
 
 const MAX_ACTIVE_TASKS = 500;
 export const useTasksStore = defineStore('tasks', {
@@ -115,7 +116,9 @@ export const useTasksStore = defineStore('tasks', {
 
       const storeTask = {
         ...task,
-        task_files: []
+        task_files: [],
+        files_loading: true,
+        status: 'creating'
       }
 
       this.tasks.unshift(storeTask)
@@ -123,7 +126,14 @@ export const useTasksStore = defineStore('tasks', {
       /* только upload */
       if (payload.newFiles?.length) {
         await this.uploadMultipleFiles(storeTask, payload.newFiles)
-        await this.syncTaskFiles(storeTask.id)
+      }
+
+      await this.syncTaskFiles(task.id)
+
+      const idx = this.tasks.findIndex(t => t.id === task.id)
+      if (idx !== -1) {
+        this.tasks[idx].files_loading = false
+        this.tasks[idx].status = 'ready'
       }
 
     },
@@ -234,17 +244,9 @@ export const useTasksStore = defineStore('tasks', {
 
         if (error) throw error
 
-        // 4. replace temp with real id
-        // const idx = task.task_files.findIndex(f => f.id === tempId)
-        //
-        // if (idx !== -1) {
-        //   task.task_files.splice(idx, 1, data)
-        // }
 
       } catch (e) {
         console.error('UPLOAD FAILED:', e)
-
-        // task.task_files = task.task_files.filter(f => f.id !== tempId)
 
         throw e
       }
@@ -649,10 +651,17 @@ export const useTasksStore = defineStore('tasks', {
         .select('*')
         .eq('task_id', taskId)
 
-      const task = this.tasks.find(t => t.id === taskId)
-      if (task) {
-        task.task_files = data
+      const idx = this.tasks.findIndex(t => t.id === taskId)
+
+      if (idx !== -1) {
+        this.tasks[idx].task_files = data
+        this.tasks[idx].files_loading = false
+        this.tasks[idx].status = 'ready'
       }
+      // const task = this.tasks.find(t => t.id === taskId)
+      // if (task) {
+      //   task.task_files = data
+      // }
     },
   }
 })
