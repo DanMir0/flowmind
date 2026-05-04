@@ -34,10 +34,10 @@ const sortedTasks = computed(() => {
 
   switch (sortKey.value) {
     case 'created_asc':
-      return list.sort((a, b) => a.id - b.id)
+      return list.sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
 
     case 'created_desc':
-      return list.sort((a, b) => b.id - a.id)
+      return list.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
 
     case 'priority_asc':
       return list.sort((a, b) => b.priority - a.priority)
@@ -56,10 +56,10 @@ const sortedTasks = computed(() => {
       )
 
     case 'manual':
-      return list.sort((a, b) => a.position - b.position)
+      return [...tasks.value].sort((a, b) => a.position - b.position)
 
     default:
-      return list
+      return [...tasks.value]
   }
 })
 
@@ -302,22 +302,25 @@ watch(taskToEdit, (val) => {
       }"
       @showCompleted="statusFilter = 'completed'" />
 
-    <TransitionGroup v-else  name="list" tag="div" class="tasks-grid">
-      <TaskCard
-        v-for="task in visibleTasks"
-        :key="task.id"
-        :task="task"
-        :class="{ dragging: draggingId === task.id }"
-        draggable="true"
-        @dragstart="onDragStart(task, $event)"
-        @dragend="onDragEnd"
-        @dragover.prevent
-        @drop="onDrop(task)"
-        @delete="requestDelete"
-        @edit="requestEdit"
-        @toggle-complete="toggleComplete"
-      />
-    </TransitionGroup>
+    <div  v-else>
+      <TransitionGroup  name="list" tag="div" class="tasks-grid">
+        <TaskCard
+          v-for="task in visibleTasks"
+          :key="task._key"
+          :task="task"
+          :class="{ dragging: draggingId === task.id }"
+          draggable="true"
+          @dragstart="onDragStart(task, $event)"
+          @dragend="onDragEnd"
+          @dragover.prevent
+          @drop="onDrop(task)"
+          @delete="requestDelete"
+          @edit="requestEdit"
+          @toggle-complete="toggleComplete"
+        />
+      </TransitionGroup>
+    </div>
+
 
     <Teleport to="body">
       <Transition name="modal">
@@ -378,7 +381,7 @@ watch(taskToEdit, (val) => {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: 20px;
-  align-items: stretch;
+  align-items: start;
 }
 
 .controls {
@@ -486,16 +489,12 @@ watch(taskToEdit, (val) => {
   padding: 12px 26px;
   border: none;
   border-radius: 14px;
-
   background: linear-gradient(135deg, #7b5cff, #5b4dff);
   color: white;
-
   font-size: 15px;
   font-weight: 600;
-
   cursor: pointer;
   transition: all 0.2s ease;
-
   box-shadow: 0 6px 18px rgba(91,77,255,0.35);
 }
 
@@ -591,18 +590,16 @@ watch(taskToEdit, (val) => {
 </style>
 <style>
 .list-move {
-  transition: transform 0.25s ease;
+  transition: none !important;
 }
-
 .list-enter-active,
 .list-leave-active {
-  transition: all 0.25s ease;
+  transition: all 0.2s ease;
 }
 
 .list-enter-from,
 .list-leave-to {
   opacity: 0;
-  transform: scale(0.95);
 }
 
 </style>

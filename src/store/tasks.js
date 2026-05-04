@@ -12,6 +12,7 @@ export const useTasksStore = defineStore('tasks', {
     loading: false,
     error: null,
     isInitialized: false,
+    creatingTaskIds: new Set(),
   }),
 
   actions: {
@@ -82,62 +83,144 @@ export const useTasksStore = defineStore('tasks', {
     /* =========================
        ADD TASK
     ========================= */
+    // async addTask(payload) {
+    //   const auth = useAuthStore()
+    //   if (!auth.user) throw new Error('Not authenticated')
+    //
+    //   if (this.tasks.length >= MAX_ACTIVE_TASKS) {
+    //     throw new Error('Active tasks limit reached (500). Archive old tasks.')
+    //   }
+    //
+    //   if (payload.deadline) {
+    //     const d = new Date(payload.deadline)
+    //     if (isNaN(d.getTime())) {
+    //       throw new Error('Invalid date')
+    //     }
+    //   }
+    //
+    //   const { data: task, error } = await supabase
+    //     .from('tasks')
+    //     .insert({
+    //       title: payload.title,
+    //       description: payload.description,
+    //       deadline: payload.deadline,
+    //       priority: payload.priority,
+    //       user_id: auth.user.id,
+    //       position: Date.now(),
+    //       category: payload.category,
+    //       time: payload.time,
+    //     })
+    //     .select('*')
+    //     .single()
+    //
+    //   if (error) handleSupabaseError(error, 'addTask')
+    //
+    //   const storeTask = {
+    //     ...task,
+    //     task_files: [],
+    //     files_loading: true,
+    //     status: 'creating'
+    //   }
+    //
+    //   this.tasks.unshift(storeTask)
+    //
+    //   /* только upload */
+    //   if (payload.newFiles?.length) {
+    //     await this.uploadMultipleFiles(storeTask, payload.newFiles)
+    //   }
+    //
+    //   // await this.syncTaskFiles(task.id)
+    //
+    //   // const idx = this.tasks.findIndex(t => t.id === task.id)
+    //   // if (idx !== -1) {
+    //   //   this.tasks[idx].files_loading = false
+    //   //   this.tasks[idx].status = 'ready'
+    //   // }
+    //
+    //   storeTask.files_loading = false
+    //
+    // },
     async addTask(payload) {
       const auth = useAuthStore()
       if (!auth.user) throw new Error('Not authenticated')
 
-      if (this.tasks.length >= MAX_ACTIVE_TASKS) {
-        throw new Error('Active tasks limit reached (500). Archive old tasks.')
-      }
+      // 1. создаём временную skeleton-карточку
+      const tempId = 'temp-' + crypto.randomUUID()
 
-      if (payload.deadline) {
-        const d = new Date(payload.deadline)
-        if (isNaN(d.getTime())) {
-          throw new Error('Invalid date')
-        }
-      }
+      const position = Date.now()
 
-      const { data: task, error } = await supabase
-        .from('tasks')
-        .insert({
-          title: payload.title,
-          description: payload.description,
-          deadline: payload.deadline,
-          priority: payload.priority,
-          user_id: auth.user.id,
-          position: Date.now(),
-          category: payload.category,
-          time: payload.time,
-        })
-        .select('*')
-        .single()
-
-      if (error) handleSupabaseError(error, 'addTask')
-
-      const storeTask = {
-        ...task,
+      const tempTask = {
+        id: tempId,
+        _key: tempId,
+        title: payload.title,
+        description: payload.description,
+        deadline: payload.deadline,
+        priority: payload.priority,
+        category: payload.category,
+        time: payload.time,
+        created_at: new Date().toISOString(),
+        position: position,
         task_files: [],
-        files_loading: true,
-        status: 'creating'
+        _skeleton: true
       }
 
-      this.tasks.unshift(storeTask)
+      this.tasks.unshift(tempTask)
 
-      /* только upload */
-      if (payload.newFiles?.length) {
-        await this.uploadMultipleFiles(storeTask, payload.newFiles)
+      try {
+        // 2. создаём реальную задачу
+        const { data: task, error } = await supabase
+          .from('tasks')
+          .insert({
+            title: payload.title,
+            description: payload.description,
+            deadline: payload.deadline,
+            priority: payload.priority,
+            user_id: auth.user.id,
+            position: position,
+            category: payload.category,
+            time: payload.time,
+          })
+          .select('*')
+          .single()
+
+        if (error) throw error
+
+        this.creatingTaskIds.add(task.id)
+
+        // 3. загружаем файлы (если есть)
+        if (payload.newFiles?.length) {
+          await this.uploadMultipleFiles(task, payload.newFiles)
+        }
+
+
+        // 4. получаем файлы (один раз, без realtime гонок)
+        const { data: files } = await supabase
+          .from('task_files')
+          .select('*')
+          .eq('task_id', task.id)
+
+        // 5. заменяем skeleton на реальную задачу
+        const idx = this.tasks.findIndex(t => t.id === tempId)
+        const tempPosition = tempTask.position
+        Object.assign(this.tasks[idx], {
+          ...task,
+          _key: tempId,
+          position: tempPosition,
+          task_files: files || [],
+          _skeleton: false
+        })
+
+        await this.syncTaskFiles(task.id)
+        this.creatingTaskIds.delete(task.id)
+      } catch (e) {
+        console.error('ADD TASK FAILED:', e)
+
+        // удаляем skeleton если ошибка
+        this.tasks = this.tasks.filter(t => t.id !== tempId)
+
+        throw e
       }
-
-      await this.syncTaskFiles(task.id)
-
-      const idx = this.tasks.findIndex(t => t.id === task.id)
-      if (idx !== -1) {
-        this.tasks[idx].files_loading = false
-        this.tasks[idx].status = 'ready'
-      }
-
     },
-
     async updateTask(taskId, payload) {
       const auth = useAuthStore()
       if (!auth.user) throw new Error('Not authenticated')
@@ -220,37 +303,65 @@ export const useTasksStore = defineStore('tasks', {
       const safeName = `${Date.now()}-${crypto.randomUUID()}.${ext}`
       const filePath = `${auth.user.id}/${task.id}/${safeName}`
 
-      try {
-        // 2. upload storage
-        const { error: uploadError } = await supabase.storage
-          .from('task-files')
-          .upload(filePath, file)
+      // 1. upload storage
+      const { error: uploadError } = await supabase.storage
+        .from('task-files')
+        .upload(filePath, file)
 
-        if (uploadError) throw uploadError
+      if (uploadError) throw uploadError
 
-        // 3. insert DB
-        const { data, error } = await supabase
-          .from('task_files')
-          .insert({
-            task_id: task.id,
-            user_id: auth.user.id,
-            file_name: file.name,
-            file_path: filePath,
-            file_type: file.type,
-            file_size: file.size
-          })
-          .select()
-          .single()
+      // 2. insert DB
+      const { error } = await supabase
+        .from('task_files')
+        .insert({
+          task_id: task.id,
+          user_id: auth.user.id,
+          file_name: file.name,
+          file_path: filePath,
+          file_type: file.type,
+          file_size: file.size
+        })
 
-        if (error) throw error
-
-
-      } catch (e) {
-        console.error('UPLOAD FAILED:', e)
-
-        throw e
-      }
+      if (error) throw error
     },
+    // async uploadSingleFile(task, file) {
+    //   const auth = useAuthStore()
+    //
+    //   const ext = file.name.split('.').pop()
+    //   const safeName = `${Date.now()}-${crypto.randomUUID()}.${ext}`
+    //   const filePath = `${auth.user.id}/${task.id}/${safeName}`
+    //
+    //   try {
+    //     // 2. upload storage
+    //     const { error: uploadError } = await supabase.storage
+    //       .from('task-files')
+    //       .upload(filePath, file)
+    //
+    //     if (uploadError) throw uploadError
+    //
+    //     // 3. insert DB
+    //     const { data, error } = await supabase
+    //       .from('task_files')
+    //       .insert({
+    //         task_id: task.id,
+    //         user_id: auth.user.id,
+    //         file_name: file.name,
+    //         file_path: filePath,
+    //         file_type: file.type,
+    //         file_size: file.size
+    //       })
+    //       .select()
+    //       .single()
+    //
+    //     if (error) throw error
+    //
+    //
+    //   } catch (e) {
+    //     console.error('UPLOAD FAILED:', e)
+    //
+    //     throw e
+    //   }
+    // },
 
     async deleteFile(file) {
       const task = this.tasks.find(t => t.id === file.task_id)
@@ -512,40 +623,113 @@ export const useTasksStore = defineStore('tasks', {
     handleRealtime(payload) {
       const { eventType, new: newRow, old: oldRow } = payload
 
-      if (eventType === 'UPDATE') {
-        this.handleUpdate(newRow)
-      }
-
       if (eventType === 'INSERT') {
+
+        // ❗️ ГЛАВНОЕ — игнорируем свои задачи
+        if (this.creatingTaskIds.has(newRow.id)) {
+          return
+        }
+
         const exists = this.tasks.some(t => t.id === newRow.id)
         if (!exists) {
-          this.tasks.unshift(newRow)
+          this.tasks.unshift({
+            ...newRow,
+            task_files: [],
+          })
         }
+      }
+
+      if (eventType === 'UPDATE') {
+        this.handleUpdate(newRow)
       }
 
       if (eventType === 'DELETE') {
         if (!oldRow) return
         this.tasks = this.tasks.filter(t => t.id !== oldRow.id)
-        this.archivedTasks = this.archivedTasks.filter(t => t.id !== oldRow.id)
       }
     },
+    // handleRealtime(payload) {
+    //   const { eventType, new: newRow, old: oldRow } = payload
+    //
+    //   if (eventType === 'UPDATE') {
+    //     this.handleUpdate(newRow)
+    //   }
+    //
+    //   if (eventType === 'INSERT') {
+    //     const exists = this.tasks.some(t => t.id === newRow.id)
+    //     if (!exists) {
+    //       this.tasks.unshift(newRow)
+    //     }
+    //   }
+    //
+    //   if (eventType === 'DELETE') {
+    //     if (!oldRow) return
+    //     this.tasks = this.tasks.filter(t => t.id !== oldRow.id)
+    //     this.archivedTasks = this.archivedTasks.filter(t => t.id !== oldRow.id)
+    //   }
+    // },
 
+    // handleUpdate(task) {
+    //   const isArchived = task.archived
+    //
+    //   // удалить из обычных задач
+    //   this.tasks = this.tasks.filter(t => t.id !== task.id)
+    //
+    //   // удалить из архива
+    //   this.archivedTasks = this.archivedTasks.filter(t => t.id !== task.id)
+    //
+    //   if (isArchived) {
+    //     this.archivedTasks.unshift(task)
+    //   } else {
+    //     this.tasks.unshift(task)
+    //   }
+    // },
     handleUpdate(task) {
+      if (this.creatingTaskIds.has(task.id)) return
       const isArchived = task.archived
 
-      // удалить из обычных задач
-      this.tasks = this.tasks.filter(t => t.id !== task.id)
-
-      // удалить из архива
-      this.archivedTasks = this.archivedTasks.filter(t => t.id !== task.id)
+      // удалить из архива/тасков (но БЕЗ потери позиции)
+      const index = this.tasks.findIndex(t => t.id === task.id)
+      const archivedIndex = this.archivedTasks.findIndex(t => t.id === task.id)
 
       if (isArchived) {
-        this.archivedTasks.unshift(task)
+        // если ушла в архив
+        if (index !== -1) {
+          this.tasks.splice(index, 1)
+        }
+
+        if (archivedIndex === -1) {
+          this.archivedTasks.unshift({
+            ...task,
+            task_files: []
+          })
+        }
       } else {
-        this.tasks.unshift(task)
+        // обычная задача
+
+        if (archivedIndex !== -1) {
+          this.archivedTasks.splice(archivedIndex, 1)
+        }
+
+        if (index !== -1) {
+          // ✅ ОБНОВЛЯЕМ БЕЗ ПЕРЕСТАНОВКИ
+          this.tasks[index] = {
+            ...this.tasks[index],
+            ...task
+          }
+        } else {
+          const hasSkeleton = this.tasks.some(t => t._skeleton)
+
+          if (hasSkeleton) return
+
+          // если задачи ещё нет
+          this.tasks.push({
+            ...task,
+            task_files: []
+          })
+        }
       }
     },
-
     setupRealtime() {
       const auth = useAuthStore()
       if (!auth.user) return
@@ -613,6 +797,7 @@ export const useTasksStore = defineStore('tasks', {
     },
 
     onFileInsert(file) {
+      console.log('REALTINE FILE', file)
       const task = this.tasks.find(t => t.id === file.task_id)
       if (!task) return
 
@@ -634,15 +819,23 @@ export const useTasksStore = defineStore('tasks', {
     },
 
     onTaskUpdate(updatedTask) {
-      const index = this.tasks.findIndex(t => t.id === updatedTask.id)
 
-      if (index !== -1) {
-        this.tasks[index] = {
-          ...this.tasks[index],
+        const task = this.tasks.find(t => t.id === updatedTask.id)
+        if (!task) return
+
+        Object.assign(task, {
           ...updatedTask,
           completed: Boolean(updatedTask.completed)
-        }
-      }
+        })
+      // const index = this.tasks.findIndex(t => t.id === updatedTask.id)
+      //
+      // if (index !== -1) {
+      //   this.tasks[index] = {
+      //     ...this.tasks[index],
+      //     ...updatedTask,
+      //     completed: Boolean(updatedTask.completed)
+      //   }
+      // }
     },
 
     async syncTaskFiles(taskId) {

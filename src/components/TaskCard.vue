@@ -27,10 +27,10 @@ const visibleFiles = computed(() => {
 })
 
 const hasMoreFiles = computed(() => {
-  return files.value.length > 2
+  return (files.value?.length || 0) > 2
 })
 const hasFiles = computed(() => {
- return  files.value.length > 0
+ return  (files.value?.length || 0) > 0
 })
 
 // helper
@@ -47,11 +47,11 @@ function getFileIconComponent(file) {
 defineEmits(['edit', 'delete', 'toggle-complete'])
 
 watch(
-  () => props.task.task_files,
-  (val) => {
-    console.log('FILES CHANGED:', val)
+  () => props.task,
+  (t) => {
+    console.log('Task', t)
   },
-  { deep: true }
+  { immediate: true }
 )
 
 /**
@@ -109,8 +109,11 @@ const priorityLabel = computed(() => {
 /**
  * Files (из Supabase)
  */
-const files = computed(() =>
-   props.task.task_files ?? []
+const files = computed(() => {
+  console.log('FILES RENDER', props.task.task_files)
+    return props.task.task_files ?? []
+}
+
 )
 
 async function openFile(file) {
@@ -130,7 +133,25 @@ async function openFile(file) {
 
 </script>
 <template>
+  <div v-if="task._skeleton" class="task-card skeleton">
+    <div class="header">
+      <div class="skeleton-checkbox"></div>
+      <div class="skeleton-title"></div>
+    </div>
+
+    <div class="skeleton-category"></div>
+    <div class="skeleton-text"></div>
+
+    <div class="attachments">
+      <div class="file-skeleton" v-for="i in 2" :key="i"></div>
+    </div>
+
+    <div class="footer">
+      <div class="skeleton-meta"></div>
+    </div>
+  </div>
   <div
+    v-else
     class="task-card"
     :class="[deadlineInfo.state, { completed: task.completed }]"
   >
@@ -273,7 +294,7 @@ async function openFile(file) {
   display: flex;
   flex-direction: column;
   gap: 14px;
-  transition: 0.2s;
+  min-height: 300px;
   height: 100%;
 }
 
@@ -341,6 +362,7 @@ async function openFile(file) {
 .attachments {
   border-top: 1px solid #eee;
   padding-top: 8px;
+  min-height: 80px;
 }
 
 .attachments-title {
