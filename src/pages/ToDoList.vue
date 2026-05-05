@@ -118,13 +118,6 @@ function requestDelete(task) {
   taskToDelete.value = task
 }
 
-// function requestEdit(task) {
-//   taskToEdit.value = null
-//   nextTick(() => {
-//     taskToEdit.value = { ...task }
-//   })
-// }
-
 function requestEdit(taskId) {
   taskToEdit.value = taskId
 }

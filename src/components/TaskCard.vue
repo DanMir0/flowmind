@@ -113,7 +113,6 @@ const files = computed(() => {
   console.log('FILES RENDER', props.task.task_files)
     return props.task.task_files ?? []
 }
-
 )
 
 async function openFile(file) {
@@ -197,7 +196,6 @@ async function openFile(file) {
         <div class="file-skeleton" v-for="i in 2" :key="i"></div>
       </div>
 
-<!--      <div class="loading-files" v-if="isLoadingFiles">Loading</div>-->
       <div v-else-if="hasFiles">
         <div
           v-for="file in visibleFiles"
