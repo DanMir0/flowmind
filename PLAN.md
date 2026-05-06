@@ -90,7 +90,7 @@
 43) Сделать красивый Логин
 44) Сделать красиво Регистрацию
 45) Проверить таблицу архивов
-46) Почистить store/tasks.js и TaskCard.vue, TodoList, EditTaskModal от лишнего кода
+46) Почистить store/tasks.js и TaskCard.vue, TodoList, EditTaskModal от лишнего кода ✔️
 47) роверить работу циатат
 48) ИСПРАВИТь DRAG on DROp
 49) Переделать верстку в Dashboard
