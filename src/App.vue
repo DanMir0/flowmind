@@ -1,8 +1,8 @@
 <script setup>
 import { useAuthStore } from '@/store/auth.js'
-import Header from '@/components/Header.vue'
 import { onMounted } from 'vue'
 import {useTasksStore} from '@/store/tasks.js'
+import MainLayout from '@/components/MainLayout.vue'
 
 const taskStore = useTasksStore()
 const auth = useAuthStore()
@@ -17,8 +17,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <Header></Header>
-  <router-view />
+  <MainLayout/>
   <Toaster position="top-center" theme="dark" :duration="3000"/>
 </template>
 

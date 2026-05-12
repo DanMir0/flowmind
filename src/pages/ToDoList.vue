@@ -170,11 +170,13 @@ watch(taskToEdit, (val) => {
 </script>
 
 <template>
-
   <div class="page">
 
     <div class="header-row">
-      <h2>My Tasks</h2>
+      <div class="header-block-text">
+        <h1 class="header-title">My Task</h1>
+        <p class="header-description">{{ tasks.length }} tasks</p>
+      </div>
 
       <div class="controls">
 
@@ -345,15 +347,31 @@ watch(taskToEdit, (val) => {
 
 <style scoped>
 .page {
-  padding: 40px;
+  width: 100%;
+  padding: 32px 24px 40px;
 }
 
 .header-row {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 30px;
-  padding: 0 20px;
+  align-items: flex-start;
+  gap: 24px;
+  margin-bottom: 28px;
+}
+
+.header-block-text {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.header-title {
+  font-size: 26px;
+}
+
+.header-description {
+  color: #6b7280;
+  font-size: 18px;
 }
 
 .add-btn {
@@ -372,24 +390,26 @@ watch(taskToEdit, (val) => {
 
 .tasks-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 22px;
   align-items: start;
 }
 
 .controls {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 14px;
+  flex-wrap: wrap;
 }
 
 /* группа фильтров */
 .filters-group {
   display: flex;
+  align-items: center;
   gap: 8px;
-  padding: 4px;
-  background: #fafafa;
-  border-radius: 24px;
+  padding: 6px;
+  background: white;
+  border-radius: 14px;
   border: 1px solid #eee;
 }
 
@@ -414,13 +434,13 @@ watch(taskToEdit, (val) => {
 }
 
 .sort-select {
-  padding: 10px 14px;
+  height: 42px;
+  padding: 0 14px;
   border-radius: 16px;
-  border: 1px solid #e0e0e0;
-  font-weight: 500;
+  border: 1px solid #e5e7eb;
   background: white;
-  cursor: pointer;
 }
+
 .error-wrapper {
   display: flex;
   justify-content: center;

@@ -285,15 +285,19 @@ async function openFile(file) {
 }
 
 .task-card {
-  background: white;
-  border-radius: 20px;
-  padding: 20px;
-  border: 1px solid #eee;
+  background: #fff;
+  border-radius: 18px;
+  padding: 18px;
+  border: 1px solid #f1f1f1;
+
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  min-height: 300px;
-  height: 100%;
+  gap: 12px;
+
+  transition:
+    box-shadow 0.2s ease,
+    transform 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .task-card:hover {
@@ -315,9 +319,11 @@ async function openFile(file) {
 }
 
 .title {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 600;
+  line-height: 1.35;
   margin: 0;
+  color: #111827;
 }
 
 /* BADGE */
@@ -358,9 +364,8 @@ async function openFile(file) {
 
 /* ATTACHMENTS */
 .attachments {
-  border-top: 1px solid #eee;
+  border-top: 1px solid #f3f4f6;
   padding-top: 8px;
-  min-height: 80px;
 }
 
 .attachments-title {
@@ -384,7 +389,7 @@ async function openFile(file) {
 
 /* FOOTER */
 .footer {
-  border-top: 1px solid #eee;
+  border-top: 1px solid #f5f5f5;
   padding-top: 10px;
 }
 
@@ -423,16 +428,17 @@ async function openFile(file) {
 .actions {
   display: flex;
   gap: 10px;
-  margin-top: auto;
+  margin-top: 6px;
 }
 
 .btn {
   flex: 1;
   border: none;
-  padding: 8px;
-  border-radius: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
   cursor: pointer;
   font-weight: 600;
+  font-size: 14px;
   transition: 0.2s;
 }
 
