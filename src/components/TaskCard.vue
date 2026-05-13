@@ -391,6 +391,7 @@ async function openFile(file) {
 .footer {
   border-top: 1px solid #f5f5f5;
   padding-top: 10px;
+  margin-top: auto;
 }
 
 .meta {
