@@ -183,6 +183,18 @@ export const useTasksStore = defineStore('tasks', {
         .eq('user_id', auth.user.id)
 
       if (updateError) throw updateError
+      const task = this.tasks.find(t => t.id === taskId)
+      if (task) {
+        Object.assign(task, {
+          title: payload.title,
+          description: payload.description,
+          priority: payload.payload,
+          deadline: payload.deadline,
+          category: payload.category,
+          time: payload.time,
+          updated_at: new Date().toISOString()
+        })
+      }
 
       /* 2. delete files */
       if (payload.filesToDelete?.length) {
