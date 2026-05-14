@@ -26,6 +26,54 @@ const visibleFiles = computed(() => {
   return files.value.slice(0, 2)
 })
 
+const priorityClass = computed(() => {
+  switch (props.task?.priority) {
+    case 1:
+      return 'priority-high'
+    case 2:
+      return 'priority-medium'
+    case 3:
+      return 'priority-low'
+    default:
+      return 'priority-low'
+  }
+})
+const categoryClass = computed(() => {
+  const category = props.task?.category
+
+  switch (category) {
+    case 'Work':
+      return 'category-work'
+
+    case 'Personal':
+      return 'category-personal'
+
+    case 'Health':
+      return 'category-health'
+
+    case 'Study':
+      return 'category-study'
+
+    case 'Creative':
+      return 'category-creative'
+
+    default:
+      return 'category-default'
+  }
+})
+
+const dateClass = computed(() => {
+  if (deadlineInfo.value?.state === 'overdue') {
+    return 'date-overdue'
+  }
+
+  if (deadlineInfo.value?.state === 'today') {
+    return 'date-today'
+  }
+
+  return 'date-default'
+})
+
 const hasMoreFiles = computed(() => {
   return (files.value?.length || 0) > 2
 })
@@ -179,7 +227,7 @@ async function openFile(file) {
     </div>
 
     <!-- CATEGORY -->
-    <div v-if="task.category" class="category">
+    <div v-if="task.category" class="category" :class="categoryClass">
       {{ task.category }}
     </div>
 
@@ -189,7 +237,7 @@ async function openFile(file) {
     </p>
 
     <!-- FILES -->
-    <div class="attachments">
+    <div v-if="hasFiles" class="attachments">
       <div class="attachments-title">Attachments:</div>
 
       <div v-if="task.files_loading">
@@ -221,21 +269,16 @@ async function openFile(file) {
     <!-- FOOTER -->
     <div class="footer">
       <div class="meta">
-        <span class="priority">
-          Priority: <span class="font-bold">{{ priorityLabel }}</span>
-        </span>
+        <span :class="priorityClass" class="priority-pill font-bold">{{ priorityLabel }}</span>
 
-        <span class="dot">•</span>
+        <span v-show="task.deadline" class="dot">•</span>
 
-        <span
-          class="date">
-          Due: <span :class="{ overdue: deadlineInfo.state === 'overdue' }"> {{ formatTaskDate(task.deadline) }}</span>
-        </span>
+        <span :class="dateClass">{{ formatTaskDate(task.deadline) }}</span>
       </div>
 
       <!-- TIME -->
       <div v-if="task.time" class="time">
-        Time: <span class="font-bold">{{ task.time }}</span>
+        {{ task.time.replace('-', ' - ') }}
       </div>
     </div>
 
@@ -286,8 +329,8 @@ async function openFile(file) {
 
 .task-card {
   background: #fff;
-  border-radius: 18px;
-  padding: 18px;
+  border-radius: 16px;
+  padding: 16px;
   border: 1px solid #f1f1f1;
 
   display: flex;
@@ -328,8 +371,8 @@ async function openFile(file) {
 
 /* BADGE */
 .badge {
-  font-size: 12px;
-  padding: 6px 12px;
+  font-size: 11px;
+  padding: 5px 10px;
   border-radius: 999px;
   font-weight: 600;
 }
@@ -341,13 +384,49 @@ async function openFile(file) {
 
 /* CATEGORY */
 .category {
-  display: inline-block;
-  background: #f3f4f6;
-  color: #374151;
-  font-size: 12px;
-  padding: 4px 10px;
-  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
   width: fit-content;
+  padding: 5px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* Work */
+.category-work {
+  background: #DCFCE7;
+  color: #15803D;
+}
+
+/* Personal */
+.category-personal {
+  background: #F3E8FF;
+  color: #7E22CE;
+}
+
+/* Health */
+.category-health {
+  background: #FEE2E2;
+  color: #DC2626;
+}
+
+/* Study */
+.category-study {
+  background: #DBEAFE;
+  color: #2563EB;
+}
+
+/* Creative */
+.category-creative {
+  background: #FED7AA;
+  color: #EA580C;
+}
+
+/* Default */
+.category-default {
+  background: #F3F4F6;
+  color: #6B7280;
 }
 
 /* DESCRIPTION */
@@ -356,10 +435,35 @@ async function openFile(file) {
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  color: #4b5563;
+  color: #6B7280;
   font-size: 14px;
   line-height: 1.5;
   margin: 0;
+}
+
+/* PRIORITY */
+.priority-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.priority-low {
+  background: #EFF6FF;
+  color: #2563EB;
+}
+
+.priority-medium {
+  background: #FEF3C7;
+  color: #D97706;
+}
+
+.priority-high {
+  background: #FEE2E2;
+  color: #DC2626;
 }
 
 /* ATTACHMENTS */
@@ -402,20 +506,28 @@ async function openFile(file) {
 .dot {
   margin: 0 6px;
 }
-
-.date span {
-  color: #111827;
+.date {
+  font-weight: 500;
 }
 
-.date .overdue {
-  color: #dc2626;
-  font-weight: 600;
+.date-default {
+  color: #6B7280;
 }
 
+.date-overdue {
+  color: #DC2626;
+}
+
+.date-today {
+  color: #7C3AED;
+}
+
+/* TIME */
 .time {
   font-size: 13px;
-  color: #374151;
-  margin-top: 4px;
+  color: #6b7280;
+  font-weight: 500;
+  margin-top: 8px;
 }
 
 /* COMPLETED */
@@ -462,7 +574,6 @@ async function openFile(file) {
 }
 
 .font-bold {
-  color: #111827;
   font-weight: 500;
 }
 
