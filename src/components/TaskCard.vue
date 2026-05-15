@@ -378,8 +378,9 @@ async function openFile(file) {
 }
 
 .badge.overdue {
-  background: #fee2e2;
-  color: #b91c1c;
+  background: #FEF2F2;
+  color: #DC2626;
+  border: 1px solid #FECACA;
 }
 
 /* CATEGORY */
@@ -445,10 +446,11 @@ async function openFile(file) {
 .priority-pill {
   display: inline-flex;
   align-items: center;
-  padding: 5px 10px;
+  padding: 4px 10px;
   border-radius: 999px;
   font-size: 12px;
   font-weight: 600;
+  line-height: 1;
 }
 
 .priority-low {
@@ -458,12 +460,12 @@ async function openFile(file) {
 
 .priority-medium {
   background: #FEF3C7;
-  color: #D97706;
+  color: #B45309;
 }
 
 .priority-high {
-  background: #FEE2E2;
-  color: #DC2626;
+  background: #FCE7F3 ;
+  color: #BE185D;
 }
 
 /* ATTACHMENTS */
@@ -556,8 +558,9 @@ async function openFile(file) {
 }
 
 .btn.edit {
-  background: #ede9fe;
-  color: #6d28d9;
+  background: transparent;
+  color: #7C3AED;
+  border: 1px solid #E9D5FF;
 }
 
 .btn.edit:hover {
@@ -565,7 +568,8 @@ async function openFile(file) {
 }
 
 .btn.delete {
-  background: #fee2e2;
+  background: transparent;
+  border: 1px solid #fecaca;
   color: #dc2626;
 }
 
