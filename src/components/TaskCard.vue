@@ -124,20 +124,22 @@ const deadlineInfo = computed(() => {
     return { state: '', label: '' }
   }
 
-  const now = new Date()
-  const d = new Date(props.task.deadline)
+  const today = new Date()
+  today.setHours(0,0,0,0)
 
-  if (d < now) {
-    return { state: 'overdue', label: 'Overdue' }
-  }
+  const deadline = new Date(props.task.deadline)
+  deadline.setHours(0,0,0,0)
 
-  const diff = (d - now) / (1000 * 60 * 60 * 24)
+ if (deadline < today) {
+   return {state:  'overdue', label: 'Overdue'}
+ }
 
-  if (diff <= 2) {
-    return { state: 'soon', label: 'Soon' }
-  }
+ if (deadline.getTime() === today.getTime()) {
+   return {state: 'today', label: 'Today'}
+ }
 
-  return { state: '', label: '' }
+ return {state: '', label: ''}
+
 })
 
 /**
@@ -335,7 +337,7 @@ async function openFile(file) {
 
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
 
   transition:
     box-shadow 0.2s ease,
@@ -372,7 +374,7 @@ async function openFile(file) {
 /* BADGE */
 .badge {
   font-size: 11px;
-  padding: 5px 10px;
+  padding: 4px 8px;;
   border-radius: 999px;
   font-weight: 600;
 }
@@ -396,31 +398,31 @@ async function openFile(file) {
 
 /* Work */
 .category-work {
-  background: #DCFCE7;
-  color: #15803D;
+  background: #ECFDF3;
+  color: #027A48;
 }
 
 /* Personal */
 .category-personal {
-  background: #F3E8FF;
-  color: #7E22CE;
+  background: #F5F3FF;
+  color: #7C3AED;
 }
 
 /* Health */
 .category-health {
-  background: #FEE2E2;
-  color: #DC2626;
+  background: #ECFEFF;
+  color: #0F766E;
 }
 
 /* Study */
 .category-study {
-  background: #DBEAFE;
-  color: #2563EB;
+  background: #EEF2FF;
+  color: #4338CA;
 }
 
 /* Creative */
 .category-creative {
-  background: #FED7AA;
+  background: #FFF7ED;
   color: #EA580C;
 }
 
@@ -464,8 +466,8 @@ async function openFile(file) {
 }
 
 .priority-high {
-  background: #FCE7F3 ;
-  color: #BE185D;
+  background: #FAE8FF;
+  color: #A21CAF;
 }
 
 /* ATTACHMENTS */
