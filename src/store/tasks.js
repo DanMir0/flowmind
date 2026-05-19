@@ -188,7 +188,7 @@ export const useTasksStore = defineStore('tasks', {
         Object.assign(task, {
           title: payload.title,
           description: payload.description,
-          priority: payload.payload,
+          priority: payload.priority,
           deadline: payload.deadline,
           category: payload.category,
           time: payload.time,
