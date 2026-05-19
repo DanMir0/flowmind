@@ -34,8 +34,6 @@ const priorities = [
   { label: 'Medium', value: 2},
   { label: 'Low', value: 3},
 ]
-const startTime = ref('')
-const endTime = ref('')
 const title = ref('')
 const description = ref('')
 const priority = ref('')
@@ -52,17 +50,6 @@ const filesLoading = ref(false)
 /* реактивно берём файлы ИЗ STORE */
 const existingFiles = computed(() => task.value?.task_files ?? [])
 
-const isValidTimeRange = computed(() => {
-  if (!startTime.value || !endTime.value) return true
-  return startTime.value < endTime.value
-})
-watch(startTime, (val) => {
-  if (!endTime.value && val) {
-    const [h, m] = val.split(':')
-    const nextHour = String(Number(h) + 1).padStart(2, '0')
-    endTime.value = `${nextHour}:${m}`
-  }
-})
 onMounted(() => {
   console.log(task.value)
   console.log(tasksStore.tasks)
@@ -80,15 +67,6 @@ watch(
       ? t.deadline.slice(0, 10)
       : null
     category.value = t.category ?? ''
-
-    if (t.time && t.time.includes('-')) {
-      const [start, end] = t.time.split('-')
-      startTime.value = start
-      endTime.value = end
-    } else {
-      startTime.value = ''
-      endTime.value = ''
-    }
 
     newFiles.value = []
     filesToDelete.value = []
@@ -146,16 +124,8 @@ function removeNewFile(index) {
 
 async function save() {
   if (saving.value) return
-  if (!isValidTimeRange.value) {
-    error.value = 'End time must be after start time'
-    return
-  }
-  saving.value = true
 
-  const timeRange =
-    startTime.value && endTime.value
-      ? `${startTime.value}-${endTime.value}`
-      : null
+  saving.value = true
 
   try {
     await props.onSave({
@@ -167,7 +137,6 @@ async function save() {
       newFiles: newFiles.value,
       filesToDelete: filesToDelete.value,
       category: category.value || null,
-      time: timeRange
     })
 
   emit('close')
@@ -214,24 +183,6 @@ function close() {
           placeholder="Select category"/>
 
         <input type="date" v-model="deadline" />
-
-        <div class="time-range">
-          <input
-            type="time"
-            v-model="startTime"
-          />
-
-          <span class="time-separator">—</span>
-
-          <input
-            type="time"
-            v-model="endTime"
-          />
-        </div>
-
-        <p v-if="!isValidTimeRange" class="error">
-          End time must be after start time
-        </p>
 
         <!-- FILES SECTION -->
         <div class="files-wrapper">
@@ -484,21 +435,6 @@ textarea {
   100% {
     background-position: 0 0;
   }
-}
-
-.time-range {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-}
-
-.time-range input {
-  flex: 1;
-}
-
-.time-separator {
-  font-weight: 600;
-  opacity: 0.6;
 }
 </style>
 

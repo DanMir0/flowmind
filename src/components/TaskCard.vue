@@ -278,10 +278,6 @@ async function openFile(file) {
         <span :class="dateClass">{{ formatTaskDate(task.deadline) }}</span>
       </div>
 
-      <!-- TIME -->
-      <div v-if="task.time" class="time">
-        {{ task.time.replace('-', ' - ') }}
-      </div>
     </div>
 
     <!-- ACTIONS -->
@@ -526,13 +522,6 @@ async function openFile(file) {
   color: #7C3AED;
 }
 
-/* TIME */
-.time {
-  font-size: 13px;
-  color: #6b7280;
-  font-weight: 500;
-  margin-top: 8px;
-}
 
 /* COMPLETED */
 .task-card.completed {

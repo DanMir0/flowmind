@@ -99,7 +99,6 @@ export const useTasksStore = defineStore('tasks', {
         deadline: payload.deadline,
         priority: payload.priority,
         category: payload.category,
-        time: payload.time,
         created_at: new Date().toISOString(),
         position: position,
         task_files: [],
@@ -120,7 +119,6 @@ export const useTasksStore = defineStore('tasks', {
             user_id: auth.user.id,
             position: position,
             category: payload.category,
-            time: payload.time,
           })
           .select('*')
           .single()
@@ -176,7 +174,6 @@ export const useTasksStore = defineStore('tasks', {
           priority: payload.priority,
           deadline: payload.deadline,
           category: payload.category,
-          time: payload.time,
           updated_at: new Date().toISOString()
         })
         .eq('id', taskId)
@@ -191,7 +188,6 @@ export const useTasksStore = defineStore('tasks', {
           priority: payload.priority,
           deadline: payload.deadline,
           category: payload.category,
-          time: payload.time,
           updated_at: new Date().toISOString()
         })
       }

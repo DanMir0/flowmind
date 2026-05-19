@@ -15,8 +15,6 @@ const auth = useAuthStore()
 const { modalRef } = useModal(emit)
 
 const category = ref('')
-const startTime = ref('')
-const endTime = ref('')
 const title = ref('')
 const description = ref('')
 const deadline = ref('')
@@ -38,12 +36,6 @@ const priorities = [
   { label: 'Medium', value: 2},
   { label: 'Low', value: 3},
 ]
-
-const isValidTimeRange = computed(() => {
-  if (!startTime.value || !endTime.value) return true
-
-  return startTime.value < endTime.value
-})
 
 const isValidDate = computed(() => {
   if (!deadline.value) return true
@@ -91,16 +83,10 @@ async function submit() {
     return
   }
   if (!canSubmit.value || loading.value) return
-  if (!isValidTimeRange.value) {
-    error.value = 'End time must be after start time'
-    return
-  }
+
   loading.value = true
   error.value = ''
 
-  const timeRange = startTime.value && endTime.value
-    ? `${startTime.value}-${endTime.value}`
-    : null
 
   try {
     await tasksStore.addTask({
@@ -110,7 +96,6 @@ async function submit() {
       priority: priority.value,
       newFiles: newFiles.value,
       category: category.value || null,
-      time: timeRange
     })
     showSuccess('Task added!')
     emit('close')
@@ -162,22 +147,6 @@ onUnmounted(() => {
           v-model="category"
           :options="categories"
           placeholder="Select category"/>
-
-        <!-- TIME -->
-        <div class="time-range">
-          <input
-            type="time"
-            v-model="startTime"
-            placeholder="Start"/>
-
-          <span class="time-separator">—</span>
-
-          <input
-            type="time"
-            v-model="endTime"
-            placeholder="End"
-          />
-        </div>
 
         <!-- File upload -->
         <div class="file-upload">
@@ -438,20 +407,10 @@ input, textarea, select {
   color: #e53935;
 }
 
-.time-range {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-}
-
 .time-range input {
   flex: 1;
 }
 
-.time-separator {
-  font-weight: 600;
-  opacity: 0.6;
-}
 </style>
 <style>
 /* TransitionGroup animations */
