@@ -17,13 +17,13 @@ async function logout() {
     </div>
 
     <nav class="nav">
-      <router-link to="/">Home</router-link>
-      <router-link to="/to-do-list">To-Do List</router-link>
-      <router-link to="/calendar">Calendar</router-link>
-      <router-link to="/timer">Timer</router-link>
-      <router-link to="/settings">Settings</router-link>
-      <router-link to="/archive">Arhive</router-link>
-      <button v-if="auth.user" @click="logout">Log out</button>
+      <router-link class="menu-item" to="/dashboard">Home</router-link>
+      <router-link class="menu-item" to="/to-do-list">To-Do List</router-link>
+      <router-link class="menu-item" to="/calendar">Calendar</router-link>
+      <router-link class="menu-item" to="/timer">Timer</router-link>
+      <router-link class="menu-item" to="/settings">Settings</router-link>
+      <router-link class="menu-item" to="/archive">Arhive</router-link>
+      <button class="menu-item" v-if="auth.user" @click="logout">Log out</button>
 
       <template v-else>
         <router-link to="/login">Sign in</router-link>
@@ -61,23 +61,52 @@ async function logout() {
   font-weight: 700;
 }
 
+/* NAV */
 .nav {
   display: flex;
   align-items: center;
-  gap: 25px;
+  gap: 10px;
 }
 
-.nav a {
-  text-decoration: none;
-  color: black;
-  font-weight: 500;
-}
-
-.nav a:hover {
-  color: #7a3cff;
-}
-button {
+/* ITEM */
+.menu-item {
   position: relative;
-  z-index: 80;
+
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 12px 16px;
+  border-radius: 14px;
+
+  text-decoration: none;
+
+  color: #6B7280;
+  font-weight: 600;
+  font-size: 14px;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+/* HOVER */
+.menu-item:hover {
+  background: #F5F3FF;
+  color: #7C3AED;
+
+  transform: translateY(-1px);
+}
+
+/* ACTIVE */
+.menu-item.router-link-active {
+  background: #F3E8FF;
+  color: #7C3AED;
+
+  box-shadow:
+    inset 0 0 0 1px #E9D5FF,
+    0 4px 12px rgba(124, 58, 237, 0.12);
 }
 </style>
