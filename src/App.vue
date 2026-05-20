@@ -1,6 +1,6 @@
 <script setup>
 import { useAuthStore } from '@/store/auth.js'
-import { onMounted } from 'vue'
+import { onMounted, watch } from 'vue'
 import {useTasksStore} from '@/store/tasks.js'
 import MainLayout from '@/components/MainLayout.vue'
 
@@ -14,6 +14,18 @@ onMounted(async () => {
   await taskStore.initRealtime()
 })
 
+watch(
+  () => auth.user?.id,
+  async (userId) => {
+    if (!userId) {
+      taskStore.reset()
+      return
+    }
+
+    await taskStore.initTasks()
+  },
+  { immediate: true }
+)
 </script>
 
 <template>

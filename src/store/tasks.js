@@ -55,6 +55,20 @@ export const useTasksStore = defineStore('tasks', {
       }
     },
 
+    reset() {
+      this.tasks = []
+      this.archivedTasks = []
+      this.loading = false
+      this.error = null
+      this.isInitialized = false
+      this.creatingTaskIds = new Set()
+
+      if (this.channel) {
+        supabase.removeChannel(this.channel)
+        this.channel = null
+      }
+    },
+
     /* =========================
        LOAD FILES FOR ONE TASK
     ========================= */

@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import {useTasksStore} from '@/store/tasks.js'
 import {supabase} from '@/services/supabase.js'
 
 export const useAuthStore = defineStore('auth', {
@@ -22,19 +23,6 @@ export const useAuthStore = defineStore('auth', {
 
       this.initialized = true
     },
-
-    // async init() {
-    //   const {
-    //     data: { user }
-    //   } = await supabase.auth.getUser()
-    //
-    //   this.user = user
-    //
-    //   if (user) {
-    //     await this.fetchProfile()
-    //   }
-    //   this.initialized = true
-    // },
 
     async signUp(email, password, username) {
       this.loading = true
@@ -67,10 +55,12 @@ export const useAuthStore = defineStore('auth', {
     },
 
     async signOut() {
+      const taskStore = useTasksStore()
+
       const { error } = await supabase.auth.signOut()
       this.user = null
       this.profile = null
-      const { data } = await supabase.auth.getSession()
+      taskStore.reset()
 
       return error
     },
