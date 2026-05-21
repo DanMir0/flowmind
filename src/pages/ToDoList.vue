@@ -175,7 +175,7 @@ watch(taskToEdit, (val) => {
     <div class="header-row">
       <div class="header-block-text">
         <h1 class="header-title">My Task</h1>
-        <p class="header-description">{{ tasks.length }} tasks</p>
+        <p class="header-description">{{ visibleTasks.length }} {{ visibleTasks.length === 1 ? 'task' : 'tasks'}}</p>
       </div>
 
       <div class="controls">
