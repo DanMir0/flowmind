@@ -208,7 +208,7 @@ async function openFile(file) {
     <div class="header">
       <div class="left">
         <label class="task-checkbox">
-          <input type="checkbox" />
+          <input type="checkbox" :checked="task.completed" @change="$emit('toggle-complete', task)" />
 
           <span class="checkbox-custom">
             <svg class="check-icon" viewBox="0 0 24 24">
