@@ -207,11 +207,21 @@ async function openFile(file) {
     <!-- HEADER -->
     <div class="header">
       <div class="left">
-        <input
-          type="checkbox"
-          :checked="task.completed"
-          @change="$emit('toggle-complete', task)"
-        />
+        <label class="task-checkbox">
+          <input type="checkbox" />
+
+          <span class="checkbox-custom">
+            <svg class="check-icon" viewBox="0 0 24 24">
+            <path
+              d="M20 6L9 17L4 12"
+              stroke="currentColor"
+              stroke-width="3"
+              fill="none"
+              stroke-linecap="round"
+              stroke-linejoin="round" />
+           </svg>
+          </span>
+        </label>
 
         <h3 class="title">
           {{ task.title }}
@@ -300,6 +310,60 @@ async function openFile(file) {
 </template>
 
 <style scoped>
+.task-checkbox {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.checkbox-custom {
+  width: 18px;
+  height: 18px;
+
+  border: 2px solid #D1D5DB;
+  border-radius: 6px;
+
+  background: white;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  transition: all 0.2s ease;
+
+  flex-shrink: 0;
+}
+
+.task-checkbox input {
+  display: none;
+}
+
+.task-checkbox:hover .checkbox-custom {
+  border-color: #7C3AED;
+}
+
+.task-checkbox input:checked + .checkbox-custom {
+  background: #7C3AED;
+  border-color: #7C3AED;
+}
+
+.check-icon {
+  width: 12px;
+  height: 12px;
+
+  color: white;
+
+  opacity: 0;
+  transform: scale(0.8);
+
+  transition: all 0.15s ease;
+}
+
+.task-checkbox input:checked + .checkbox-custom .check-icon {
+  opacity: 1;
+  transform: scale(1);
+}
+
 .file {
   display: flex;
   flex-direction: row;
@@ -590,4 +654,5 @@ async function openFile(file) {
   0% { background-position: 100% 0 }
   100% { background-position: -100% 0 }
 }
+
 </style>
