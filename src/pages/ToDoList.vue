@@ -301,7 +301,7 @@ watch(taskToEdit, (val) => {
       <TransitionGroup  name="list" tag="div" class="tasks-grid">
         <TaskCard
           v-for="task in visibleTasks"
-          :key="task._key"
+          :key="task._key || task.id"
           :task="task"
           :class="{ dragging: draggingId === task.id }"
           draggable="true"
