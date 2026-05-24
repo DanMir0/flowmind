@@ -1,9 +1,9 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useTasksStore } from '@/store/tasks'
 
 const tasksStore = useTasksStore()
-
+const quickTask = ref('')
 function isToday(dateStr) {
   if (!dateStr) return false
 
@@ -48,6 +48,20 @@ const progressPercent = computed(() => {
     (completedFocusTasks.value / focusTasks.value.length) * 100
   )
 })
+
+async function addQuickTask() {
+  const title = quickTask.value.trim()
+
+  if (!title) return
+
+  await tasksStore.addTask({
+    title,
+    priority: 3,
+    completed: false
+  })
+
+  quickTask.value = ''
+}
 </script>
 
 <template>
@@ -192,6 +206,29 @@ const progressPercent = computed(() => {
           </div>
         </div>
       </template>
+    </div>
+
+    <div class="quick-add-card">
+      <div class="quick-add-title">
+        Quick Add
+      </div>
+
+      <div class="quick-add-input-wrapper">
+        <input
+          v-model="quickTask"
+          type="text"
+          placeholder="Type task name..."
+          class="quick-add-input"
+          @keydown.enter="addQuickTask"
+        />
+
+        <button
+          class="quick-add-btn"
+          @click="addQuickTask"
+        >
+          +
+        </button>
+      </div>
     </div>
 </aside>
 </template>
@@ -343,5 +380,74 @@ const progressPercent = computed(() => {
 .focus-footer {
   font-size: 14px;
   color: #4b5563;
+}
+
+.quick-add-card {
+  margin-top: 16px;
+
+  background: white;
+  border: 1px solid #eee;
+
+  border-radius: 20px;
+
+  padding: 18px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.quick-add-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.quick-add-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.quick-add-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: #f9fafb;
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 12px;
+  transition: 0.2s;
+  min-width: 0;
+}
+
+.quick-add-input:focus {
+  background: #f3f4f6;
+}
+
+.quick-add-btn {
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  border: none;
+  border-radius: 12px;
+  background: #7c3aed;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.2s;
+}
+
+.quick-add-btn:hover {
+  background: #6d28d9;
+  transform: translateY(-1px);
+}
+
+.quick-add-btn:active {
+  transform: scale(0.96);
 }
 </style>
