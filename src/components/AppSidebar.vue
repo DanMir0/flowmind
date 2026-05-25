@@ -111,7 +111,6 @@ async function addQuickTask() {
       <span>Calendar</span>
     </router-link>
 
-    <!-- Улучшенная иконка Timer -->
     <router-link to="/timer" class="menu-item">
       <svg width="18px" height="18px" viewBox="0 0 24 24" fill="none"
            xmlns="http://www.w3.org/2000/svg">
@@ -146,7 +145,6 @@ async function addQuickTask() {
       </svg>
       <span>Archive</span>
     </router-link>
-
 
     <div class="focus-card">
       <div class="focus-header">
@@ -224,8 +222,7 @@ async function addQuickTask() {
 
         <button
           class="quick-add-btn"
-          @click="addQuickTask"
-        >
+          @click="addQuickTask">
           +
         </button>
       </div>
@@ -254,13 +251,9 @@ async function addQuickTask() {
   align-items: center;
   gap: 5px;
   text-decoration: none;
-
   color: #374151;
-
   padding: 14px 16px;
-
   border-radius: 14px;
-
   transition: 0.2s;
   font-weight: 500;
 }
@@ -286,16 +279,12 @@ async function addQuickTask() {
 .empty-icon {
   width: 44px;
   height: 44px;
-
   border-radius: 50%;
-
   background: #F5F3FF;
   color: #7C3AED;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   font-size: 20px;
   font-weight: 700;
 }
