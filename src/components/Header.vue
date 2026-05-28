@@ -426,7 +426,7 @@ onBeforeUnmount(() => {
 .switch {
   position: relative;
   width: 52px;
-  height: 30px;
+  height: 24px;
 }
 
 .switch input {
@@ -444,8 +444,8 @@ onBeforeUnmount(() => {
 .slider::before {
   content: "";
   position: absolute;
-  width: 26px;
-  height: 26px;
+  width: 20px;
+  height: 20px;
   left: 2px;
   top: 2px;
   background: #fff;
@@ -477,13 +477,13 @@ onBeforeUnmount(() => {
   position: absolute;
   top: calc(100% + 8px);
   right: 0;
-  width: 260px;
+  width: 280px;
   background: white;
   border: 1px solid #E5E7EB;
   border-radius: 20px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08),
   0 2px 6px rgba(0, 0, 0, 0.04);
-  padding: 10px;
+  padding: 8px;
   z-index: 500;
 }
 
