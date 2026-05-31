@@ -128,12 +128,16 @@ async function goToTodoPage() {
 }
 
 .dashboard {
+  min-height: calc(100vh - 72px);
   font-family: Arial, sans-serif;
   background: #fff;
+  display: flex;
+  flex-direction: column;
 }
 
 /* content layout */
 .content {
+  flex: 1;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   gap: 40px;
