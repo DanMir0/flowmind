@@ -1,15 +1,23 @@
 <script setup>
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useAuthStore } from '@/store/auth'
 import router from '@/router/router'
+import { useTasksStore } from '@/store/tasks.js'
+import { useRoute } from 'vue-router'
 
 const auth = useAuthStore()
+const tasksStore = useTasksStore()
+const route = useRoute()
 
 const isOpen = ref(false)
 
 const username = computed(() => {
   return auth.profile?.username || 'User'
 })
+
+const searchInput = ref('')
+
+let timeout = null
 
 const initials = computed(() => {
   return username.value
@@ -33,6 +41,14 @@ function handleClickOutside(event) {
     isOpen.value = false
   }
 }
+
+watch(searchInput, (value) => {
+  clearTimeout(timeout)
+
+  timeout = setTimeout(() => {
+    tasksStore.searchQuery = value.trim()
+  }, 300)
+})
 
 onMounted(() => {
   window.addEventListener('click', handleClickOutside)
@@ -67,7 +83,7 @@ onBeforeUnmount(() => {
     </div>
 
     <!-- CENTER: Search -->
-    <div class="search-wrapper">
+    <div v-if="route.name == 'todo'" class="search-wrapper">
       <svg
         class="search-icon"
         viewBox="0 0 24 24"
@@ -86,6 +102,7 @@ onBeforeUnmount(() => {
       </svg>
 
       <input
+        v-model="searchInput"
         type="text"
         placeholder="Search tasks..."
         class="search-input"
