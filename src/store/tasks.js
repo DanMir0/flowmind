@@ -12,6 +12,7 @@ export const useTasksStore = defineStore('tasks', {
     error: null,
     isInitialized: false,
     creatingTaskIds: new Set(),
+    searchQuery: '',
   }),
 
   actions: {

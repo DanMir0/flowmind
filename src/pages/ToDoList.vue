@@ -10,7 +10,7 @@ import EmptyState from '@/components/EmptyState.vue'
 import { showSuccess } from '@/utils/toast.js'
 
 const tasksStore = useTasksStore()
-const { tasks, loading, error, isInitialized } = storeToRefs(tasksStore)
+const { tasks, loading, error, isInitialized, searchQuery } = storeToRefs(tasksStore)
 
 const showAddModal = ref(false)
 const taskToDelete = ref(null)
@@ -76,11 +76,11 @@ const priorityFilteredTasks = computed(() => {
 const visibleTasks = computed(() => {
   switch (statusFilter.value) {
     case 'active':
-      return priorityFilteredTasks.value.filter(t => !t.completed)
+      return searchedTasks.value.filter(t => !t.completed)
     case 'completed':
-      return priorityFilteredTasks.value.filter(t => t.completed)
+      return searchedTasks.value.filter(t => t.completed)
     default:
-      return priorityFilteredTasks.value
+      return searchedTasks.value
   }
 })
 
@@ -157,6 +157,28 @@ const emptyType = computed(() => {
   }
 
   return null
+})
+
+const searchedTasks = computed(() => {
+  const query = searchQuery.value?.trim().toLowerCase()
+
+  if (!query) {
+    return priorityFilteredTasks.value
+  }
+
+  return priorityFilteredTasks.value.filter(task => {
+    const title = task.title?.toLowerCase() || ''
+    const description = task.description?.toLowerCase() || ''
+    const createdAt = task.created_at || ''
+    const deadline = task.deadline || ''
+
+    return (
+      title.includes(query) ||
+      description.includes(query) ||
+      createdAt.includes(query) ||
+      deadline.includes(query)
+    )
+  })
 })
 
 watch(taskToEdit, (val) => {
