@@ -93,7 +93,7 @@ function onDragStart(task, event) {
   img.src =
     'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciLz4='
 
-  event.dataTransfer.setDragImage(img, 0,0)
+  event.dataTransfer.setDragImage(img, 0, 0)
   event.dataTransfer.effectAllowed = 'move'
 }
 
@@ -121,6 +121,7 @@ function requestDelete(task) {
 function requestEdit(taskId) {
   taskToEdit.value = taskId
 }
+
 async function saveEdit(payload) {
   await tasksStore.updateTask(payload.id, payload)
   taskToEdit.value = null
@@ -159,26 +160,80 @@ const emptyType = computed(() => {
   return null
 })
 
+function buildDateTokens(dateValue) {
+  if (!dateValue) return []
+
+  const date = new Date(dateValue)
+
+  if (isNaN(date)) return []
+
+  const monthLong = date.toLocaleString('en-US', {
+    month: 'long'
+  }).toLowerCase()
+
+  const monthShort = date.toLocaleString('en-US', {
+    month: 'short'
+  }).toLowerCase()
+
+  const day = String(date.getDate())
+  const year = String(date.getFullYear())
+
+  return [
+    monthLong,
+    monthShort,
+    day,
+    year,
+    `${monthLong} ${day}`,
+    `${day} ${monthLong}`,
+    `${monthShort} ${day}`,
+    `${day} ${monthShort}`
+  ]
+}
+
+function buildSearchText(task) {
+  const parts = [
+    task.title,
+    task.description,
+
+    ...buildDateTokens(task.created_at),
+    ...buildDateTokens(task.deadline)
+  ]
+
+  return parts
+    .filter(Boolean)
+    .join(' ')
+    .toLowerCase()
+}
+
 const searchedTasks = computed(() => {
-  const query = searchQuery.value?.trim().toLowerCase()
+  const query = searchQuery.value
+    ?.trim()
+    .toLowerCase()
 
   if (!query) {
     return priorityFilteredTasks.value
   }
 
-  return priorityFilteredTasks.value.filter(task => {
-    const title = task.title?.toLowerCase() || ''
-    const description = task.description?.toLowerCase() || ''
-    const createdAt = task.created_at || ''
-    const deadline = task.deadline || ''
+  return [...priorityFilteredTasks.value]
+    .filter(task => {
+      const searchText = buildSearchText(task)
 
-    return (
-      title.includes(query) ||
-      description.includes(query) ||
-      createdAt.includes(query) ||
-      deadline.includes(query)
-    )
-  })
+      return query
+        .split(/\s+/)
+        .every(word => searchText.includes(word))
+    })
+    .sort((a, b) => {
+      const aTitle = a.title?.toLowerCase() || ''
+      const bTitle = b.title?.toLowerCase() || ''
+
+      const aStarts = aTitle.startsWith(query)
+      const bStarts = bTitle.startsWith(query)
+
+      if (aStarts && !bStarts) return -1
+      if (!aStarts && bStarts) return 1
+
+      return 0
+    })
 })
 
 watch(taskToEdit, (val) => {
@@ -197,7 +252,8 @@ watch(taskToEdit, (val) => {
     <div class="header-row">
       <div class="header-block-text">
         <h1 class="header-title">My Task</h1>
-        <p class="header-description">{{ visibleTasks.length }} {{ visibleTasks.length === 1 ? 'task' : 'tasks'}}</p>
+        <p class="header-description">{{ visibleTasks.length }}
+          {{ visibleTasks.length === 1 ? 'task' : 'tasks' }}</p>
       </div>
 
       <div class="controls">
@@ -292,7 +348,7 @@ watch(taskToEdit, (val) => {
         <div class="error-illustration"></div>
 
         <p class="error-text">
-          {{ error}}
+          {{ error }}
         </p>
 
         <p class="error-subtext">
@@ -319,8 +375,8 @@ watch(taskToEdit, (val) => {
       }"
       @showCompleted="statusFilter = 'completed'" />
 
-    <div  v-else>
-      <TransitionGroup  name="list" tag="div" class="tasks-grid">
+    <div v-else>
+      <TransitionGroup name="list" tag="div" class="tasks-grid">
         <TaskCard
           v-for="task in visibleTasks"
           :key="task._key || task.id"
@@ -478,9 +534,8 @@ watch(taskToEdit, (val) => {
   border-radius: 24px;
   background: rgba(255, 255, 255, 0.7);
   backdrop-filter: blur(12px);
-  box-shadow:
-    0 10px 30px rgba(0,0,0,0.08),
-    inset 0 1px 0 rgba(255,255,255,0.6);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08),
+  inset 0 1px 0 rgba(255, 255, 255, 0.6);
   text-align: center;
   position: relative;
   overflow: hidden;
@@ -530,12 +585,12 @@ watch(taskToEdit, (val) => {
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
-  box-shadow: 0 6px 18px rgba(91,77,255,0.35);
+  box-shadow: 0 6px 18px rgba(91, 77, 255, 0.35);
 }
 
 .error-btn:hover {
   transform: translateY(-2px) scale(1.02);
-  box-shadow: 0 10px 24px rgba(91,77,255,0.45);
+  box-shadow: 0 10px 24px rgba(91, 77, 255, 0.45);
 }
 
 .error-btn:active {
@@ -566,15 +621,19 @@ watch(taskToEdit, (val) => {
   background: linear-gradient(
     90deg,
     transparent,
-    rgba(255,255,255,0.6),
+    rgba(255, 255, 255, 0.6),
     transparent
   );
   animation: shimmer 1.5s infinite;
 }
 
 @keyframes shimmer {
-  0% { transform: translateX(-100%) }
-  100% { transform: translateX(100%) }
+  0% {
+    transform: translateX(-100%)
+  }
+  100% {
+    transform: translateX(100%)
+  }
 }
 
 /* элементы */
@@ -627,6 +686,7 @@ watch(taskToEdit, (val) => {
 .list-move {
   transition: none !important;
 }
+
 .list-enter-active,
 .list-leave-active {
   transition: all 0.2s ease;
