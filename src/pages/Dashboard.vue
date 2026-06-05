@@ -111,11 +111,17 @@ async function goToTodoPage() {
 
     <!-- Footer -->
     <footer class="footer">
-      <p>
-        © 2026 TaskMaster. All rights reserved. |
-        <a href="#">Privacy Policy</a> |
-        <a href="#">Terms of Service</a>
-      </p>
+      <div class="footer-content">
+        <span>© 2026 TaskMaster. All rights reserved.</span>
+
+        <span class="divider"></span>
+
+        <a href="/privacy">Privacy Policy</a>
+
+        <span class="divider"></span>
+
+        <a href="/terms">Terms of Service</a>
+      </div>
     </footer>
 
   </div>
@@ -205,17 +211,48 @@ h2:hover {
   background: #5e2fd1;
 }
 
-/* footer */
 .footer {
-  margin-top: 60px;
-  text-align: center;
-  padding: 30px;
-  background: #f5eaff;
-  color: #333;
+  margin-top: auto;
+  padding: 24px 0;
+  background: #fff;
+  border-top: 1px solid #E5E7EB;
+}
+
+.footer-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 28px;
+
+  font-size: 14px;
+  color: #6B7280;
 }
 
 .footer a {
-  color: #7a3cff;
+  color: #7C3AED;
   text-decoration: none;
+  font-weight: 500;
+  transition: color .2s ease;
+}
+
+.footer a:hover {
+  color: #6D28D9;
+}
+
+.divider {
+  width: 1px;
+  height: 18px;
+  background: #E5E7EB;
+}
+
+@media (max-width: 768px) {
+  .footer-content {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .divider {
+    display: none;
+  }
 }
 </style>
