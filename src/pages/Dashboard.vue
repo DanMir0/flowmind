@@ -1,115 +1,209 @@
 <script setup>
 import router from '@/router/router.js'
 import { useAuthStore } from '@/store/auth.js'
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import { useTasksStore } from '@/store/tasks.js'
-
-const defaultTasks = ref([
-  { id: 0, title: 'Finish project report', deadline: 'Deadline: 25th Oct 2026' },
-  { id: 1, title: 'Prepare presentation', deadline: 'Deadline: 27th Oct 2026' },
-  { id: 2, title: 'Team meeting', deadline: 'Deadline: 28th Oct 2026' }
-])
 
 const auth = useAuthStore()
 const tasksStore = useTasksStore()
 
-const tasks = computed(() => tasksStore.tasks.filter(t => !t.completed))
+const totalTasks = computed(() => tasksStore.tasks.length)
+
+const completedTasks = computed(() =>
+  tasksStore.tasks.filter(task => task.completed).length
+)
+
+const dueToday = computed(() => {
+  const today = new Date().toISOString().split('T')[0]
+
+  return tasksStore.tasks.filter(task =>
+    task.deadline?.startsWith(today)
+  ).length
+})
+
+const todayTasks = computed(() =>
+  tasksStore.tasks
+    .filter(task => !task.completed)
+    .slice(0, 5)
+)
+
+const upcomingTasks = computed(() =>
+  [...tasksStore.tasks]
+    .filter(task => task.deadline)
+    .sort(
+      (a, b) =>
+        new Date(a.deadline) - new Date(b.deadline)
+    )
+    .slice(0, 5)
+)
+
+async function goToTodoPage() {
+  if (auth.goToLoginIfGuest(router)) {
+    await router.push({ name: 'todo' })
+  }
+}
 
 async function goToCalendarPage() {
-  if (auth.goToLoginIfGuest(router)) await router.push({ name: 'calendar' })
+  if (auth.goToLoginIfGuest(router)) {
+    await router.push({ name: 'calendar' })
+  }
 }
 
 async function goToTimerPage() {
-  if (auth.goToLoginIfGuest(router)) await router.push({ name: 'timer' })
+  if (auth.goToLoginIfGuest(router)) {
+    await router.push({ name: 'timer' })
+  }
 }
-
-async function goToTodoPage() {
-  if (auth.goToLoginIfGuest(router)) await router.push({ name: 'todo' })
-}
-
 </script>
 
 <template>
   <div class="dashboard">
-    <main class="content">
 
-      <!-- To Do -->
-      <section class="section section-todo">
-        <h2 @click="goToTodoPage">To-Do List</h2>
+    <div class="welcome">
+      <h1>Welcome back 👋</h1>
+      <p>Manage your tasks and stay productive.</p>
+    </div>
 
-        <!-- Гость -->
-        <div v-if="!auth.user">
-          <div
-            v-for="card in defaultTasks"
-            :key="card.id"
-            @click="goToTodoPage"
-            class="card"
-          >
-            <h3>{{ card.title }}</h3>
-            <p>{{ card.deadline }}</p>
-          </div>
+    <!-- STATS -->
+    <section class="stats-grid">
+
+      <div class="stat-card">
+        <div class="stat-value">
+          {{ totalTasks }}
         </div>
 
-        <!-- Авторизован -->
-        <div v-else>
-          <!-- Ждём первую загрузку -->
-          <div v-if="!tasksStore.isInitialized">
-            <div v-for="n in 2" :key="n" class="card placeholder"></div>
-          </div>
+        <div class="stat-label">
+          Total Tasks
+        </div>
+      </div>
 
-          <!-- Есть задачи -->
-          <div v-else-if="tasks.length">
+      <div class="stat-card">
+        <div class="stat-value">
+          {{ completedTasks }}
+        </div>
+
+        <div class="stat-label">
+          Completed
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-value">
+          0h
+        </div>
+
+        <div class="stat-label">
+          Focus Hours
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-value">
+          {{ dueToday }}
+        </div>
+
+        <div class="stat-label">
+          Due Today
+        </div>
+      </div>
+
+    </section>
+
+    <!-- MAIN GRID -->
+    <section class="main-grid">
+
+      <!-- TODAY -->
+      <div class="panel">
+        <div class="panel-header">
+          Today's Tasks
+        </div>
+
+        <div
+          v-if="todayTasks.length"
+          class="task-list"
+        >
+          <div
+            v-for="task in todayTasks"
+            :key="task.id"
+            class="task-item"
+            @click="goToTodoPage"
+          >
+            <div class="task-title">
+              {{ task.title }}
+            </div>
+
             <div
-              v-for="card in tasks"
-              :key="card.id"
-              class="card"
-              @click="goToTodoPage"
+              v-if="task.deadline"
+              class="task-deadline"
             >
-              <h3>{{ card.title }}</h3>
-              <p>{{ card.deadline }}</p>
+              {{ task.deadline }}
             </div>
           </div>
-
-          <!-- Реально пусто -->
-          <p v-else>No tasks yet</p>
         </div>
-      </section>
 
-      <!-- Calendar -->
-      <section class="section section-calendar">
-        <h2 @click="goToCalendarPage">Calendar</h2>
+        <div v-else class="empty">
+          No active tasks
+        </div>
+      </div>
 
-        <div class="card image-card">
-          <img
+      <!-- UPCOMING -->
+      <div class="panel">
+        <div class="panel-header">
+          Upcoming
+        </div>
+
+        <div
+          v-if="upcomingTasks.length"
+          class="task-list"
+        >
+          <div
+            v-for="task in upcomingTasks"
+            :key="task.id"
+            class="task-item"
             @click="goToCalendarPage"
-            src="../assets/calendar.png"
-            alt="calendar image"
           >
+            <div class="task-title">
+              {{ task.title }}
+            </div>
+
+            <div class="task-deadline">
+              {{ task.deadline }}
+            </div>
+          </div>
         </div>
-      </section>
 
-      <!-- Timer -->
-      <section class="section section-timer">
-        <h2 @click="goToTimerPage">Timer</h2>
-
-        <div class="card timer-card">
-          <p>Work Session Timer</p>
-
-          <img
-            @click="goToTimerPage"
-            src="../assets/timer.png"
-            alt="timer image"
-          >
-
-          <button @click="goToTimerPage" class="btn">
-            Start
-          </button>
+        <div v-else class="empty">
+          No upcoming tasks
         </div>
-      </section>
+      </div>
 
-    </main>
+      <!-- TIMER -->
+      <div class="panel timer-panel">
 
-    <!-- Footer -->
+        <img
+          src="../assets/timer.png"
+          alt="timer"
+          class="timer-image"
+        >
+
+        <h3>Focus Timer</h3>
+
+        <p>
+          Stay focused and boost productivity.
+        </p>
+
+        <button
+          class="start-btn"
+          @click="goToTimerPage"
+        >
+          Start Focus Session
+        </button>
+
+      </div>
+
+    </section>
+
+    <!-- FOOTER -->
     <footer class="footer">
       <div class="footer-content">
         <span>© 2026 TaskMaster. All rights reserved.</span>
@@ -128,127 +222,179 @@ async function goToTodoPage() {
 </template>
 
 <style scoped>
-.placeholder {
-  height: 90px;
-  background: transparent;
-}
-
 .dashboard {
   min-height: calc(100vh - 72px);
-  font-family: Arial, sans-serif;
-  background: #fff;
-  display: flex;
-  flex-direction: column;
+  background: #f8fafc;
+  padding: 32px;
 }
 
-/* content layout */
-.content {
-  flex: 1;
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 40px;
-  padding: 40px;
+.welcome {
+  margin-bottom: 32px;
 }
 
-/* sections */
-.section h2 {
-  margin-bottom: 20px;
-  font-size: 22px;
+.welcome h1 {
+  margin: 0;
+  font-size: 36px;
   font-weight: 700;
+  color: #111827;
 }
 
-.section-todo .card {
-  width: 100%;
+.welcome p {
+  margin-top: 8px;
+  color: #6b7280;
 }
 
-.section-timer .timer-card {
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.stat-card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 20px;
+  padding: 24px;
+}
+
+.stat-value {
+  font-size: 34px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.stat-label {
+  margin-top: 8px;
+  color: #6b7280;
+}
+
+.main-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 0.9fr;
+  gap: 24px;
+}
+
+.panel {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 20px;
+  padding: 24px;
+}
+
+.panel-header {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.task-list {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  padding: 35px;
-  gap: 20px;
+  gap: 12px;
 }
 
-h2:hover {
+.task-item {
+  padding: 14px;
+  border-radius: 12px;
+  background: #f9fafb;
   cursor: pointer;
+  transition: .2s;
 }
 
-/* cards */
-.card {
-  background: white;
-  border-radius: 20px;
-  padding: 20px 25px;
+.task-item:hover {
+  background: #f3f4f6;
+}
+
+.task-title {
+  font-weight: 600;
+  color: #111827;
+}
+
+.task-deadline {
+  margin-top: 4px;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.timer-panel {
+  text-align: center;
+}
+
+.timer-image {
+  width: 130px;
   margin-bottom: 20px;
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.08);
 }
 
-.card:hover {
-  cursor: pointer;
+.timer-panel h3 {
+  margin-bottom: 10px;
 }
 
-.image-card img {
-  width: 100%;
-  display: block;
-  margin: 0 auto;
+.timer-panel p {
+  color: #6b7280;
+  margin-bottom: 20px;
 }
 
-.timer-card img {
-  width: 140px;
-}
-
-/* button */
-.btn {
-  padding: 10px 25px;
+.start-btn {
   border: none;
-  border-radius: 30px;
-  background: #7a3cff;
+  background: #7c3aed;
   color: white;
-  font-weight: bold;
+  border-radius: 12px;
+  padding: 12px 18px;
   cursor: pointer;
+  font-weight: 600;
 }
 
-.btn:hover {
-  background: #5e2fd1;
+.start-btn:hover {
+  background: #6d28d9;
+}
+
+.empty {
+  color: #9ca3af;
 }
 
 .footer {
-  margin-top: auto;
+  margin-top: 40px;
   padding: 24px 0;
-  background: #fff;
-  border-top: 1px solid #E5E7EB;
 }
 
 .footer-content {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 28px;
-
+  gap: 20px;
+  color: #6b7280;
   font-size: 14px;
-  color: #6B7280;
 }
 
 .footer a {
-  color: #7C3AED;
+  color: #7c3aed;
   text-decoration: none;
-  font-weight: 500;
-  transition: color .2s ease;
-}
-
-.footer a:hover {
-  color: #6D28D9;
 }
 
 .divider {
   width: 1px;
-  height: 18px;
-  background: #E5E7EB;
+  height: 14px;
+  background: #e5e7eb;
+}
+
+@media (max-width: 1200px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .main-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
   .footer-content {
     flex-wrap: wrap;
-    gap: 12px;
   }
 
   .divider {
