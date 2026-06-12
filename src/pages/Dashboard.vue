@@ -60,8 +60,8 @@ async function goToTimerPage() {
   <div class="dashboard">
 
     <div class="welcome">
-      <h1>Welcome back 👋</h1>
-      <p>Manage your tasks and stay productive.</p>
+      <h1>Good morning, {{ auth.user?.user_metadata?.username || auth.user?.email?.split('@')[0] }} 👋</h1>
+      <p>Here's what's happening today.</p>
     </div>
 
     <!-- STATS -->
