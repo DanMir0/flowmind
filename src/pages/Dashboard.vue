@@ -54,6 +54,52 @@ async function goToTimerPage() {
     await router.push({ name: 'timer' })
   }
 }
+
+function priorityLabel(priority) {
+  switch (priority) {
+    case 1:
+      return 'High'
+    case 2:
+      return 'Medium'
+    case 3:
+      return 'Low'
+    default:
+      return 'Low'
+  }
+}
+
+function priorityClass(priority) {
+  switch (priority) {
+    case 1:
+      return 'high'
+    case 2:
+      return 'medium'
+    case 3:
+      return 'low'
+    default:
+      return 'low'
+  }
+}
+
+function formatMonth(date) {
+  return new Date(date)
+    .toLocaleDateString('en-US', {
+      month: 'short'
+    })
+    .toUpperCase()
+}
+
+function formatDay(date) {
+  return new Date(date).getDate()
+}
+
+function formatTime(date) {
+  return new Date(date)
+    .toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit'
+    })
+}
 </script>
 
 <template>
@@ -120,23 +166,26 @@ async function goToTimerPage() {
 
         <div
           v-if="todayTasks.length"
-          class="task-list"
-        >
+          class="task-list">
           <div
             v-for="task in todayTasks"
             :key="task.id"
             class="task-item"
-            @click="goToTodoPage"
-          >
-            <div class="task-title">
-              {{ task.title }}
+            @click="goToTodoPage">
+            <div>
+              <div class="task-title">
+                {{ task.title }}
+              </div>
+
+              <div class="task-category">
+                {{ task.category }}
+              </div>
             </div>
 
             <div
-              v-if="task.deadline"
-              class="task-deadline"
-            >
-              {{ task.deadline }}
+              class="priority"
+              :class="priorityClass(task.priority)">
+              ● {{ priorityLabel(task.priority) }}
             </div>
           </div>
         </div>
@@ -154,20 +203,31 @@ async function goToTimerPage() {
 
         <div
           v-if="upcomingTasks.length"
-          class="task-list"
-        >
+          class="task-list">
           <div
             v-for="task in upcomingTasks"
             :key="task.id"
-            class="task-item"
-            @click="goToCalendarPage"
-          >
-            <div class="task-title">
-              {{ task.title }}
+            class="upcoming-item">
+            <div class="date-box">
+              <span>{{ formatMonth(task.deadline) }}</span>
+
+              <strong>
+                {{ formatDay(task.deadline) }}
+              </strong>
             </div>
 
-            <div class="task-deadline">
-              {{ task.deadline }}
+            <div>
+              <div class="upcoming-time">
+                {{ formatTime(task.deadline) }}
+              </div>
+
+              <div class="upcoming-title">
+                {{ task.title }}
+              </div>
+
+              <div class="upcoming-category">
+                Personal
+              </div>
             </div>
           </div>
         </div>
@@ -183,8 +243,7 @@ async function goToTimerPage() {
         <img
           src="../assets/timer.png"
           alt="timer"
-          class="timer-image"
-        >
+          class="timer-image">
 
         <h3>Focus Timer</h3>
 
@@ -194,8 +253,7 @@ async function goToTimerPage() {
 
         <button
           class="start-btn"
-          @click="goToTimerPage"
-        >
+          @click="goToTimerPage">
           Start Focus Session
         </button>
 
@@ -253,7 +311,7 @@ async function goToTimerPage() {
 
 .stat-card {
   background: white;
-  border: 1px solid #e5e7eb;
+  border: 1px solid #f1f5f9;
   border-radius: 20px;
   padding: 24px;
 }
@@ -294,16 +352,18 @@ async function goToTimerPage() {
   gap: 12px;
 }
 
-.task-item {
-  padding: 14px;
-  border-radius: 12px;
-  background: #f9fafb;
-  cursor: pointer;
-  transition: .2s;
-}
-
 .task-item:hover {
   background: #f3f4f6;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.task-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 20px;
+  border-bottom: 1px solid #f3f4f6;
 }
 
 .task-title {
@@ -311,19 +371,83 @@ async function goToTimerPage() {
   color: #111827;
 }
 
-.task-deadline {
-  margin-top: 4px;
+.task-category {
   font-size: 13px;
   color: #6b7280;
+  margin-top: 4px;
+}
+
+.priority {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.priority.high {
+  color: #ef4444;
+}
+
+.priority.medium {
+  color: #f59e0b;
+}
+
+.priority.low {
+  color: #10b981;
+}
+
+.upcoming-item {
+  display: flex;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.date-box {
+  width: 60px;
+  height: 60px;
+  border-radius: 14px;
+  background: #f8fafc;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.date-box span {
+  font-size: 11px;
+  color: #7c3aed;
+  font-weight: 600;
+}
+
+.date-box strong {
+  font-size: 22px;
+}
+
+.upcoming-time {
+  color: #6b7280;
+  font-size: 13px;
+}
+
+.upcoming-title {
+  font-weight: 600;
+  margin-top: 3px;
+}
+
+.upcoming-category {
+  color: #9ca3af;
+  font-size: 13px;
 }
 
 .timer-panel {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   text-align: center;
 }
 
 .timer-image {
-  width: 130px;
-  margin-bottom: 20px;
+  width: 180px;
+  margin: 20px auto;
+  display: block;
 }
 
 .timer-panel h3 {
