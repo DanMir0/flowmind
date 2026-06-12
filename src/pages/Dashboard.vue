@@ -161,7 +161,8 @@ function formatTime(date) {
       <!-- TODAY -->
       <div class="panel">
         <div class="panel-header">
-          Today's Tasks
+          <span class="panel-title">Today's Tasks</span>
+          <router-link class="panel-view" :to="{name: 'todo'}">View all</router-link>
         </div>
 
         <div
@@ -198,7 +199,8 @@ function formatTime(date) {
       <!-- UPCOMING -->
       <div class="panel">
         <div class="panel-header">
-          Upcoming
+          <span class="panel-title">Upcoming</span>
+          <router-link class="panel-view" :to="{name: 'calendar'}">View calendar</router-link>
         </div>
 
         <div
@@ -341,6 +343,21 @@ function formatTime(date) {
 }
 
 .panel-header {
+  display: flex;
+  justify-content: space-between;
+}
+
+.panel-view {
+  color: #5b02f4;
+  font-size: 14px;
+}
+
+.panel-view:hover {
+  cursor: pointer;
+  color: #863fff;
+}
+
+.panel-title {
   font-size: 20px;
   font-weight: 700;
   margin-bottom: 20px;
