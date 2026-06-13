@@ -21,11 +21,24 @@ const dueToday = computed(() => {
   ).length
 })
 
-const todayTasks = computed(() =>
-  tasksStore.tasks
-    .filter(task => !task.completed)
+const todayTasks = computed(() => {
+  const today = new Date().toISOString().split('T')[0]
+
+  return tasksStore.tasks
+    .filter(task =>
+      !task.completed &&
+      task.deadline &&
+      task.deadline.startsWith(today)
+    )
     .slice(0, 5)
-)
+})
+
+async function toggleTask(task) {
+  await tasksStore.toggleTaskCompleted(
+    task.id,
+    !task.completed
+  )
+}
 
 const upcomingTasks = computed(() =>
   [...tasksStore.tasks]
@@ -37,10 +50,15 @@ const upcomingTasks = computed(() =>
     .slice(0, 5)
 )
 
-async function goToTodoPage() {
-  if (auth.goToLoginIfGuest(router)) {
-    await router.push({ name: 'todo' })
-  }
+async function openTask(taskId) {
+  if (!auth.goToLoginIfGuest(router)) return
+
+  await router.push({
+    name: 'todo',
+    query: {
+      edit: taskId
+    }
+  })
 }
 
 async function goToCalendarPage() {
@@ -99,6 +117,17 @@ function formatTime(date) {
       hour: '2-digit',
       minute: '2-digit'
     })
+}
+
+async function openAddTask() {
+  if (!auth.goToLoginIfGuest(router)) return
+
+  await router.push({
+    name: 'todo',
+    query: {
+      add: 'true'
+    }
+  })
 }
 </script>
 
@@ -172,27 +201,48 @@ function formatTime(date) {
             v-for="task in todayTasks"
             :key="task.id"
             class="task-item"
-            @click="goToTodoPage">
-            <div>
-              <div class="task-title">
-                {{ task.title }}
+            @click="openTask(task.id)">
+
+            <div class="task-left">
+
+              <button
+                class="task-checkbox"
+                @click.stop="toggleTask(task)"
+              >
+                <span v-if="task.completed">✓</span>
+              </button>
+
+              <div>
+                <div
+                  class="task-title"
+                  :class="{ completed: task.completed }"
+                >
+                  {{ task.title }}
+                </div>
+
+                <div class="task-category">
+                  {{ task.description || 'Task' }}
+                </div>
               </div>
 
-              <div class="task-category">
-                {{ task.category }}
-              </div>
             </div>
 
             <div
               class="priority"
-              :class="priorityClass(task.priority)">
+              :class="priorityClass(task.priority)"
+            >
               ● {{ priorityLabel(task.priority) }}
             </div>
+
           </div>
         </div>
 
         <div v-else class="empty">
           No active tasks
+        </div>
+
+        <div class="add-task-link" @click="openAddTask">
+          + Add new task
         </div>
       </div>
 
@@ -370,9 +420,8 @@ function formatTime(date) {
 }
 
 .task-item:hover {
-  background: #f3f4f6;
-  border-radius: 10px;
   cursor: pointer;
+  background: #f9fafb;
 }
 
 .task-item {
@@ -380,7 +429,9 @@ function formatTime(date) {
   justify-content: space-between;
   align-items: center;
   padding: 14px 20px;
-  border-bottom: 1px solid #f3f4f6;
+  border-bottom: none;
+  transition: all .2s ease;
+  border-radius: 10px;
 }
 
 .task-title {
@@ -392,6 +443,37 @@ function formatTime(date) {
   font-size: 13px;
   color: #6b7280;
   margin-top: 4px;
+}
+
+.task-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.task-checkbox {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid #d1d5db;
+  background: white;
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 12px;
+  color: white;
+}
+
+.task-checkbox:hover {
+  border-color: #7c3aed;
+}
+
+.task-title.completed {
+  text-decoration: line-through;
+  color: #9ca3af;
 }
 
 .priority {
@@ -517,6 +599,19 @@ function formatTime(date) {
   width: 1px;
   height: 14px;
   background: #e5e7eb;
+}
+
+.add-task-link {
+  margin-top: 20px;
+  color: #7c3aed;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  width: fit-content;
+}
+
+.add-task-link:hover {
+  color: #6d28d9;
 }
 
 @media (max-width: 1200px) {

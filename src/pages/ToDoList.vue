@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { useTasksStore } from '@/store/tasks'
 import { storeToRefs } from 'pinia'
 import TaskCard from '@/components/TaskCard.vue'
@@ -8,6 +8,7 @@ import ConfirmDeleteModal from '@/components/ConfirmDeleteModal.vue'
 import EditTaskModal from '@/components/EditTaskModal.vue'
 import EmptyState from '@/components/EmptyState.vue'
 import { showSuccess } from '@/utils/toast.js'
+import { useRoute } from 'vue-router'
 
 const tasksStore = useTasksStore()
 const { tasks, loading, error, isInitialized, searchQuery } = storeToRefs(tasksStore)
@@ -15,7 +16,7 @@ const { tasks, loading, error, isInitialized, searchQuery } = storeToRefs(tasksS
 const showAddModal = ref(false)
 const taskToDelete = ref(null)
 const taskToEdit = ref(null)
-
+const route = useRoute()
 const sortKey = ref('manual')
 const priorityFilter = ref('all')
 const statusFilter = ref('active')
@@ -244,6 +245,18 @@ watch(taskToEdit, (val) => {
   }
 })
 
+onMounted(() => {
+  const editId = route.query.edit
+  const addTask = route.query.add
+
+  if (editId) {
+    taskToEdit.value = editId
+  }
+
+  if (addTask === 'true') {
+    showAddModal.value = true
+  }
+})
 </script>
 
 <template>
