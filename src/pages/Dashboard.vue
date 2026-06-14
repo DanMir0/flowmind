@@ -135,7 +135,8 @@ async function openAddTask() {
   <div class="dashboard">
 
     <div class="welcome">
-      <h1>Good morning, {{ auth.user?.user_metadata?.username || auth.user?.email?.split('@')[0] }} 👋</h1>
+      <h1>Good morning, {{ auth.user?.user_metadata?.username || auth.user?.email?.split('@')[0] }}
+        👋</h1>
       <p>Here's what's happening today.</p>
     </div>
 
@@ -143,43 +144,85 @@ async function openAddTask() {
     <section class="stats-grid">
 
       <div class="stat-card">
-        <div class="stat-value">
-          {{ totalTasks }}
+        <div class="stat-icon purple">
+          📋
         </div>
 
-        <div class="stat-label">
-          Total Tasks
+        <div class="stat-card-block">
+          <div class="stat-value">
+            {{ totalTasks }}
+          </div>
+
+          <div class="stat-label">
+            Total Tasks
+          </div>
+
+          <div class="stat-subtitle">
+            All time
+          </div>
+        </div>
+
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon green">
+          ✅
+        </div>
+
+        <div class="stat-card-block">
+          <div class="stat-value">
+            {{ completedTasks }}
+          </div>
+
+          <div class="stat-label">
+            Completed
+          </div>
+
+          <div class="stat-subtitle">
+            This week
+          </div>
         </div>
       </div>
 
       <div class="stat-card">
-        <div class="stat-value">
-          {{ completedTasks }}
+        <div class="stat-icon yellow">
+          🕒
         </div>
+        <div class="stat-card-block">
 
-        <div class="stat-label">
-          Completed
+          <div class="stat-value">
+            0h
+          </div>
+
+          <div class="stat-label">
+            Focus Hours
+          </div>
+
+          <div class="stat-subtitle">
+            This week
+          </div>
         </div>
       </div>
 
       <div class="stat-card">
-        <div class="stat-value">
-          0h
+        <div class="stat-icon blue">
+          📅
         </div>
 
-        <div class="stat-label">
-          Focus Hours
-        </div>
-      </div>
+        <div class="stat-card-block">
+          <div class="stat-value">
+            {{ dueToday }}
+          </div>
 
-      <div class="stat-card">
-        <div class="stat-value">
-          {{ dueToday }}
+          <div class="stat-label">
+            Due Today
+          </div>
+
+          <div class="stat-subtitle">
+            Stay on track
+          </div>
         </div>
 
-        <div class="stat-label">
-          Due Today
-        </div>
       </div>
 
     </section>
@@ -292,22 +335,32 @@ async function openAddTask() {
       <!-- TIMER -->
       <div class="panel timer-panel">
 
+        <div class="panel-header">
+          <span class="panel-title">
+            Focus Timer
+          </span>
+        </div>
+
         <img
           src="../assets/timer.png"
           alt="timer"
-          class="timer-image">
+          class="timer-image"
+        >
 
-        <h3>Focus Timer</h3>
+        <div class="timer-panel-block">
+          <h3>Ready to focus?</h3>
 
-        <p>
-          Stay focused and boost productivity.
-        </p>
+          <p>
+            Start a focus session and get things done.
+          </p>
 
-        <button
-          class="start-btn"
-          @click="goToTimerPage">
-          Start Focus Session
-        </button>
+          <button
+            class="start-btn"
+            @click="goToTimerPage"
+          >
+            Start Timer
+          </button>
+        </div>
 
       </div>
 
@@ -366,12 +419,47 @@ async function openAddTask() {
   border: 1px solid #f1f5f9;
   border-radius: 20px;
   padding: 24px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.stat-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
 }
 
 .stat-value {
   font-size: 34px;
   font-weight: 700;
   color: #111827;
+}
+
+.stat-subtitle {
+  margin-top: 4px;
+  font-size: 13px;
+  color: #9ca3af;
+}
+
+.purple {
+  background: #f4ebff;
+}
+
+.green {
+  background: #ecfdf3;
+}
+
+.yellow {
+  background: #fffaeb;
+}
+
+.blue {
+  background: #eff8ff;
 }
 
 .stat-label {
@@ -458,11 +546,9 @@ async function openAddTask() {
   border: 2px solid #d1d5db;
   background: white;
   cursor: pointer;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   font-size: 12px;
   color: white;
 }
@@ -538,9 +624,12 @@ async function openAddTask() {
 .timer-panel {
   display: flex;
   flex-direction: column;
-  justify-content: center;
+}
+
+.timer-panel-block {
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  text-align: center;
 }
 
 .timer-image {
