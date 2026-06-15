@@ -137,7 +137,12 @@ async function openAddTask() {
 
       <div class="stat-card">
         <div class="stat-icon purple">
-          📋
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9 5H7C5.89543 5 5 5.89543 5 7V19C5 20.1046 5.89543 21 7 21H17C18.1046 21 19 20.1046 19 19V7C19 5.89543 18.1046 5 17 5H15" stroke="#7C3AED" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M9 5C9 3.89543 9.89543 3 11 3H13C14.1046 3 15 3.89543 15 5C15 6.10457 14.1046 7 13 7H11C9.89543 7 9 6.10457 9 5Z" stroke="#7C3AED" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M9 12H15" stroke="#7C3AED" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M9 16H13" stroke="#7C3AED" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
         </div>
 
         <div class="stat-card-block">
@@ -158,7 +163,10 @@ async function openAddTask() {
 
       <div class="stat-card">
         <div class="stat-icon green">
-          ✅
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="12" cy="12" r="10" stroke="#10B981" stroke-width="1.5"/>
+            <path d="M8 12L11 15L16 9" stroke="#10B981" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
         </div>
 
         <div class="stat-card-block">
@@ -178,7 +186,10 @@ async function openAddTask() {
 
       <div class="stat-card">
         <div class="stat-icon yellow">
-          🕒
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="12" cy="12" r="10" stroke="#F59E0B" stroke-width="1.5"/>
+            <path d="M12 6V12L16 14" stroke="#F59E0B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
         </div>
         <div class="stat-card-block">
 
@@ -198,7 +209,14 @@ async function openAddTask() {
 
       <div class="stat-card">
         <div class="stat-icon blue">
-          📅
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M8 2V6M16 2V6" stroke="#3B82F6" stroke-width="1.5" stroke-linecap="round"/>
+            <rect x="3" y="4" width="18" height="18" rx="2" stroke="#3B82F6" stroke-width="1.5"/>
+            <path d="M3 10H21" stroke="#3B82F6" stroke-width="1.5" stroke-linecap="round"/>
+            <circle cx="12" cy="15" r="1.5" fill="#3B82F6" stroke="#3B82F6" stroke-width="1"/>
+            <circle cx="16" cy="15" r="1.5" fill="#3B82F6" stroke="#3B82F6" stroke-width="1"/>
+            <circle cx="8" cy="15" r="1.5" fill="#3B82F6" stroke="#3B82F6" stroke-width="1"/>
+          </svg>
         </div>
 
         <div class="stat-card-block">
@@ -410,8 +428,8 @@ async function openAddTask() {
 }
 
 .stat-icon {
-  width: 64px;
-  height: 64px;
+  width: 78px;
+  height: 86px;
   border-radius: 18px;
   display: flex;
   align-items: center;
@@ -420,13 +438,12 @@ async function openAddTask() {
 }
 
 .stat-value {
-  font-size: 34px;
+  font-size: 32px;
   font-weight: 700;
   color: #111827;
 }
 
 .stat-subtitle {
-  margin-top: 4px;
   font-size: 13px;
   color: #9ca3af;
 }
@@ -448,7 +465,6 @@ async function openAddTask() {
 }
 
 .stat-label {
-  margin-top: 8px;
   color: #6b7280;
 }
 
