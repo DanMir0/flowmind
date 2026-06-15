@@ -40,14 +40,24 @@ async function toggleTask(task) {
   )
 }
 
+const today = new Date()
+today.setHours(0, 0, 0, 0)
+
 const upcomingTasks = computed(() =>
   [...tasksStore.tasks]
-    .filter(task => task.deadline)
+    .filter(task => {
+      if (!task.deadline || task.completed) return false
+
+      const deadline = new Date(task.deadline)
+      deadline.setHours(0, 0, 0, 0)
+
+      return deadline >= today
+    })
     .sort(
       (a, b) =>
         new Date(a.deadline) - new Date(b.deadline)
     )
-    .slice(0, 5)
+    .slice(0, 4)
 )
 
 async function openTask(taskId) {
@@ -391,7 +401,7 @@ async function openAddTask() {
 .dashboard {
   min-height: calc(100vh - 72px);
   background: #f8fafc;
-  padding: 32px;
+  padding: 18px 32px;
 }
 
 .welcome {
@@ -406,7 +416,7 @@ async function openAddTask() {
 }
 
 .welcome p {
-  margin-top: 8px;
+  margin-top: 4px;
   color: #6b7280;
 }
 
@@ -505,7 +515,7 @@ async function openAddTask() {
 .task-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 
 .task-item:hover {
