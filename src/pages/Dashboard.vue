@@ -111,14 +111,6 @@ function formatDay(date) {
   return new Date(date).getDate()
 }
 
-function formatTime(date) {
-  return new Date(date)
-    .toLocaleTimeString('en-US', {
-      hour: '2-digit',
-      minute: '2-digit'
-    })
-}
-
 async function openAddTask() {
   if (!auth.goToLoginIfGuest(router)) return
 
@@ -250,16 +242,14 @@ async function openAddTask() {
 
               <button
                 class="task-checkbox"
-                @click.stop="toggleTask(task)"
-              >
+                @click.stop="toggleTask(task)">
                 <span v-if="task.completed">✓</span>
               </button>
 
               <div>
                 <div
                   class="task-title"
-                  :class="{ completed: task.completed }"
-                >
+                  :class="{ completed: task.completed }">
                   {{ task.title }}
                 </div>
 
@@ -272,8 +262,7 @@ async function openAddTask() {
 
             <div
               class="priority"
-              :class="priorityClass(task.priority)"
-            >
+              :class="priorityClass(task.priority)">
               ● {{ priorityLabel(task.priority) }}
             </div>
 
@@ -300,10 +289,11 @@ async function openAddTask() {
           v-if="upcomingTasks.length"
           class="task-list">
           <div
-            v-for="task in upcomingTasks"
+            v-for="(task, index) in upcomingTasks"
             :key="task.id"
             class="upcoming-item">
-            <div class="date-box">
+            <div class="date-box"
+                 :class="index % 2 === 0 ? 'purple-date' : 'pink-date'">
               <span>{{ formatMonth(task.deadline) }}</span>
 
               <strong>
@@ -311,10 +301,7 @@ async function openAddTask() {
               </strong>
             </div>
 
-            <div>
-              <div class="upcoming-time">
-                {{ formatTime(task.deadline) }}
-              </div>
+            <div class="upcoming-content">
 
               <div class="upcoming-title">
                 {{ task.title }}
@@ -344,8 +331,7 @@ async function openAddTask() {
         <img
           src="../assets/timer.png"
           alt="timer"
-          class="timer-image"
-        >
+          class="timer-image">
 
         <div class="timer-panel-block">
           <h3>Ready to focus?</h3>
@@ -356,8 +342,7 @@ async function openAddTask() {
 
           <button
             class="start-btn"
-            @click="goToTimerPage"
-          >
+            @click="goToTimerPage">
             Start Timer
           </button>
         </div>
@@ -581,44 +566,61 @@ async function openAddTask() {
 
 .upcoming-item {
   display: flex;
+  align-items: center;
   gap: 14px;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
+}
+
+.upcoming-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .date-box {
-  width: 60px;
-  height: 60px;
+  width: 56px;
+  height: 66px;
   border-radius: 14px;
-  background: #f8fafc;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  flex-shrink: 0;
 }
 
 .date-box span {
   font-size: 11px;
-  color: #7c3aed;
-  font-weight: 600;
+  font-weight: 700;
+  color: #6b7280;
+  line-height: 1;
+}
+
+.purple-date {
+  background: #f5f3ff;
+}
+
+.pink-date {
+  background: #fdf2f8;
 }
 
 .date-box strong {
-  font-size: 22px;
-}
-
-.upcoming-time {
-  color: #6b7280;
-  font-size: 13px;
+  margin-top: 4px;
+  font-size: 28px;
+  font-weight: 700;
+  color: #111827;
+  line-height: 1;
 }
 
 .upcoming-title {
+  font-size: 15px;
   font-weight: 600;
-  margin-top: 3px;
+  color: #111827;
 }
 
 .upcoming-category {
-  color: #9ca3af;
+  margin-top: 4px;
   font-size: 13px;
+  color: #9ca3af;
 }
 
 .timer-panel {
