@@ -1,11 +1,13 @@
 <script setup>
 import router from '@/router/router.js'
 import { useAuthStore } from '@/store/auth.js'
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 import { useTasksStore } from '@/store/tasks.js'
+import { useFocusStore } from '@/store/focusSessions.js'
 
 const auth = useAuthStore()
 const tasksStore = useTasksStore()
+const focusStore = useFocusStore()
 
 const totalTasks = computed(() => tasksStore.tasks.length)
 
@@ -131,6 +133,10 @@ async function openAddTask() {
     }
   })
 }
+
+onMounted(async () => {
+  await focusStore.loadSessions()
+})
 </script>
 
 <template>
@@ -204,7 +210,7 @@ async function openAddTask() {
         <div class="stat-card-block">
 
           <div class="stat-value">
-            0h
+            {{ focusStore.weeklyFocusTime  }}
           </div>
 
           <div class="stat-label">

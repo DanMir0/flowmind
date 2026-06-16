@@ -5,8 +5,14 @@ import { useSubscriptionStore } from '@/store/subscription'
 import QuoteMenu from '@/components/quotes/QuoteMenu.vue'
 import AddQuoteModal from '@/components/quotes/AddQuoteModal.vue'
 import { useRouter } from 'vue-router'
+import { useFocusStore } from '@/store/focusSessions'
+import { useAuthStore } from '@/store/auth'
 
 const subscriptionStore = useSubscriptionStore()
+const focusStore = useFocusStore()
+const authStore = useAuthStore()
+
+let sessionStartedAt = null
 
 const router = useRouter()
 const showQuoteMenu = ref(false)
@@ -122,6 +128,8 @@ const tick = () => {
 const start = () => {
   if (isRunning.value || isEditing.value) return
 
+  sessionStartedAt = new Date()
+
   isRunning.value = true
 
   endTime = Date.now() + timeLeft.value * 1000
@@ -129,23 +137,54 @@ const start = () => {
   tick()
 }
 
-const stop = () => {
+const saveFocusSession = async () => {
+  if (!sessionStartedAt) return
+
+  const endedAt = new Date()
+
+  const durationMinutes =
+    Math.floor(
+      (endedAt.getTime() -
+        sessionStartedAt.getTime()) / 60000
+    )
+
+  if (durationMinutes < 1) return
+
+  await focusStore.createSession({
+    user_id: authStore.user.id,
+    started_at: sessionStartedAt.toISOString(),
+    ended_at: endedAt.toISOString(),
+    duration_minutes: durationMinutes,
+    completed: true
+  })
+
+  sessionStartedAt = null
+
+}
+
+const stop = async () => {
   if (rafId) {
     cancelAnimationFrame(rafId)
     rafId = null
   }
+
   isRunning.value = false
+
+  await saveFocusSession()
 }
 
 const toggle = () => {
   isRunning.value ? stop() : start()
 }
 
-const reset = () => {
-  stop()
+const reset = async () => {
+  await stop()
+
   dashOffset.value = 0
+
   rafId = null
   endTime = null
+
   timeLeft.value = workDuration.value
 }
 
@@ -159,7 +198,7 @@ onMounted(async () => {
   await loadQuote()
 })
 
-onUnmounted(stop)
+// onUnmounted(stop)
 </script>
 
 <template>
