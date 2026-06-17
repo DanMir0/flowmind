@@ -11,12 +11,19 @@ export const useFocusStore = defineStore('focus', {
     weeklyFocusTime(state) {
       const now = new Date()
 
-      const weekAgo = new Date()
-      weekAgo.setDate(now.getDate() - 7)
+      const monday = new Date(now)
+
+      const day = monday.getDay() // 0=Вс, 1=Пн, ...
+
+      const diff = day === 0 ? 6 : day - 1
+
+      monday.setDate(monday.getDate() - diff)
+
+      monday.setHours(0, 0, 0, 0)
 
       const totalMinutes = state.sessions
         .filter(session =>
-          new Date(session.started_at) >= weekAgo
+          new Date(session.started_at) >= monday
         )
         .reduce((sum, session) => {
           return sum + (session.duration_minutes || 0)
@@ -29,11 +36,9 @@ export const useFocusStore = defineStore('focus', {
       const hours = Math.floor(totalMinutes / 60)
       const minutes = totalMinutes % 60
 
-      if (minutes === 0) {
-        return `${hours}h`
-      }
-
-      return `${hours}:${String(minutes).padStart(2, '0')}h`
+      return minutes
+        ? `${hours}:${String(minutes).padStart(2, '0')}h`
+        : `${hours}h`
     }
   },
 
