@@ -22,6 +22,7 @@ const priorityFilter = ref('all')
 const statusFilter = ref('active')
 const draggedTask = ref(null)
 const draggingId = ref(null)
+const visibleCount = ref(15)
 
 const priorityFilters = [
   { label: 'All', value: 'all' },
@@ -84,6 +85,18 @@ const visibleTasks = computed(() => {
       return searchedTasks.value
   }
 })
+
+const displayedTasks = computed(() =>
+  visibleTasks.value.slice(0, visibleCount.value)
+)
+
+const hasMoreTasks = computed(() =>
+  visibleTasks.value.length > visibleCount.value
+)
+
+function loadMore() {
+  visibleCount.value += 15
+}
 
 function onDragStart(task, event) {
   if (sortKey.value !== 'manual') return
@@ -244,6 +257,12 @@ watch(taskToEdit, (val) => {
     document.body.classList.remove('modal-open')
   }
 })
+watch(
+  [priorityFilter, statusFilter, searchQuery],
+  () => {
+    visibleCount.value = 15
+  }
+)
 
 onMounted(() => {
   const editId = route.query.edit
@@ -391,7 +410,7 @@ onMounted(() => {
     <div v-else>
       <TransitionGroup name="list" tag="div" class="tasks-grid">
         <TaskCard
-          v-for="task in visibleTasks"
+          v-for="task in displayedTasks"
           :key="task._key || task.id"
           :task="task"
           :class="{ dragging: draggingId === task.id }"
@@ -405,6 +424,15 @@ onMounted(() => {
           @toggle-complete="toggleComplete"
         />
       </TransitionGroup>
+      <div
+        v-if="hasMoreTasks"
+        class="load-more-wrapper">
+        <button
+          class="load-more-btn"
+          @click="loadMore">
+          Load More ({{ visibleTasks.length - displayedTasks.length }})
+        </button>
+      </div>
     </div>
 
 
@@ -693,6 +721,29 @@ onMounted(() => {
   height: 36px;
   border-radius: 20px;
   background: #eee;
+}
+
+.load-more-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 32px;
+}
+
+.load-more-btn {
+  padding: 12px 20px;
+  border-radius: 14px;
+  border: 1px solid #E5E7EB;
+  background: white;
+  color: #6B7280;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .2s ease;
+}
+
+.load-more-btn:hover {
+  background: #F9FAFB;
+  border-color: #D1D5DB;
+  transform: translateY(-1px);
 }
 </style>
 <style>
