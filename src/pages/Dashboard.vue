@@ -15,12 +15,16 @@ const completedTasks = computed(() =>
   tasksStore.tasks.filter(task => task.completed).length
 )
 
-const dueToday = computed(() => {
-  const today = new Date().toISOString().split('T')[0]
+const overdueTasks = computed(() => {
+  const now = new Date()
 
-  return tasksStore.tasks.filter(task =>
-    task.deadline?.startsWith(today)
-  ).length
+  return tasksStore.tasks.filter(task => {
+    return (
+      !task.completed &&
+      task.deadline &&
+      new Date(task.deadline) < now
+    )
+  }).length
 })
 
 const todayTasks = computed(() => {
@@ -224,31 +228,40 @@ onMounted(async () => {
       </div>
 
       <div class="stat-card">
-        <div class="stat-icon blue">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M8 2V6M16 2V6" stroke="#3B82F6" stroke-width="1.5" stroke-linecap="round"/>
-            <rect x="3" y="4" width="18" height="18" rx="2" stroke="#3B82F6" stroke-width="1.5"/>
-            <path d="M3 10H21" stroke="#3B82F6" stroke-width="1.5" stroke-linecap="round"/>
-            <circle cx="12" cy="15" r="1.5" fill="#3B82F6" stroke="#3B82F6" stroke-width="1"/>
-            <circle cx="16" cy="15" r="1.5" fill="#3B82F6" stroke="#3B82F6" stroke-width="1"/>
-            <circle cx="8" cy="15" r="1.5" fill="#3B82F6" stroke="#3B82F6" stroke-width="1"/>
+        <div class="stat-icon red">
+          <svg
+            width="32"
+            height="32"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M12 8V13"
+              stroke="#EF4444"
+              stroke-width="2"
+              stroke-linecap="round"/>
+            <circle
+              cx="12"
+              cy="17"
+              r="1"
+              fill="#EF4444"/>
+            <path
+              d="M10.29 3.86L1.82 18C1.64 18.31 1.55 18.66 1.55 19C1.55 20.1 2.45 21 3.55 21H20.45C21.55 21 22.45 20.1 22.45 19C22.45 18.66 22.36 18.31 22.18 18L13.71 3.86C13.32 3.22 12.68 3 12 3C11.32 3 10.68 3.22 10.29 3.86Z"
+              stroke="#EF4444"
+              stroke-width="1.7"
+              stroke-linejoin="round"/>
           </svg>
         </div>
 
-        <div class="stat-card-block">
-          <div class="stat-value">
-            {{ dueToday }}
-          </div>
+          <div>
+            <div class="stat-value">
+              {{ overdueTasks }}
+            </div>
 
-          <div class="stat-label">
-            Due Today
+            <div class="stat-label">
+              Overdue
+            </div>
           </div>
-
-          <div class="stat-subtitle">
-            Stay on track
-          </div>
-        </div>
-
       </div>
 
     </section>
@@ -476,8 +489,8 @@ onMounted(async () => {
   background: #fffaeb;
 }
 
-.blue {
-  background: #eff8ff;
+.red {
+  background: #fef2f2;
 }
 
 .stat-label {
