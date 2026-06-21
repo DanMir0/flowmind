@@ -507,7 +507,7 @@ onMounted(async () => {
 
 .main-grid {
   display: grid;
-  grid-template-columns: 1.4fr 1fr 0.9fr;
+  grid-template-columns: 1.3fr 1fr 1.1fr;
   gap: 24px;
 }
 
