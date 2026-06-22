@@ -77,6 +77,39 @@ async function openTask(taskId) {
   })
 }
 
+async function openAllTasks() {
+  await router.push({
+    name: 'todo',
+    query: {
+      status: 'all'
+    }
+  })
+}
+
+async function openCompletedTasks() {
+  await router.push({
+    name: 'todo',
+    query: {
+      status: 'completed'
+    }
+  })
+}
+
+async function openOverdueTasks() {
+  await router.push({
+    name: 'todo',
+    query: {
+      status: 'overdue'
+    }
+  })
+}
+
+async function openTimer() {
+  await router.push({
+    name: 'timer'
+  })
+}
+
 async function goToCalendarPage() {
   if (auth.goToLoginIfGuest(router)) {
     await router.push({ name: 'calendar' })
@@ -159,7 +192,8 @@ onMounted(async () => {
     <!-- STATS -->
     <section class="stats-grid">
 
-      <div class="stat-card">
+      <div class="stat-card clickable"
+           @click="openAllTasks">
         <div class="stat-icon purple">
           <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M9 5H7C5.89543 5 5 5.89543 5 7V19C5 20.1046 5.89543 21 7 21H17C18.1046 21 19 20.1046 19 19V7C19 5.89543 18.1046 5 17 5H15" stroke="#7C3AED" stroke-width="1.5" stroke-linecap="round"/>
@@ -185,7 +219,8 @@ onMounted(async () => {
 
       </div>
 
-      <div class="stat-card">
+      <div class="stat-card clickable"
+           @click="openCompletedTasks">
         <div class="stat-icon green">
           <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <circle cx="12" cy="12" r="10" stroke="#10B981" stroke-width="1.5"/>
@@ -208,7 +243,8 @@ onMounted(async () => {
         </div>
       </div>
 
-      <div class="stat-card">
+      <div class="stat-card clickable"
+           @click="openTimer">
         <div class="stat-icon yellow">
           <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <circle cx="12" cy="12" r="10" stroke="#F59E0B" stroke-width="1.5"/>
@@ -231,7 +267,8 @@ onMounted(async () => {
         </div>
       </div>
 
-      <div class="stat-card">
+      <div class="stat-card clickable"
+           @click="openOverdueTasks">
         <div class="stat-icon red">
           <svg
             width="32"
@@ -756,6 +793,20 @@ onMounted(async () => {
 
 .add-task-link:hover {
   color: #6d28d9;
+}
+
+.clickable {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.clickable:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 28px rgba(0,0,0,0.08);
+}
+
+.clickable:active {
+  transform: translateY(-1px);
 }
 
 @media (max-width: 1200px) {

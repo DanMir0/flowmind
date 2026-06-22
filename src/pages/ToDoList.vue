@@ -81,6 +81,12 @@ const visibleTasks = computed(() => {
       return searchedTasks.value.filter(t => !t.completed)
     case 'completed':
       return searchedTasks.value.filter(t => t.completed)
+    case 'overdue':
+      return searchedTasks.value.filter(task =>
+        !task.completed &&
+        task.deadline &&
+        new Date(task.deadline) < new Date()
+      )
     default:
       return searchedTasks.value
   }
@@ -267,6 +273,7 @@ watch(
 onMounted(() => {
   const editId = route.query.edit
   const addTask = route.query.add
+  const status = route.query.status
 
   if (editId) {
     taskToEdit.value = editId
@@ -274,6 +281,18 @@ onMounted(() => {
 
   if (addTask === 'true') {
     showAddModal.value = true
+  }
+
+  if (status === 'completed') {
+    statusFilter.value = 'completed'
+  }
+
+  if (status === 'overdue') {
+    statusFilter.value = 'overdue'
+  }
+
+  if (status === 'all') {
+    statusFilter.value = 'all'
   }
 })
 </script>
