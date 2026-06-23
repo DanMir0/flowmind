@@ -21,21 +21,9 @@ const focusTasks = computed(() => {
   return tasksStore.tasks.filter(task => {
     if (!task.deadline) return false
 
-    return isToday(task.deadline) || isOverdue(task.deadline)
+    return isToday(task.deadline)
   })
 })
-
-function isOverdue(dateStr) {
-  if (!dateStr) return false
-
-  const today = new Date()
-  today.setHours(0, 0, 0, 0)
-
-  const date = new Date(dateStr)
-  date.setHours(0, 0, 0, 0)
-
-  return date < today
-}
 
 const completedFocusTasks = computed(() => {
   return focusTasks.value.filter(t => t.completed).length
