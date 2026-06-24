@@ -183,12 +183,12 @@ onUnmounted(() => {
         <p v-if="error" class="error">{{ error }}</p>
 
         <div class="actions">
-          <button class="cancel" @click="emit('close')">
+          <button class="btn btn-cancel" @click="emit('close')">
             Cancel
           </button>
 
           <button
-            :class="[!canSubmit || !canAddTask ? 'btn-disabled' : 'save']"
+            class="btn btn-primary"
             :disabled="!canSubmit || !canAddTask"
             @click="submit">
             {{ loading ? 'Saving...' : 'Add Task' }}
@@ -262,90 +262,48 @@ input, textarea, select {
   gap: 12px;
 }
 
-.cancel {
-  background: #f5f5f5;
-  border: 1px solid #e0e0e0;
+.btn {
+  flex: 1;
+  max-width: 120px;
   padding: 10px 18px;
   border-radius: 22px;
-  color: #666;
   font-weight: 600;
   font-size: 14px;
   cursor: pointer;
   transition: all 0.2s ease;
-  max-width: 120px;
-  flex: 1;
 }
 
-.cancel:hover {
+.btn-primary {
+  background: #7a3cff;
+  color: #ffffff;
+  border: none;
+  box-shadow: 0 2px 6px rgba(122, 60, 255, 0.25);
+}
+
+.btn-primary:hover {
+  background: #6633d9;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(122, 60, 255, 0.35);
+}
+
+.btn-primary:disabled {
+  background: #c4b0f0;
+  color: #ffffff;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.btn-cancel {
+  background: #f5f5f5;
+  border: 1px solid #e0e0e0;
+  color: #444;
+}
+
+.btn-cancel:hover {
   background: #e8e8e8;
   border-color: #ccc;
-  color: #333;
-}
-
-.cancel:active {
-  transform: translateY(0);
-}
-
-.save {
-  background: linear-gradient(145deg, #7a3cff, #6a2ee0);
-  border: 1px solid rgba(122, 60, 255, 0.2);
-  border-radius: 40px;
-  padding: 10px 20px;
-  color: white;
-  font-weight: 600;
-  font-size: 14px;
-  letter-spacing: 0.3px;
-  cursor: pointer;
-  transition: all 0.25s ease;
-  max-width: 120px;
-  box-shadow: 0 4px 12px rgba(122, 60, 255, 0.25);
-  position: relative;
-  overflow: hidden;
-  flex: 1;
-}
-
-.save:hover {
   transform: translateY(-2px);
-  background: linear-gradient(145deg, #8a4cff, #7a3ee0);
-  box-shadow: 0 8px 18px rgba(122, 60, 255, 0.35);
-  border-color: rgba(122, 60, 255, 0.3);
-}
-
-.save:hover::before {
-  left: 100%;
-}
-
-.save::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-  transition: left 0.5s ease;
-}
-
-.save:active {
-  transform: translateY(0);
-  box-shadow: 0 4px 12px rgba(122, 60, 255, 0.2);
-}
-
-.btn-disabled {
-  background: linear-gradient(145deg, #e0d9f0, #d4cce8);
-  border: 1px solid rgba(100, 70, 150, 0.15);
-  border-radius: 40px;
-  padding: 10px 20px;
-  color: #a094b9;
-  font-weight: 600;
-  font-size: 14px;
-  letter-spacing: 0.3px;
-  cursor: not-allowed;
-  flex: 1;
-  max-width: 120px;
-  box-shadow: none;
-  opacity: 0.7;
-  position: relative;
 }
 
 .error {

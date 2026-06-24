@@ -32,11 +32,11 @@ const emit = defineEmits(['confirm','cancel'])
 
         <div class="actions">
 
-          <button class="btn cancel" @click="emit('cancel')">
+          <button class="btn btn-cancel" @click="emit('cancel')">
             Cancel
           </button>
 
-          <button class="btn danger" @click="emit('confirm')">
+          <button class="btn btn-primary" @click="emit('confirm')">
             Delete
           </button>
 
@@ -86,65 +86,46 @@ const emit = defineEmits(['confirm','cancel'])
 
 .btn {
   flex: 1;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 40px;
-  cursor: pointer;
-  font-size: 14px;
+  max-width: 120px;
+  padding: 10px 18px;
+  border-radius: 22px;
   font-weight: 600;
-  letter-spacing: 0.3px;
-  transition: all 0.25s ease;
-  position: relative;
-  overflow: hidden;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-/* Cancel Button Styles */
-.btn.cancel {
-  background: linear-gradient(145deg, #f5f3ff, #ede9fe);
-  color: #6d4fa8;
-  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.15);
-  border: 1px solid rgba(139, 92, 246, 0.2);
+.btn-primary {
+  background: #7a3cff;
+  color: #ffffff;
+  border: none;
+  box-shadow: 0 2px 6px rgba(122, 60, 255, 0.25);
 }
 
-.btn.cancel:hover {
+.btn-primary:hover {
+  background: #6633d9;
   transform: translateY(-2px);
-  box-shadow: 0 12px 22px rgba(139, 92, 246, 0.3);
+  box-shadow: 0 4px 12px rgba(122, 60, 255, 0.35);
 }
 
-.btn.cancel:active {
-  transform: translateY(0);
-  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2);
+.btn-primary:disabled {
+  background: #c4b0f0;
+  color: #ffffff;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
-/* Danger Button Styles */
-.btn.danger {
-  background: linear-gradient(145deg, #fff5f5, #ffe5e5);
-  color: #e53e3e;
-  border: 1px solid rgba(229, 62, 62, 0.2);
-  box-shadow: 0 4px 12px rgba(229, 62, 62, 0.1);
+.btn-cancel {
+  background: #f5f5f5;
+  border: 1px solid #e0e0e0;
+  color: #444;
 }
 
-.btn.danger:hover {
-  background: linear-gradient(145deg, #e53e3e, #c53030);
-  color: white;
+.btn-cancel:hover {
+  background: #e8e8e8;
+  border-color: #ccc;
   transform: translateY(-2px);
-  box-shadow: 0 12px 22px rgba(229, 62, 62, 0.25);
-  border-color: transparent;
-}
-
-.btn.danger:active {
-  transform: translateY(0);
-  box-shadow: 0 4px 12px rgba(229, 62, 62, 0.15);
-}
-
-/* Button text animation */
-.btn-text {
-  display: inline-block;
-  transition: transform 0.2s;
-}
-
-.btn:hover .btn-text {
-  transform: scale(1.02);
 }
 
 /* Ripple effect */

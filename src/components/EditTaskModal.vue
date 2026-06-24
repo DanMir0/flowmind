@@ -265,15 +265,15 @@ function close() {
         <!-- ACTIONS -->
         <div class="actions">
           <button
-            class="btn save"
-            @click="save">
-            Save
+            class="btn btn-cancel"
+            @click="close">
+            Cancel
           </button>
 
           <button
-            class="btn cancel"
-            @click="close">
-            Cancel
+            class="btn btn-primary"
+            @click="save">
+            Save
           </button>
         </div>
 
@@ -333,20 +333,47 @@ textarea {
 }
 
 .btn {
+  flex: 1;
+  max-width: 120px;
   padding: 10px 18px;
-  border-radius: 20px;
-  border: none;
-  cursor: pointer;
+  border-radius: 22px;
   font-weight: 600;
-  color: white;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-.btn.save {
+.btn-primary {
   background: #7a3cff;
+  color: #ffffff;
+  border: none;
+  box-shadow: 0 2px 6px rgba(122, 60, 255, 0.25);
 }
 
-.btn.cancel {
-  background: #9e9e9e;
+.btn-primary:hover {
+  background: #6633d9;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(122, 60, 255, 0.35);
+}
+
+.btn-primary:disabled {
+  background: #c4b0f0;
+  color: #ffffff;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.btn-cancel {
+  background: #f5f5f5;
+  border: 1px solid #e0e0e0;
+  color: #444;
+}
+
+.btn-cancel:hover {
+  background: #e8e8e8;
+  border-color: #ccc;
+  transform: translateY(-2px);
 }
 
 .hidden-input {
