@@ -4,6 +4,9 @@ import { useTasksStore } from '@/store/tasks'
 
 const tasksStore = useTasksStore()
 const quickTask = ref('')
+const quickTaskError = ref(false)
+const quickTaskInput = ref(null)
+
 function isToday(dateStr) {
   if (!dateStr) return false
 
@@ -37,10 +40,24 @@ const progressPercent = computed(() => {
   )
 })
 
+let quickTaskTimer = null
+
 async function addQuickTask() {
   const title = quickTask.value.trim()
 
-  if (!title) return
+  if (!title) {
+    quickTaskError.value = true
+
+    clearTimeout(quickTaskTimer)
+
+    quickTaskTimer = setTimeout(() => {
+      quickTaskError.value = false
+    }, 1500)
+
+    quickTaskInput.value?.focus()
+
+    return
+  }
 
   await tasksStore.addTask({
     title,
@@ -49,6 +66,7 @@ async function addQuickTask() {
   })
 
   quickTask.value = ''
+  quickTaskError.value = false
 }
 </script>
 
@@ -201,10 +219,12 @@ async function addQuickTask() {
 
       <div class="quick-add-input-wrapper">
         <input
+          ref="quickTaskInput"
           v-model="quickTask"
           type="text"
           placeholder="Type task name..."
           class="quick-add-input"
+          :class="{ error: quickTaskError }"
           @keydown.enter="addQuickTask"
         />
 
@@ -214,6 +234,10 @@ async function addQuickTask() {
           +
         </button>
       </div>
+
+      <p v-if="quickTaskError" class="quick-add-error">
+        Task title is required
+      </p>
     </div>
 </aside>
 </template>
@@ -222,12 +246,9 @@ async function addQuickTask() {
 .sidebar {
   width: 240px;
   min-height: calc(100vh - 73px);
-
   background: white;
   border-right: 1px solid #eee;
-
   padding: 24px 16px;
-
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -361,14 +382,10 @@ async function addQuickTask() {
 
 .quick-add-card {
   margin-top: 16px;
-
   background: white;
   border: 1px solid #eee;
-
   border-radius: 20px;
-
   padding: 18px;
-
   display: flex;
   flex-direction: column;
   gap: 14px;
@@ -395,8 +412,19 @@ async function addQuickTask() {
   border-radius: 12px;
   padding: 12px 14px;
   font-size: 12px;
-  transition: 0.2s;
+  transition: border-color .2s ease, box-shadow .2s ease;
   min-width: 0;
+}
+
+.quick-add-input.error {
+  border: 1px solid #ef4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, .15);
+}
+
+.quick-add-error {
+  color: #ef4444;
+  font-size: 13px;
+  font-weight: 500;
 }
 
 .quick-add-input:focus {
