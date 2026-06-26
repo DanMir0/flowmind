@@ -8,6 +8,9 @@ defineProps({
   entity: {
     type: String,
     default: 'item'
+  },
+  isOpen: {
+    type: Boolean,
   }
 })
 
@@ -16,47 +19,51 @@ const emit = defineEmits(['confirm','cancel'])
 </script>
 
 <template>
+  <Teleport to="body">
+    <Transition name="modal" appear>
+      <div v-if="isOpen" class="modal-wrapper">
 
-  <div class="modal-wrapper">
+        <div class="modal-backdrop">
 
-    <div class="modal-backdrop">
+          <div class="modal">
 
-      <div class="modal">
+            <h3>Delete {{ entity }}</h3>
 
-        <h3>Delete {{ entity }}</h3>
+            <p>
+              Are you sure you want to delete
+              <strong>"{{ title }}"</strong>?
+            </p>
 
-        <p>
-          Are you sure you want to delete
-          <strong>"{{ title }}"</strong>?
-        </p>
+            <div class="actions">
 
-        <div class="actions">
+              <button class="btn btn-cancel" @click="emit('cancel')">
+                Cancel
+              </button>
 
-          <button class="btn btn-cancel" @click="emit('cancel')">
-            Cancel
-          </button>
+              <button class="btn btn-primary" @click="emit('confirm')">
+                Delete
+              </button>
 
-          <button class="btn btn-primary" @click="emit('confirm')">
-            Delete
-          </button>
+            </div>
+
+          </div>
 
         </div>
 
       </div>
+    </Transition>
+  </Teleport>
 
-    </div>
-
-  </div>
 
 </template>
 <style scoped>
 .modal-backdrop {
-  position: fixed;
+  position: absolute;
   inset: 0;
-  background: rgba(15, 23, 42, 0.35);
+  background: rgba(15,23,42,.35);
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
 }
 
 .modal {
@@ -128,6 +135,12 @@ const emit = defineEmits(['confirm','cancel'])
   transform: translateY(-2px);
 }
 
+.modal-wrapper {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+}
+
 /* Ripple effect */
 .btn::after {
   content: '';
@@ -177,28 +190,25 @@ const emit = defineEmits(['confirm','cancel'])
 <style>
 .modal-enter-active,
 .modal-leave-active {
-  transition: opacity 0.3s ease;
+  transition: opacity .25s ease;
 }
 
 .modal-enter-from,
 .modal-leave-to {
   opacity: 0;
 }
-
-/* Панель */
 .modal-enter-active .modal,
 .modal-leave-active .modal {
-  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1),
-  opacity 0.25s ease;
+  transition:
+    transform .35s cubic-bezier(.16,1,.3,1),
+    opacity .25s ease;
 }
-
 .modal-enter-from .modal {
-  transform: translateY(60px) scale(0.9);
+  transform: translateY(45px) scale(.95);
   opacity: 0;
 }
-
 .modal-leave-to .modal {
-  transform: translateY(30px) scale(0.95);
+  transform: translateY(20px) scale(.98);
   opacity: 0;
 }
 </style>

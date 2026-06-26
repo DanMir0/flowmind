@@ -15,6 +15,8 @@ const { tasks, loading, error, isInitialized, searchQuery } = storeToRefs(tasksS
 
 const showAddModal = ref(false)
 const taskToDelete = ref(null)
+const showEditModal = ref(false)
+const showDeleteModal = ref(false)
 const taskToEdit = ref(null)
 const route = useRoute()
 const sortKey = ref('manual')
@@ -136,9 +138,11 @@ async function onDrop(targetTask) {
 
 function requestDelete(task) {
   taskToDelete.value = task
+  showDeleteModal.value = true
 }
 
 function requestEdit(taskId) {
+  showEditModal.value = true
   taskToEdit.value = taskId
 }
 
@@ -150,6 +154,7 @@ async function saveEdit(payload) {
 
 async function confirmDelete() {
   await tasksStore.deleteTask(taskToDelete.value.id)
+  showDeleteModal.value = false
   taskToDelete.value = null
   showSuccess('Task deleted!')
 }
@@ -256,6 +261,11 @@ const searchedTasks = computed(() => {
     })
 })
 
+function closeEditModal() {
+  showEditModal.value = false
+  taskToEdit.value = null
+}
+
 watch(taskToEdit, (val) => {
   if (val) {
     document.body.classList.add('modal-open')
@@ -276,6 +286,7 @@ onMounted(() => {
   const status = route.query.status
 
   if (editId) {
+    showEditModal.value = true
     taskToEdit.value = editId
   }
 
@@ -455,31 +466,21 @@ onMounted(() => {
     </div>
 
 
-    <Teleport to="body">
-      <Transition name="modal">
-        <AddTaskModal
-          v-if="showAddModal"
-          @close="showAddModal = false" />
-      </Transition>
-    </Teleport>
+    <AddTaskModal
+      :isOpen="showAddModal"
+      @close="showAddModal = false" />
 
-    <Teleport to="body">
-      <Transition name="modal">
-        <EditTaskModal
-          v-if="taskToEdit"
-          :task-id="taskToEdit"
-          :on-save="saveEdit"
-          @close="taskToEdit = null" />
-      </Transition>
-    </Teleport>
+    <EditTaskModal
+      :isOpen="showEditModal"
+      :task-id="taskToEdit"
+      :on-save="saveEdit"
+      @close="closeEditModal" />
 
-    <Transition name="modal">
-      <ConfirmDeleteModal
-        v-if="taskToDelete"
-        :title="taskToDelete.title"
-        @confirm="confirmDelete"
-        @cancel="taskToDelete = null" />
-    </Transition>
+    <ConfirmDeleteModal
+      :isOpen="showDeleteModal"
+      :title="taskToDelete?.title"
+      @confirm="confirmDelete"
+      @cancel="showDeleteModal = false" />
   </div>
 </template>
 
