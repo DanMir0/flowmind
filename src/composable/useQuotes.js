@@ -111,7 +111,6 @@ export function useQuotes() {
 
     } catch (error) {
 
-      console.error('Quote loading error:', error)
 
     } finally {
 

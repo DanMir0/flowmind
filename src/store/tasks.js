@@ -168,7 +168,6 @@ export const useTasksStore = defineStore('tasks', {
         await this.syncTaskFiles(task.id)
         this.creatingTaskIds.delete(task.id)
       } catch (e) {
-        console.error('ADD TASK FAILED:', e)
 
         // удаляем skeleton если ошибка
         this.tasks = this.tasks.filter(t => t.id !== tempId)
@@ -361,10 +360,6 @@ export const useTasksStore = defineStore('tasks', {
           .from('tasks')
           .update({ position: item.position })
           .eq('id', item.id)
-
-        if (error) {
-          console.error(error)
-        }
       }
     },
 
@@ -425,7 +420,6 @@ export const useTasksStore = defineStore('tasks', {
 
       // 4. rollback если ошибка
       if (error) {
-        console.error(error)
 
         // возвращаем назад
         this.tasks.push(...toArchive)
@@ -485,7 +479,6 @@ export const useTasksStore = defineStore('tasks', {
 
       // 3. rollback если ошибка
       if (error) {
-        console.error(error)
 
         this.tasks = this.tasks.filter(t => t.id !== taskId)
         this.archivedTasks.unshift(task)
@@ -632,7 +625,6 @@ export const useTasksStore = defineStore('tasks', {
             table: 'task_files'
           },
           (payload) => {
-            console.log('REALTIME:', payload)
 
             const { eventType, new: newRow, old: oldRow } = payload
 
@@ -664,7 +656,6 @@ export const useTasksStore = defineStore('tasks', {
     },
 
     onFileInsert(file) {
-      console.log('REALTINE FILE', file)
       const task = this.tasks.find(t => t.id === file.task_id)
       if (!task) return
 

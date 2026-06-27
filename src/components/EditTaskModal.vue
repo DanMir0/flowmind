@@ -26,7 +26,6 @@ const props = defineProps({
 
 const task = computed(() => tasksStore.tasks.find(t => t.id === props.taskId))
 
-console.log('IS SAME OBJECT:', props.taskId === tasksStore.tasks.find(t => t.id === props.taskId))
 const categories = [
   'Work', 'Personal', 'Study', 'Workout', 'Appointments',
   'Ideas', 'Health', 'Home', 'Social', 'Travel', 'Learning',
@@ -53,10 +52,6 @@ const filesLoading = ref(false)
 /* реактивно берём файлы ИЗ STORE */
 const existingFiles = computed(() => task.value?.task_files ?? [])
 
-onMounted(() => {
-  console.log(task.value)
-  console.log(tasksStore.tasks)
-})
 /* sync task → form */
 watch(
   task,

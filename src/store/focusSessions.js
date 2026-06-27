@@ -72,8 +72,6 @@ export const useFocusStore = defineStore('focus', {
 
       this.sessions.unshift(data)
 
-      console.log(data)
-      console.log(error)
       return data
     }
   }

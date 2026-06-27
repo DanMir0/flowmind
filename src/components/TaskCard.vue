@@ -97,7 +97,7 @@ defineEmits(['edit', 'delete', 'toggle-complete'])
 watch(
   () => props.task,
   (t) => {
-    console.log('Task', t)
+
   },
   { immediate: true }
 )
@@ -160,7 +160,6 @@ const priorityLabel = computed(() => {
  * Files (из Supabase)
  */
 const files = computed(() => {
-  console.log('FILES RENDER', props.task.task_files)
     return props.task.task_files ?? []
 }
 )
@@ -172,7 +171,6 @@ async function openFile(file) {
     .createSignedUrl(file.file_path, 60)
 
   if (error) {
-    console.error(error)
     return
   }
 

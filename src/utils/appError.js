@@ -32,8 +32,6 @@ export const handleSupabaseError = (error, context = '') => {
 
   if (!error) return
 
-  console.error('[Supabase Error]', context, error)
-
   const appError = new AppError(
     normalizeSupabaseMessage(error),
     {
