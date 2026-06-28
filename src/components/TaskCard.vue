@@ -6,6 +6,7 @@ import WordIcon from '@/components/icons/WordIcon.vue'
 import PdfIcon from '@/components/icons/PdfIcon.vue'
 import ImageIcon from '@/components/icons/ImageIcon.vue'
 import FileIcon from '@/components/icons/FileIcon.vue'
+import {formatFileName} from '@/utils/formatFile.js'
 
 const props = defineProps({
   task: {
@@ -177,7 +178,6 @@ async function openFile(file) {
   window.open(data.signedUrl, '_blank')
 }
 
-
 </script>
 <template>
   <div v-if="task._skeleton" class="task-card skeleton">
@@ -261,7 +261,7 @@ async function openFile(file) {
           class="file"
           @click="openFile(file)">
           <component :is="getFileIconComponent(file)" class="file-icon" />
-          <span>{{ file.file_name }}</span>
+          <span class="file-name" :title="file.file_name">{{ formatFileName(file.file_name) }}</span>
         </div>
       </div>
 
@@ -373,6 +373,18 @@ async function openFile(file) {
 
 .file:hover {
   opacity: 0.7;
+}
+
+.file-icon {
+  flex-shrink: 0;
+}
+
+.file-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .show-more {
