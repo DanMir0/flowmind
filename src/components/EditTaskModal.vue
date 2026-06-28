@@ -1,5 +1,5 @@
 <script setup>
-import { computed, nextTick, onMounted, ref, watch } from 'vue'
+import { computed, nextTick, ref, watch } from 'vue'
 import { useTasksStore } from '@/store/tasks'
 import Loader from '@/components/Loader.vue'
 import { toast } from 'vue-sonner'
@@ -18,7 +18,8 @@ const props = defineProps({
     required: true
   },
   onSave: {
-    type: Function
+    type: Function,
+    required: true
   },
   isOpen: {
     type: Boolean
@@ -52,6 +53,12 @@ const filesLoading = ref(false)
 
 /* реактивно берём файлы ИЗ STORE */
 const existingFiles = computed(() => task.value?.task_files ?? [])
+
+const visibleExistingFiles = computed(() =>
+  existingFiles.value.filter(
+    f => !filesToDelete.value.some(d => d.id === f.id)
+  )
+)
 
 /* sync task → form */
 watch(
@@ -108,13 +115,18 @@ async function onFileChange(e) {
 
   await nextTick()
 
-  const el = document.querySelector('.files-scroll')
-  if (el) el.scrollTop = el.scrollHeight
+  const filesScrollRef = ref(null)
+  filesScrollRef.value?.scrollTo({
+    top: filesScrollRef.value.scrollHeight,
+    behavior: 'smooth'
+  })
 }
 
 /* ТОЛЬКО UI */
 function markFileForDelete(file) {
-  filesToDelete.value.push(file)
+  if (!filesToDelete.value.some(f => f.id === file.id)) {
+    filesToDelete.value.push(file)
+  }
 }
 
 function removeNewFile(index) {
@@ -123,11 +135,11 @@ function removeNewFile(index) {
 
 async function save() {
   if (saving.value) return
-
+  if (!task.value) return
   saving.value = true
 
   try {
-    await props.onSave({
+    const payload = {
       id: task.value.id,
       title: title.value,
       description: description.value,
@@ -135,8 +147,10 @@ async function save() {
       deadline: deadline.value,
       newFiles: newFiles.value,
       filesToDelete: filesToDelete.value,
-      category: category.value || null,
-    })
+      category: category.value || null
+    }
+
+    await props.onSave(payload)
 
   emit('close')
   } finally {
@@ -160,7 +174,7 @@ function close() {
 
           <div
             class="modal-backdrop"
-            @click.self="emit('close')">
+            @click.self="close">
             <div ref="modalRef" class="modal">
               <h2>Edit Task</h2>
 
@@ -188,7 +202,7 @@ function close() {
               <!-- FILES SECTION -->
               <div class="files-wrapper">
                 <!-- SCROLL AREA (все файлы внутри) -->
-                <div class="files-scroll">
+                <div ref="filesScrollRef" class="files-scroll">
 
                   <!-- loading -->
                   <div v-if="filesLoading">
@@ -205,9 +219,7 @@ function close() {
                     name="file"
                     tag="div">
                     <div
-                      v-for="file in existingFiles.filter(
-                  f => !filesToDelete.some(d => d.id === f.id)
-                )"
+                      v-for="file in visibleExistingFiles"
                       :key="'existing-' + file.id"
                       class="file-preview">
                 <span class="file-name" :title="file.file_name">
