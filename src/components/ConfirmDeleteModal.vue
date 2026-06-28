@@ -3,7 +3,8 @@
 defineProps({
   title: {
     type: String,
-    required: true
+    required: true,
+    default: ''
   },
   entity: {
     type: String,

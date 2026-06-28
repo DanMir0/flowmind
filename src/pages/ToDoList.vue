@@ -472,7 +472,7 @@ onMounted(() => {
 
     <EditTaskModal
       :isOpen="showEditModal"
-      :task-id="taskToEdit"
+      :task-id="taskToEdit || ''"
       :on-save="saveEdit"
       @close="closeEditModal" />
 

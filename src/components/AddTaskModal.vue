@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, } from 'vue'
 import { useTasksStore } from '@/store/tasks'
 import { useAuthStore } from '@/store/auth'
 import Loader from '@/components/Loader.vue'
@@ -13,7 +13,7 @@ const props = defineProps({isOpen: Boolean})
 const tasksStore = useTasksStore()
 const auth = useAuthStore()
 
-const { modalRef } = useModal(emit)
+const { modalRef } = useModal(props, emit)
 
 const category = ref('')
 const title = ref('')
@@ -102,20 +102,12 @@ async function submit() {
     emit('close')
 
   } catch (e) {
-    showError('Failed to add task')
+    showError('Failed to add task', e)
   } finally {
     loading.value = false
     newFiles.value = []
   }
 }
-
-onMounted(() => {
-  document.body.style.overflow = 'hidden'
-})
-
-onUnmounted(() => {
-  document.body.style.overflow = ''
-})
 </script>
 
 <template>
