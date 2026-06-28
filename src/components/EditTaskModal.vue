@@ -5,6 +5,7 @@ import Loader from '@/components/Loader.vue'
 import { toast } from 'vue-sonner'
 import { useModal } from '@/composable/useModal.js'
 import BaseSelect from '@/components/BaseSelect.vue'
+import { formatFileName } from '../utils/formatFile.js'
 
 const emit = defineEmits(['close'])
 const tasksStore = useTasksStore()
@@ -209,8 +210,8 @@ function close() {
                 )"
                       :key="'existing-' + file.id"
                       class="file-preview">
-                <span class="file-name">
-                  {{ file.file_name }}
+                <span class="file-name" :title="file.file_name">
+                  {{ formatFileName(file.file_name) }}
                 </span>
 
                       <button
@@ -230,8 +231,8 @@ function close() {
                       v-for="(file, index) in newFiles"
                       :key="'new-' + file.name + file.size"
                       class="file-preview">
-                <span class="file-name">
-                  {{ file.name }}
+                <span class="file-name" :title="file.name">
+                  {{ formatFileName(file.name) }}
                 </span>
 
                       <button

@@ -6,6 +6,7 @@ import Loader from '@/components/Loader.vue'
 import { useModal } from '@/composable/useModal.js'
 import { showSuccess, showError } from '@/utils/toast.js'
 import BaseSelect from '@/components/BaseSelect.vue'
+import { formatFileName } from '../utils/formatFile.js'
 
 const emit = defineEmits(['close'])
 const props = defineProps({isOpen: Boolean})
@@ -163,7 +164,7 @@ async function submit() {
                     v-for="(file, index) in newFiles"
                     :key="file.name + file.size"
                     class="file-preview">
-                    <span class="file-name">{{ file.name }}</span>
+                    <span class="file-name" :title="file.name">{{ formatFileName(file.name) }}</span>
 
                     <button
                       class="remove-file"
