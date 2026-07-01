@@ -54,13 +54,13 @@ export function useQuotes() {
       loading.value = true
 
       // instant cached quote
-      const cached = loadCache()
-
-      if (cached) {
-        displayedQuote.value = cached
-        loading.value = false
-        return
-      }
+      // const cached = loadCache()
+      //
+      // if (cached) {
+      //   displayedQuote.value = cached
+      //   loading.value = false
+      //   return
+      // }
 
       // pinned quote
       const pinned = await getPinnedQuote(authStore.user?.id)
@@ -73,6 +73,7 @@ export function useQuotes() {
 
       // daily quote
       const count = await getQuotesCount()
+
 
       if (count === null || count === undefined) {
         loading.value = false
@@ -89,10 +90,12 @@ export function useQuotes() {
 
       const quoteId = await getQuoteIdByIndex(index)
 
+
       let translation = await getQuoteTranslation(
         quoteId,
         settingsStore.locale
       )
+
 
       // fallback language
       if (!translation && settingsStore.locale !== DEFAULT_LOCALE) {
@@ -149,7 +152,11 @@ export function useQuotes() {
     () => loadQuote(),
     { immediate: true }
   )
-
+  watch(displayedQuote, value => {
+    console.log('useQuotes displayedQuote', value)
+  })
+  console.log(displayedQuote)
+  console.log(displayedQuote.value)
   return {
     displayedQuote,
     loading,

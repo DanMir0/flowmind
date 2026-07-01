@@ -26,19 +26,40 @@ export const getQuoteIdByIndex = async (index) => {
     .eq('is_active', true)
     .range(index, index)
     .maybeSingle()
+
+  console.log(data)
   return data?.id
 }
 
 export const getQuoteTranslation = async (quoteId, locale) => {
-  const { data } = await supabase
+  console.log('quoteId', quoteId)
+  console.log('locale', locale)
+
+  const { data: all } = await supabase
+    .from('quote_translations')
+    .select('*')
+
+  console.log('ALL', all.length)
+
+  const byId = all.filter(q => q.quote_id === quoteId)
+
+  console.log('BY ID', byId)
+
+  const byLocale = byId.filter(q => q.locale === locale)
+
+  console.log('BY LOCALE', byLocale)
+
+  const { data, error } = await supabase
     .from('quote_translations')
     .select('*')
     .eq('quote_id', quoteId)
     .eq('locale', locale)
-    .maybeSingle()
-  return data
-}
 
+  console.log('QUERY RESULT', data)
+  console.log(error)
+
+  return data?.[0] ?? null
+}
 export const addUserQuote = async (userId, text, locale, author) => {
   const {data} = await supabase
     .from('user_quotes')

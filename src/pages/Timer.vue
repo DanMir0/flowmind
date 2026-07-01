@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onUnmounted, nextTick, onMounted } from 'vue'
+import { ref, computed, onUnmounted, nextTick, onMounted, watch } from 'vue'
 import { useQuotes } from '@/composable/useQuotes.js'
 import { useSubscriptionStore } from '@/store/subscription'
 import QuoteMenu from '@/components/quotes/QuoteMenu.vue'
@@ -196,6 +196,15 @@ const cancelEdit = () => {
 onMounted(async () => {
   subscriptionStore.setPro(true) // после теста удалить
   await loadQuote()
+
+  console.log(displayedQuote.value)
+  console.log(typeof displayedQuote.value)
+  console.log(Array.isArray(displayedQuote.value))
+})
+
+watch(displayedQuote, (value) => {
+  console.log('QUOTE', value)
+  console.log(Array.isArray(value))
 })
 
 // onUnmounted(stop)
