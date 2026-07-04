@@ -41,7 +41,7 @@ const confirmDelete = async () => {
 
 onMounted(() => {
   if (subscriptionStore.isPro) {
-    loadQuotes()
+    loadQuotes(authStore.user.id)
   }
 })
 
@@ -58,7 +58,6 @@ watch(
 </script>
 <template>
   <div class="page">
-
     <!-- subscription loading -->
     <div v-if="subscriptionStore.loading" class="loading">
       Loading...

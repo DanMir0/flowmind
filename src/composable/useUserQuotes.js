@@ -22,7 +22,9 @@ export function useUserQuotes() {
       loading.value = true
       errorMessage.value = null
 
-      quotes.value = await getUserQuotes(userId)
+      const data = await getUserQuotes(userId)
+
+      quotes.value = data
     } catch (err) {
       errorMessage.value = err.message || 'Failed to load quotes'
     } finally {
