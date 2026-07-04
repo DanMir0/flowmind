@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, watch, computed } from 'vue'
 import { useAuthStore } from '@/store/auth'
 import { useSubscriptionStore } from '@/store/subscription'
 import { useUserQuotes } from '@/composable/useUserQuotes.js'
@@ -21,6 +21,16 @@ const {
 /* DELETE MODAL */
 const showDeleteModal = ref(false)
 const quoteToDelete = ref(null)
+
+const deleteTitle = computed(() => {
+  if (!quoteToDelete.value) return ''
+
+  const text = quoteToDelete.value.text
+
+  return text.length > 30
+    ? text.slice(0, 30) + '...'
+    : text
+})
 
 const deleteQuote = (quoteId) => {
   quoteToDelete.value = quotes.value.find(q => q.id === quoteId)
@@ -137,9 +147,9 @@ watch(
     </div>
 
     <ConfirmDeleteModal
-      v-if="showDeleteModal"
+      :isOpen="showDeleteModal"
       entity="quote"
-      :title="quoteToDelete?.text.slice(0, 30) + '...'"
+      :title="deleteTitle"
       @confirm="confirmDelete"
       @cancel="showDeleteModal=false"
     />
