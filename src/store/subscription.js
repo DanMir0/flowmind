@@ -4,31 +4,32 @@ import { supabase } from '@/services/supabase.js'
 export const useSubscriptionStore = defineStore('subscription', {
 
   state: () => ({
-    isPro: true,
+    isPro: false,
     loading: false
   }),
 
   actions: {
 
     async loadSubscription(userId) {
-
       this.loading = true
 
-      const { data } = await supabase
-        .from('subscriptions')
-        .select('*')
-        .eq('user_id', userId)
-        .maybeSingle()
+      try {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('subscription_plan')
+          .eq('user_id', userId)
+          .maybeSingle()
 
-      this.isPro = !!data
-      this.loading = false
-    },
+        if (error) throw error
 
-    async setPro(value) {
-      this.isPro  = value
+        this.isPro = data?.subscription_plan !== 'free'
+      } catch (error) {
+        this.isPro = false
+      } finally {
+        this.loading = false
+      }
     },
 
   }
 
 })
-

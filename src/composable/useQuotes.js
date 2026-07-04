@@ -11,6 +11,7 @@ import {
   clearPinned,
   pinUserQuote
 } from '@/services/quotes'
+import { useSubscriptionStore } from '@/store/subscription.js'
 
 const DEFAULT_LOCALE = 'en'
 const CACHE_KEY = 'daily_quote'
@@ -43,6 +44,7 @@ export function useQuotes() {
 
   const settingsStore = useSettingsStore()
   const authStore = useAuthStore()
+  const subscriptionStore = useSubscriptionStore()
 
   const displayedQuote = ref(null)
   const loading = ref(false)
@@ -52,15 +54,6 @@ export function useQuotes() {
     try {
 
       loading.value = true
-
-      // instant cached quote
-      // const cached = loadCache()
-      //
-      // if (cached) {
-      //   displayedQuote.value = cached
-      //   loading.value = false
-      //   return
-      // }
 
       // pinned quote
       const pinned = await getPinnedQuote(authStore.user?.id)
@@ -96,7 +89,6 @@ export function useQuotes() {
         settingsStore.locale
       )
 
-
       // fallback language
       if (!translation && settingsStore.locale !== DEFAULT_LOCALE) {
         translation = await getQuoteTranslation(
@@ -114,7 +106,6 @@ export function useQuotes() {
 
     } catch (error) {
 
-
     } finally {
 
       loading.value = false
@@ -125,6 +116,10 @@ export function useQuotes() {
   const createUserQuote = async (quoteText, authorText) => {
 
     if (!authStore.user) return
+
+    if (!subscriptionStore.isPro) {
+      throw new Error('Pro subscription required')
+    }
 
     await addUserQuote(
       authStore.user.id,
@@ -152,11 +147,7 @@ export function useQuotes() {
     () => loadQuote(),
     { immediate: true }
   )
-  watch(displayedQuote, value => {
-    console.log('useQuotes displayedQuote', value)
-  })
-  console.log(displayedQuote)
-  console.log(displayedQuote.value)
+
   return {
     displayedQuote,
     loading,

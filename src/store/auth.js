@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import {useTasksStore} from '@/store/tasks.js'
 import {supabase} from '@/services/supabase.js'
+import { useSubscriptionStore } from '@/store/subscription.js'
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
@@ -12,6 +13,8 @@ export const useAuthStore = defineStore('auth', {
 
   actions: {
     async init() {
+      const subscriptionStore = useSubscriptionStore()
+
       const { data } = await supabase.auth.getSession()
 
       if (data.session) {
@@ -19,6 +22,7 @@ export const useAuthStore = defineStore('auth', {
 
         // profile НЕ блокирует init
         this.fetchProfile().catch(() => {})
+        await subscriptionStore.loadSubscription(this.user.id)
       }
 
       this.initialized = true
@@ -42,6 +46,8 @@ export const useAuthStore = defineStore('auth', {
     },
 
     async signIn(email, password) {
+      const subscriptionStore = useSubscriptionStore()
+
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password
@@ -50,6 +56,7 @@ export const useAuthStore = defineStore('auth', {
 
       this.user = data.user
       await this.fetchProfile()
+      await subscriptionStore.loadSubscription(this.user.id)
 
       return data
     },
@@ -71,11 +78,12 @@ export const useAuthStore = defineStore('auth', {
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
-        .eq('id', this.user.id)
+        .eq('user_id', this.user.id)
         .maybeSingle()
 
       if (error) {throw error}
       this.profile = data
+
       return data
     },
 

@@ -194,20 +194,8 @@ const cancelEdit = () => {
 }
 
 onMounted(async () => {
-  subscriptionStore.setPro(true) // после теста удалить
   await loadQuote()
-
-  console.log(displayedQuote.value)
-  console.log(typeof displayedQuote.value)
-  console.log(Array.isArray(displayedQuote.value))
 })
-
-watch(displayedQuote, (value) => {
-  console.log('QUOTE', value)
-  console.log(Array.isArray(value))
-})
-
-// onUnmounted(stop)
 </script>
 
 <template>

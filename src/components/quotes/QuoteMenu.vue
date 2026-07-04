@@ -31,6 +31,7 @@ const subscriptionStore = useSubscriptionStore()
       <template v-if="subscriptionStore.isPro">
 
         <button
+          :disabled="!subscriptionStore.isPro"
           class="sheet-item"
           @click="emit('addQuote')">
           Add quote

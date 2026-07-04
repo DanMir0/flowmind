@@ -54,8 +54,8 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { supabase } from '@/services/supabase.js'
 import { useAuthStore } from '@/store/auth'
+import router from '@/router/router.js'
 
-const router = useRouter()
 const auth = useAuthStore()
 
 const email = ref('')
@@ -68,24 +68,20 @@ async function submit() {
   error.value = ''
   loading.value = true
 
-  const { error: signInError } = await supabase.auth.signInWithPassword({
-    email: email.value,
-    password: password.value
-  })
+  try {
+    await auth.signIn(email.value, password.value)
 
-  loading.value = false
-
-  if (signInError) {
-    if (signInError.message.includes('Email not confirmed')) {
+    router.push('/dashboard')
+  } catch (err) {
+    if (err.message.includes('Email not confirmed')) {
       error.value = 'Please confirm your email'
     } else {
-      error.value = signInError.message
+      error.value = err.message
     }
-    return
+  } finally {
+    loading.value = false
   }
 
-  await auth.init()
-  router.push('/dashboard')
 }
 </script>
 
