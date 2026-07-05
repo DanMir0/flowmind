@@ -21,6 +21,29 @@ const {
 /* DELETE MODAL */
 const showDeleteModal = ref(false)
 const quoteToDelete = ref(null)
+const search = ref('')
+const filter = ref('all')
+
+const filteredQuotes = computed(() => {
+
+  let list = [...quotes.value]
+
+  if (filter.value === 'pinned') {
+    list = list.filter(q => q.is_pinned)
+  }
+
+  if (search.value.trim()) {
+
+    const value = search.value.toLowerCase()
+
+    list = list.filter(q =>
+      q.text.toLowerCase().includes(value) ||
+      (q.author || '').toLowerCase().includes(value)
+    )
+  }
+
+  return list
+})
 
 const deleteTitle = computed(() => {
   if (!quoteToDelete.value) return ''
@@ -68,6 +91,44 @@ watch(
 </script>
 <template>
   <div class="page">
+    <div class="page-header">
+
+      <div>
+        <h1>My Quotes</h1>
+
+        <div class="toolbar">
+
+          <div class="search">
+            <input
+              v-model="search"
+              placeholder="Search quotes..."
+            />
+          </div>
+
+          <div class="tabs">
+            <button
+              :class="{active: filter==='all'}"
+              @click="filter='all'">
+              All Quotes
+            </button>
+
+            <button
+              :class="{active: filter==='pinned'}"
+              @click="filter='pinned'">
+              Pinned
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <button class="add-btn">
+        + Add Quote
+      </button>
+
+    </div>
     <!-- subscription loading -->
     <div v-if="subscriptionStore.loading" class="loading">
       Loading...
@@ -92,8 +153,6 @@ watch(
 
     <!-- PRO USER -->
     <div v-else>
-
-      <h1>My Quotes</h1>
 
       <div v-if="errorMessage && !loading" class="error-wrapper">
         <div class="error-card">
@@ -132,7 +191,7 @@ watch(
       <div v-else>
 
         <QuoteItem
-          v-for="quote in quotes"
+          v-for="quote in filteredQuotes"
           :key="quote.id"
           :quote="quote"
           @pin="pinQuote"
@@ -159,11 +218,60 @@ watch(
 
 <style scoped>
 .page{
-  max-width:720px;
+  max-width:1100px;
   margin:auto;
-  padding:40px 20px;
+  padding:40px;
 }
 
+.page-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  margin-bottom:35px;
+}
+
+.toolbar{
+  margin-top:18px;
+  display:flex;
+  flex-direction:column;
+  gap:18px;
+}
+
+.search input{
+  width:320px;
+  height:46px;
+  padding:0 18px;
+  border-radius:24px;
+  border:1px solid #ECECEC;
+}
+
+.tabs{
+  display:flex;
+  gap:10px;
+}
+
+.tabs button{
+  height:38px;
+  padding:0 22px;
+  border-radius:20px;
+  border:1px solid #ECECEC;
+  background:white;
+}
+
+.tabs .active{
+  background:#7C3AED;
+  color:white;
+}
+
+.add-btn{
+  height:48px;
+  padding:0 28px;
+  border:none;
+  border-radius:24px;
+  background:#7C3AED;
+  color:white;
+  font-weight:600;
+}
 /* loading */
 
 .loading{
@@ -195,14 +303,12 @@ watch(
   height:80px;
   border-radius:16px;
   margin-top:20px;
-
   background:linear-gradient(
     90deg,
     #ececf3 25%,
     #f5f5fa 50%,
     #ececf3 75%
   );
-
   background-size:200% 100%;
   animation:skeleton 1.4s infinite;
 }
@@ -281,16 +387,12 @@ watch(
   padding: 12px 26px;
   border: none;
   border-radius: 14px;
-
   background: linear-gradient(135deg, #7b5cff, #5b4dff);
   color: white;
-
   font-size: 15px;
   font-weight: 600;
-
   cursor: pointer;
   transition: all 0.2s ease;
-
   box-shadow: 0 6px 18px rgba(91,77,255,0.35);
 }
 

@@ -13,204 +13,165 @@ const emit = defineEmits([
 
 <template>
   <div class="quote-card">
-    <div class="text">"{{ quote.text }}"</div>
-    <div class="author">— {{ quote.author || 'Unknown' }}</div>
+    <div class="left">
+      <div class="quote-icon">
+        <svg width="20" height="20" viewBox="0 0 380 380" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M82.326,147.33c4.284-26.928,37.944-55.692,64.26-56.304c1.836,0,3.672-0.612,4.896-1.836
+    c1.224-0.612,2.448-1.224,3.06-3.06c9.18-17.136,4.284-30.6-11.016-41.616c-17.748-12.852-45.9,0-59.976,11.628
+    C38.054,85.518,1.946,136.313,3.782,184.662c-6.12,32.437-4.896,67.32,4.284,96.084c6.12,18.36,23.868,27.54,42.228,28.764
+    c18.36,1.225,56.304,6.732,72.828-4.283c16.524-11.017,17.748-32.437,19.584-50.796c1.836-20.196,7.344-58.141-9.792-74.053
+    C115.778,165.078,66.818,181.602,72.326,147.33z" fill="#7C3AED"/>
+          <path d="M284.286,147.33c4.284-26.928,37.943-55.692,64.26-56.304c1.836,0,3.672-0.612,4.896-1.836
+    c1.225-0.612,2.448-1.224,3.061-3.06c9.18-17.136,4.284-30.6-11.016-41.616c-17.748-12.852-45.9,0-59.977,11.628
+    c-35.496,29.376-71.604,80.172-69.768,128.52c-6.12,32.437-4.896,67.32,4.283,96.084c6.12,18.36,23.868,27.54,42.229,28.764
+    c18.36,1.225,56.304,6.732,72.828-4.283c16.523-11.017,17.748-32.437,19.584-50.796c1.836-20.196,7.344-58.141-9.792-74.053
+    C317.738,165.078,268.166,181.602,274.286,147.33z" fill="#7C3AED"/>
+        </svg>
+      </div>
+      <div>
+        <div class="text">
+          {{ quote.text }}
+        </div>
+        <div class="author">
+          — {{ quote.author || 'Unknown' }}
+        </div>
+      </div>
+    </div>
 
     <div class="actions">
+
       <button
         class="pin-btn"
-        :class="{ 'pinned': quote.is_pinned }"
+        :class="{ active: quote.is_pinned }"
         @click="emit('pin', quote.id)">
-        <span class="btn-text">{{ quote.is_pinned ? 'Pinned' : 'Pin' }}</span>
+        <span v-if="quote.is_pinned" class="pin-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+            <path d="M4 12L9 17L20 6" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span>
+        <span v-else class="pin-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">
+            <path fill="none" stroke="#8B5CF6" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 4v6l-2 4v2h10v-2l-2-4V4m-3 12v5M8 4h8"/>
+          </svg>
+        </span>
+        <span>{{ quote.is_pinned ? 'Pinned' : 'Pin' }}</span>
       </button>
 
-      <button class="delete-btn" @click="emit('delete', quote.id)">
-        <span class="btn-text">Delete</span>
+      <button class="icon-btn">
+       <span>
+         <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+              xmlns="http://www.w3.org/2000/svg">
+          <path fill-rule="evenodd" clip-rule="evenodd"
+                d="M8.56078 20.2501L20.5608 8.25011L15.7501 3.43945L3.75012 15.4395V20.2501H8.56078ZM15.7501 5.56077L18.4395 8.25011L16.5001 10.1895L13.8108 7.50013L15.7501 5.56077ZM12.7501 8.56079L15.4395 11.2501L7.93946 18.7501H5.25012L5.25012 16.0608L12.7501 8.56079Z"
+                fill="#080341" />
+        </svg>
+       </span>
       </button>
+
+      <button
+        class="icon-btn danger"
+        @click="emit('delete', quote.id)">
+        <span>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+               xmlns="http://www.w3.org/2000/svg">
+            <path d="M3 6H21" stroke="#EF4444" stroke-width="1.5" stroke-linecap="round" />
+            <path d="M8 6V4C8 3.44772 8.44772 3 9 3H15C15.5523 3 16 3.44772 16 4V6" stroke="#EF4444"
+                  stroke-width="1.5" stroke-linecap="round" />
+            <path d="M19 6L18 19C17.9 20.1 17 21 15.9 21H8.1C7 21 6.1 20.1 6 19L5 6"
+                  stroke="#EF4444"
+                  stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M10 10V17" stroke="#EF4444" stroke-width="1.5" stroke-linecap="round" />
+            <path d="M14 10V17" stroke="#EF4444" stroke-width="1.5" stroke-linecap="round" />
+          </svg>
+        </span>
+      </button>
+
     </div>
+
   </div>
 </template>
 
 <style scoped>
 .quote-card {
-  background: white;
-  border-radius: 20px;
-  padding: 24px;
-  box-shadow: 0 20px 35px -8px rgba(0, 0, 0, 0.1), 0 5px 15px -5px rgba(0, 0, 0, 0.05);
-  margin-bottom: 20px;
-  transition: transform 0.2s, box-shadow 0.2s;
-  border: 1px solid rgba(139, 92, 246, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 28px 34px;
+  margin-bottom: 22px;
+  border-radius: 22px;
+  background: #fff;
+  box-shadow: 0 8px 30px rgba(30, 30, 30, .06);
+  transition: .25s;
+  gap: 20px;
 }
 
 .quote-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 25px 40px -12px rgba(139, 92, 246, 0.25);
+}
+
+.left {
+  display: flex;
+  align-items: flex-start;
+  gap: 22px;
+  flex: 1;
+}
+
+.quote-icon {
+  color: #7C3AED;
+  font-size: 34px;
+  font-weight: bold;
+  line-height: 1;
 }
 
 .text {
-  font-size: 16px;
-  color: #1f1f2e;
-  line-height: 1.6;
+  font-size: 18px;
   font-weight: 500;
+  color: #222;
 }
 
 .author {
-  margin-top: 8px;
-  color: #6b6b7b;
-  font-size: 14px;
+  margin-top: 10px;
+  color: #8A8A99;
   font-style: italic;
 }
 
 .actions {
-  margin-top: 20px;
   display: flex;
-  gap: 12px;
+  align-items: center;
+  gap: 14px;
 }
 
-button {
-  border: none;
-  padding: 10px 20px;
-  border-radius: 40px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: 0.3px;
-  transition: all 0.25s ease;
-  position: relative;
-  overflow: hidden;
-  flex: 1;
-  max-width: 120px;
-}
-
-/* Pin Button Styles */
 .pin-btn {
-  background: linear-gradient(145deg, #f5f3ff, #ede9fe);
-  color: #6d4fa8;
-  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.15);
-  border: 1px solid rgba(139, 92, 246, 0.2);
-  position: relative;
-  padding-left: 36px;
+  height: 48px;
+  padding: 0 28px;
+  border-radius: 14px;
+  background: white;
+  border: 1px solid #E6D9FF;
+  color: #7C3AED;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px; /* Отступ между иконкой и текстом */
 }
 
-.pin-btn::before {
-  content: '';
-  position: absolute;
-  left: 14px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 16px;
-  height: 16px;
-  background-image: url("@/assets/pin-outline.svg");
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
-  transition: all 0.25s ease;
-}
-
-.pin-btn.pinned {
-  background: linear-gradient(145deg, #8B5CF6, #7C3AED);
+.pin-btn.active {
+  background: #7C3AED;
   color: white;
-  border-color: transparent;
-  box-shadow: 0 8px 18px rgba(139, 92, 246, 0.35);
 }
 
-.pin-btn.pinned::before {
-  background-image: url("@/assets/pin-fill.svg");
-  filter: brightness(0) invert(1);
+.icon-btn {
+  display: flex;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: white;
+  border: 1px solid #ECECEC;
+  align-items: center;
+  justify-content: center;
+  line-height: 0; /* Убирает лишний отступ */
 }
 
-.pin-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 22px rgba(139, 92, 246, 0.3);
-}
-
-.pin-btn:active {
-  transform: translateY(0);
-  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2);
-}
-
-.pin-btn.pinned:hover {
-  background: linear-gradient(145deg, #9B6CF6, #8C4AED);
-  box-shadow: 0 15px 25px rgba(139, 92, 246, 0.45);
-}
-
-/* Delete Button Styles */
-.delete-btn {
-  background: linear-gradient(145deg, #fff5f5, #ffe5e5);
-  color: #e53e3e;
-  border: 1px solid rgba(229, 62, 62, 0.2);
-  box-shadow: 0 4px 12px rgba(229, 62, 62, 0.1);
-}
-
-.delete-btn:hover {
-  background: linear-gradient(145deg, #e53e3e, #c53030);
-  color: white;
-  transform: translateY(-2px);
-  box-shadow: 0 12px 22px rgba(229, 62, 62, 0.25);
-  border-color: transparent;
-}
-
-.delete-btn:active {
-  transform: translateY(0);
-  box-shadow: 0 4px 12px rgba(229, 62, 62, 0.15);
-}
-
-/* Button text animation */
-.btn-text {
-  display: inline-block;
-  transition: transform 0.2s;
-}
-
-button:hover .btn-text {
-  transform: scale(1.02);
-}
-
-/* Ripple effect on click */
-button::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 5px;
-  height: 5px;
-  background: rgba(255, 255, 255, 0.5);
-  opacity: 0;
-  border-radius: 100%;
-  transform: scale(1, 1) translate(-50%);
-  transform-origin: 50% 50%;
-}
-
-button:focus:not(:active)::after {
-  animation: ripple 0.6s ease-out;
-}
-
-@keyframes ripple {
-  0% {
-    transform: scale(0, 0);
-    opacity: 0.5;
-  }
-  20% {
-    transform: scale(25, 25);
-    opacity: 0.3;
-  }
-  100% {
-    opacity: 0;
-    transform: scale(40, 40);
-  }
-}
-
-/* Responsive design */
-@media (max-width: 480px) {
-  .actions {
-    flex-direction: column;
-  }
-
-  button {
-    max-width: 100%;
-  }
-
-  .quote-card {
-    padding: 20px;
-  }
+.icon-btn.danger {
+  color: #FF4545;
 }
 </style>
