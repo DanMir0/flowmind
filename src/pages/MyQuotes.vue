@@ -98,7 +98,23 @@ watch(
 
         <div class="toolbar">
 
-          <div class="search">
+          <div class="search-wrapper">
+            <svg
+              class="search-icon"
+              viewBox="0 0 24 24"
+              fill="none">
+              <circle
+                cx="11"
+                cy="11"
+                r="7"
+                stroke="currentColor"
+                stroke-width="2" />
+              <path
+                d="M20 20L17 17"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round" />
+            </svg>
             <input
               v-model="search"
               placeholder="Search quotes..."
@@ -237,12 +253,31 @@ watch(
   gap:18px;
 }
 
-.search input{
-  width:320px;
-  height:46px;
-  padding:0 18px;
-  border-radius:24px;
-  border:1px solid #ECECEC;
+.search-wrapper {
+  width: 420px;
+  height: 44px;
+  background: #F9FAFB;
+  border: 1px solid #E5E7EB;
+  border-radius: 24px;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  gap: 10px;
+  transition: all 0.2s ease;
+}
+
+.search-wrapper:focus-within {
+  border-color: #7C3AED;
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+}
+
+.search-wrapper input{
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 14px;
+  color: #111827;
 }
 
 .tabs{
@@ -403,6 +438,12 @@ watch(
 
 .error-btn:active {
   transform: scale(0.97);
+}
+
+.search-icon {
+  width: 18px;
+  height: 18px;
+  color: #9CA3AF;
 }
 
 /* анимация появления */
