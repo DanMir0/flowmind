@@ -241,7 +241,7 @@ watch(
   display:flex;
   justify-content:space-between;
   align-items:center;
-  margin-bottom:26px;
+  margin-bottom:15px;
 }
 
 .header-left{
@@ -340,6 +340,7 @@ watch(
   cursor:pointer;
   transition:.25s;
 }
+
 .add-btn:hover{
   background:#5e2fd1;
 }
@@ -393,8 +394,14 @@ watch(
   100%{ background-position:-200% 0 }
 }
 
-/* EMPTY */
+.quotes-divider{
+  width:100%;
+  height:1px;
+  background:#ECEEF3;
+  margin-bottom:15px;
+}
 
+/* EMPTY */
 .empty{
   text-align:center;
   margin-top:40px;
