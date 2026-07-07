@@ -189,8 +189,6 @@ const save = () => {
   opacity: .9;
 }
 
-/* оставляем вашу анимацию */
-
 .fade-enter-active,
 .fade-leave-active {
   transition: .25s;

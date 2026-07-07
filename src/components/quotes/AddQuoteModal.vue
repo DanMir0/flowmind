@@ -38,35 +38,39 @@ const save = async () => {
 </script>
 
 <template>
+  <Teleport to="body">
+    <Transition name="fade">
+      <div
+        v-if="open"
+        class="modal-overlay"
+        @click="emit('close')">
 
-  <div
-    v-if="open"
-    class="modal-overlay"
-    @click="emit('close')">
+        <div
+          class="modal"
+          @click.stop>
 
-    <div
-      class="modal"
-      @click.stop>
+          <h3>Add your quote</h3>
 
-      <h3>Add your quote</h3>
+          <textarea
+            v-model="quoteText"
+            placeholder="Write your quote..." />
 
-      <textarea
-        v-model="quoteText"
-        placeholder="Write your quote..." />
+          <input
+            v-model="quoteAuthor"
+            placeholder="Author (optional)" />
 
-      <input
-        v-model="quoteAuthor"
-        placeholder="Author (optional)" />
+          <button
+            class="save"
+            @click="save">
+            Save quote
+          </button>
 
-      <button
-        class="save"
-        @click="save">
-        Save quote
-      </button>
+        </div>
 
-    </div>
+      </div>
+    </Transition>
+  </Teleport>
 
-  </div>
 
 </template>
 <style scoped>
@@ -126,5 +130,15 @@ const save = async () => {
 
 .save:hover {
   opacity: 0.9;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: .25s;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>
