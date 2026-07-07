@@ -91,60 +91,57 @@ watch(
 </script>
 <template>
   <div class="page">
+
+
     <div class="page-header">
+      <div class="header-left">
+        <h1 class="page-title">My Quotes</h1>
 
-      <div>
-        <h1>My Quotes</h1>
-
-        <div class="toolbar">
-
-          <div class="search-wrapper">
-            <svg
-              class="search-icon"
-              viewBox="0 0 24 24"
-              fill="none">
-              <circle
-                cx="11"
-                cy="11"
-                r="7"
-                stroke="currentColor"
-                stroke-width="2" />
-              <path
-                d="M20 20L17 17"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round" />
-            </svg>
-            <input
-              v-model="search"
-              placeholder="Search quotes..."
-            />
-          </div>
-
-          <div class="tabs">
-            <button
-              :class="{active: filter==='all'}"
-              @click="filter='all'">
-              All Quotes
-            </button>
-
-            <button
-              :class="{active: filter==='pinned'}"
-              @click="filter='pinned'">
-              Pinned
-            </button>
-
-          </div>
-
+        <div class="search-wrapper">
+          <svg
+            class="search-icon"
+            viewBox="0 0 24 24"
+            fill="none">
+            <circle
+              cx="11"
+              cy="11"
+              r="7"
+              stroke="currentColor"
+              stroke-width="2" />
+            <path
+              d="M20 20L17 17"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round" />
+          </svg>
+          <input
+            v-model="search"
+            placeholder="Search quotes..."
+          />
         </div>
 
+        <div class="tabs">
+          <button
+            :class="{active: filter==='all'}"
+            @click="filter='all'">
+            All Quotes
+          </button>
+
+          <button
+            :class="{active: filter==='pinned'}"
+            @click="filter='pinned'">
+            Pinned
+          </button>
+
+        </div>
       </div>
 
       <button class="add-btn">
         + Add Quote
       </button>
-
     </div>
+
+    <div class="quotes-divider"></div>
     <!-- subscription loading -->
     <div v-if="subscriptionStore.loading" class="loading">
       Loading...
@@ -204,7 +201,7 @@ watch(
       </div>
 
       <!-- Quotes list -->
-      <div v-else>
+      <div v-else class="quotes-list">
 
         <QuoteItem
           v-for="quote in filteredQuotes"
@@ -234,36 +231,48 @@ watch(
 
 <style scoped>
 .page{
-  max-width:1100px;
-  margin:auto;
-  padding:40px;
+  width:100%;
+  max-width:1280px;
+  margin:0 auto;
+  padding:36px 52px 60px;
 }
 
 .page-header{
   display:flex;
   justify-content:space-between;
-  align-items:flex-start;
-  margin-bottom:35px;
+  align-items:center;
+  margin-bottom:26px;
 }
 
-.toolbar{
-  margin-top:18px;
+.header-left{
   display:flex;
   flex-direction:column;
-  gap:18px;
+  gap:22px;
+}
+
+.page-title{
+  margin:0;
+  font-size:38px;
+  font-weight:700;
+  line-height:1;
+  letter-spacing:-1.5px;
+  color:#111827;
 }
 
 .search-wrapper {
-  width: 420px;
-  height: 44px;
-  background: #F9FAFB;
-  border: 1px solid #E5E7EB;
-  border-radius: 24px;
-  display: flex;
-  align-items: center;
-  padding: 0 16px;
-  gap: 10px;
-  transition: all 0.2s ease;
+  width:420px;
+  height:52px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:0 18px;
+  background:#fff;
+  border:1px solid #ECEEF3;
+  border-radius:28px;
+  transition:.25s;
+}
+.search-wrapper:hover{
+  border-color:#D8DCE6;
 }
 
 .search-wrapper:focus-within {
@@ -272,43 +281,74 @@ watch(
 }
 
 .search-wrapper input{
-  flex: 1;
-  border: none;
-  outline: none;
-  background: transparent;
-  font-size: 14px;
-  color: #111827;
+  width:100%;
+  border:none;
+  outline:none;
+  background:none;
+  font-size:15px;
+  font-weight:500;
+  color:#111827;
+}
+
+.search-wrapper input::placeholder{
+  color:#9CA3AF;
 }
 
 .tabs{
   display:flex;
-  gap:10px;
+  gap:12px;
 }
 
 .tabs button{
-  height:38px;
-  padding:0 22px;
-  border-radius:20px;
-  border:1px solid #ECECEC;
-  background:white;
+  height:40px;
+  padding:0 24px;
+  border-radius:999px;
+  border:1px solid #ECEEF3;
+  background:#fff;
+  color:#6B7280;
+  font-size:15px;
+  font-weight:600;
+  cursor:pointer;
+  transition:.25s;
 }
 
-.tabs .active{
-  background:#7C3AED;
+.tabs button:hover{
+  border-color:#DDD6FE;
+  color:#7C3AED;
+}
+
+.tabs button.active{
+  background:#7a3cff;
   color:white;
+  border-color:#7a3cff;
+  box-shadow:
+    0 8px 18px rgba(124,58,237,.22);
 }
 
 .add-btn{
-  height:48px;
+  height:52px;
   padding:0 28px;
+  display:flex;
+  align-items:center;
+  gap:10px;
   border:none;
-  border-radius:24px;
-  background:#7C3AED;
+  border-radius:999px;
+  background:#7a3cff;
   color:white;
+  font-size:15px;
   font-weight:600;
+  cursor:pointer;
+  transition:.25s;
 }
-/* loading */
+.add-btn:hover{
+  background:#5e2fd1;
+}
 
+.add-btn:active{
+  transform:translateY(0);
+}
+
+/* loading */
 .loading{
   text-align:center;
   padding:40px;
