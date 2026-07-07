@@ -34,7 +34,7 @@ const isLong = computed(() => props.quote.text.length > 180)
     C317.738,165.078,268.166,181.602,274.286,147.33z" fill="#7C3AED"/>
         </svg>
       </div>
-      <div>
+      <div class="content">
         <div
           class="text"
           :class="{ expanded }">
@@ -125,6 +125,11 @@ const isLong = computed(() => props.quote.text.length > 180)
   transform: translateY(-2px);
 }
 
+.content{
+  flex:1;
+  min-width:0;
+}
+
 .left {
   display: flex;
   align-items: flex-start;
@@ -145,14 +150,17 @@ const isLong = computed(() => props.quote.text.length > 180)
   line-height:1.7;
   color:#222;
   font-weight:500;
-  display:-webkit-box;
-  -webkit-line-clamp:2;
-  -webkit-box-orient:vertical;
   overflow:hidden;
+  display:-webkit-box;
+  -webkit-box-orient:vertical;
+  -webkit-line-clamp:2;
+  word-break:break-word;
+  overflow-wrap:anywhere;
 }
 
 .text.expanded{
   display:block;
+  overflow:visible;
 }
 
 .read-more{
@@ -180,6 +188,7 @@ const isLong = computed(() => props.quote.text.length > 180)
 
 .actions{
   flex-shrink:0;
+  align-self: flex-start;
   display:flex;
   align-items:center;
   gap:14px;
