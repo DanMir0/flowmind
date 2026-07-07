@@ -51,9 +51,16 @@ const save = async () => {
 
           <h3>Add your quote</h3>
 
+
           <textarea
             v-model="quoteText"
-            placeholder="Write your quote..." />
+            maxlength="300"
+            placeholder="Enter quote..."
+          />
+
+          <div class="counter">
+            {{ quoteText.length }}/300
+          </div>
 
           <input
             v-model="quoteAuthor"
@@ -86,7 +93,7 @@ const save = async () => {
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.35);
+  background: rgba(0, 0, 0, 0.35);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -102,7 +109,7 @@ const save = async () => {
   display: flex;
   flex-direction: column;
   gap: 14px;
-  box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
 }
 
 .modal h3 {
@@ -139,6 +146,13 @@ const save = async () => {
   background: white;
   cursor: pointer;
   transition: .2s;
+}
+
+.counter {
+  margin-top: -6px;
+  text-align: right;
+  font-size: 12px;
+  color: #9CA3AF;
 }
 
 .cancel:hover {

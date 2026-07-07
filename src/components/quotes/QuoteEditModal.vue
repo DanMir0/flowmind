@@ -53,11 +53,11 @@ const save = () => {
 
           <textarea
             v-model="form.text"
-            maxlength="500"
+            maxlength="300"
             placeholder="Write your quote..." />
 
           <div class="counter">
-            {{ form.text.length }}/500
+            {{ form.text.length }}/300
           </div>
 
           <input
