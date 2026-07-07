@@ -59,12 +59,21 @@ const save = async () => {
             v-model="quoteAuthor"
             placeholder="Author (optional)" />
 
-          <button
-            class="save"
-            @click="save">
-            Save quote
-          </button>
+          <div class="actions">
 
+            <button
+              class="cancel"
+              @click="$emit('close')">
+              Cancel
+            </button>
+
+            <button
+              class="save"
+              @click="save">
+              Save changes
+            </button>
+
+          </div>
         </div>
 
       </div>
@@ -115,6 +124,25 @@ const save = async () => {
   border-radius: 8px;
   border: 1px solid #ddd;
   font-size: 14px;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.cancel {
+  padding: 12px 18px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  background: white;
+  cursor: pointer;
+  transition: .2s;
+}
+
+.cancel:hover {
+  background: #F9FAFB;
 }
 
 .save {
