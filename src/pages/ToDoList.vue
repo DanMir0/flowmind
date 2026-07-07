@@ -564,7 +564,7 @@ onMounted(() => {
 }
 
 .filter-pill:hover {
-  background: #f0f0f0;
+  color: #7C3AED;
 }
 
 .filter-pill.active {
