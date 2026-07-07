@@ -5,6 +5,7 @@ import { useSubscriptionStore } from '@/store/subscription'
 import { useUserQuotes } from '@/composable/useUserQuotes.js'
 import QuoteItem from '@/components/quotes/QuoteItem.vue'
 import ConfirmDeleteModal from '@/components/ConfirmDeleteModal.vue'
+import AddQuoteModal from '@/components/quotes/AddQuoteModal.vue'
 
 const authStore = useAuthStore()
 const subscriptionStore = useSubscriptionStore()
@@ -23,6 +24,7 @@ const showDeleteModal = ref(false)
 const quoteToDelete = ref(null)
 const search = ref('')
 const filter = ref('all')
+const showAddQuote = ref(false)
 
 const filteredQuotes = computed(() => {
 
@@ -92,7 +94,6 @@ watch(
 <template>
   <div class="page">
 
-
     <div class="page-header">
       <div class="header-left">
         <h1 class="page-title">My Quotes</h1>
@@ -136,7 +137,7 @@ watch(
         </div>
       </div>
 
-      <button class="add-btn">
+      <button class="add-btn" @click="showAddQuote = true">
         + Add Quote
       </button>
     </div>
@@ -225,6 +226,10 @@ watch(
       @confirm="confirmDelete"
       @cancel="showDeleteModal=false"
     />
+
+    <AddQuoteModal
+      :open="showAddQuote"
+      @close="showAddQuote = false" />
   </div>
 
 </template>

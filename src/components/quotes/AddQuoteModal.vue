@@ -2,6 +2,7 @@
 
 import { ref } from 'vue'
 import { useQuotes } from '@/composable/useQuotes'
+import { showError, showSuccess } from '@/utils/toast.js'
 
 const props = defineProps({
   open: Boolean
@@ -18,15 +19,19 @@ const save = async () => {
 
   if (!quoteText.value.trim()) return
 
-  await createUserQuote(
-    quoteText.value,
-    quoteAuthor.value
-  )
+  try {
+    await createUserQuote(
+      quoteText.value,
+      quoteAuthor.value
+    )
+    showSuccess('Quote added!')
+    quoteText.value = ''
+    quoteAuthor.value = ''
 
-  quoteText.value = ''
-  quoteAuthor.value = ''
-
-  emit('close')
+    emit('close')
+  } catch (e) {
+    showError('Failed to add quote', e)
+  }
 
 }
 
