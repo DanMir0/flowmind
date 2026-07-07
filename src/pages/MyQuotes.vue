@@ -6,7 +6,7 @@ import { useUserQuotes } from '@/composable/useUserQuotes.js'
 import QuoteItem from '@/components/quotes/QuoteItem.vue'
 import ConfirmDeleteModal from '@/components/ConfirmDeleteModal.vue'
 import AddQuoteModal from '@/components/quotes/AddQuoteModal.vue'
-
+import QuoteEditModal from '@/components/quotes/QuoteEditModal.vue'
 const authStore = useAuthStore()
 const subscriptionStore = useSubscriptionStore()
 
@@ -16,7 +16,8 @@ const {
   errorMessage,
   loadQuotes,
   removeQuote,
-  pinQuote
+  pinQuote,
+  editQuote: saveQuote,
 } = useUserQuotes()
 
 /* DELETE MODAL */
@@ -25,6 +26,13 @@ const quoteToDelete = ref(null)
 const search = ref('')
 const filter = ref('all')
 const showAddQuote = ref(false)
+const showEditQuote = ref(false)
+const editingQuote = ref(null)
+
+const editQuote = (quoteId) => {
+  editingQuote.value = quotes.value.find(q => q.id === quoteId)
+  showEditQuote.value = true
+}
 
 const filteredQuotes = computed(() => {
 
@@ -70,6 +78,14 @@ const confirmDelete = async () => {
 
   showDeleteModal.value = false
   quoteToDelete.value = null
+}
+
+const updateQuote = async (payload) => {
+
+  await saveQuote(payload)
+
+  showEditQuote.value = false
+  editingQuote.value = null
 }
 
 /* LOAD */
@@ -209,7 +225,8 @@ watch(
           :key="quote.id"
           :quote="quote"
           @pin="pinQuote"
-          @delete="deleteQuote"/>
+          @delete="deleteQuote"
+          @edit="editQuote"/>
 
         <div
           v-if="!quotes.length"
@@ -230,6 +247,13 @@ watch(
     <AddQuoteModal
       :open="showAddQuote"
       @close="showAddQuote = false" />
+
+    <QuoteEditModal
+      :open="showEditQuote"
+      :quote="editingQuote"
+      @close="showEditQuote = false"
+      @save="updateQuote"
+    />
   </div>
 
 </template>

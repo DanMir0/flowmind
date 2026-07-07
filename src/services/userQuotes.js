@@ -33,3 +33,22 @@ export const togglePin = async (userId, quoteId) => {
 
   if (error) handleSupabaseError(error, 'togglePin')
 }
+
+export const updateUserQuote = async (quoteId, payload) => {
+
+  const { data, error } = await supabase
+    .from('user_quotes')
+    .update({
+      text: payload.text,
+      author: payload.author
+    })
+    .eq('id', quoteId)
+    .select()
+    .single()
+
+  if (error) {
+    handleSupabaseError(error, 'updateUserQuote')
+  }
+
+  return data
+}

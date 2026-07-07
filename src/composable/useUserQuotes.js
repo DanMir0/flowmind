@@ -3,7 +3,8 @@ import {toast} from 'vue-sonner'
 import {
   getUserQuotes,
   deleteUserQuote,
-  togglePin
+  togglePin,
+  updateUserQuote
 } from '@/services/userQuotes'
 import { useAuthStore } from '@/store/auth.js'
 import { showSuccess, showError} from '@/utils/toast.js'
@@ -76,12 +77,38 @@ export function useUserQuotes() {
     }
   }
 
+  const editQuote = async (payload) => {
+
+    try {
+
+      const updated = await updateUserQuote(payload.id, {
+        text: payload.text,
+        author: payload.author
+      })
+
+      quotes.value = quotes.value.map(q =>
+        q.id === updated.id
+          ? updated
+          : q
+      )
+
+      showSuccess('Quote updated')
+
+    } catch (err) {
+
+      showError(err.message || 'Failed to update quote')
+
+    }
+
+  }
+
   return {
     quotes,
     loading,
     errorMessage,
     loadQuotes,
     removeQuote,
-    pinQuote
+    pinQuote,
+    editQuote
   }
 }

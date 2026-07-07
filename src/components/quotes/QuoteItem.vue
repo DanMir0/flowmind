@@ -8,7 +8,8 @@ const props = defineProps({
 
 const emit = defineEmits([
   'pin',
-  'delete'
+  'delete',
+  'edit'
 ])
 
 const expanded = ref(false)
@@ -71,7 +72,7 @@ const isLong = computed(() => props.quote.text.length > 180)
         <span>{{ quote.is_pinned ? 'Pinned' : 'Pin' }}</span>
       </button>
 
-      <button class="icon-btn">
+      <button class="icon-btn"  @click="emit('edit', quote.id)">
        <span>
          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
               xmlns="http://www.w3.org/2000/svg">
