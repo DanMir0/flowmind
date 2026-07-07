@@ -1,6 +1,8 @@
 <script setup>
 
-defineProps({
+import { computed, ref } from 'vue'
+
+const props = defineProps({
   quote: Object
 })
 
@@ -9,6 +11,9 @@ const emit = defineEmits([
   'delete'
 ])
 
+const expanded = ref(false)
+
+const isLong = computed(() => props.quote.text.length > 180)
 </script>
 
 <template>
@@ -29,9 +34,18 @@ const emit = defineEmits([
         </svg>
       </div>
       <div>
-        <div class="text">
+        <div
+          class="text"
+          :class="{ expanded }">
           {{ quote.text }}
         </div>
+
+        <button
+          v-if="isLong"
+          class="read-more"
+          @click="expanded = !expanded">
+          {{ expanded ? 'Show less' : 'Read more' }}
+        </button>
         <div class="author">
           — {{ quote.author || 'Unknown' }}
         </div>
@@ -103,6 +117,7 @@ const emit = defineEmits([
   box-shadow: 0 8px 30px rgba(30, 30, 30, .06);
   transition: .25s;
   gap: 20px;
+  min-height:160px;
 }
 
 .quote-card:hover {
@@ -114,6 +129,7 @@ const emit = defineEmits([
   align-items: flex-start;
   gap: 22px;
   flex: 1;
+  min-width:0;
 }
 
 .quote-icon {
@@ -123,22 +139,49 @@ const emit = defineEmits([
   line-height: 1;
 }
 
-.text {
-  font-size: 18px;
-  font-weight: 500;
-  color: #222;
+.text{
+  font-size:18px;
+  line-height:1.7;
+  color:#222;
+  font-weight:500;
+  display:-webkit-box;
+  -webkit-line-clamp:2;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
+}
+
+.text.expanded{
+  display:block;
+}
+
+.read-more{
+  margin-top:10px;
+  padding:0;
+  border:none;
+  background:none;
+  color:#7C3AED;
+  font-size:14px;
+  font-weight:600;
+  cursor:pointer;
+  transition:.2s;
+}
+
+.read-more:hover{
+  color:#6D28D9;
 }
 
 .author {
   margin-top: 10px;
   color: #8A8A99;
   font-style: italic;
+  font-size:15px;
 }
 
-.actions {
-  display: flex;
-  align-items: center;
-  gap: 14px;
+.actions{
+  flex-shrink:0;
+  display:flex;
+  align-items:center;
+  gap:14px;
 }
 
 .pin-btn {
