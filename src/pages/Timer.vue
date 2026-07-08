@@ -125,6 +125,15 @@ const tick = () => {
 
   rafId = requestAnimationFrame(tick)
 }
+
+const handlePinQuote = async () => {
+  await pinQuote(displayedQuote.value.id)
+
+  await loadQuote()
+
+  showQuoteMenu.value = false
+}
+
 const start = () => {
   if (isRunning.value || isEditing.value) return
 
@@ -304,7 +313,7 @@ onMounted(async () => {
       @close="showQuoteMenu = false"
       @add-quote="openAddQuote"
       @my-quotes="openMyQuotes"
-      @pin-quote="pinQuote"/>
+      @pin-quote="handlePinQuote"/>
 
     <AddQuoteModal
       :open="showAddQuote"

@@ -1,5 +1,5 @@
 import { ref } from 'vue'
-import {toast} from 'vue-sonner'
+import { supabase } from '@/services/supabase.js'
 import {
   getUserQuotes,
   deleteUserQuote,
@@ -8,12 +8,14 @@ import {
 } from '@/services/userQuotes'
 import { useAuthStore } from '@/store/auth.js'
 import { showSuccess, showError} from '@/utils/toast.js'
+import { useQuotes } from '@/composable/useQuotes.js'
 
 export function useUserQuotes() {
 
   const quotes = ref([])
   const loading = ref(false)
   const errorMessage = ref(null)
+  const { loadQuote } = useQuotes()
 
   const loadQuotes = async (userId) => {
 
@@ -102,6 +104,37 @@ export function useUserQuotes() {
 
   }
 
+  const unpinAllQuotes = async (userId) => {
+
+    const { error } = await supabase
+      .from('user_quotes')
+      .update({
+        is_pinned: false
+      })
+      .eq('user_id', userId)
+
+    if (error)
+      throw error
+
+    quotes.value.forEach(q => {
+      q.is_pinned = false
+    })
+  }
+
+  const setRandomQuotes = async (userId, enabled) => {
+
+    const { error } = await supabase
+      .from('profiles')
+      .update({
+        use_random_quotes: enabled
+      })
+      .eq('user_id', userId)
+
+    await loadQuote()
+
+    if (error) throw error
+  }
+
   return {
     quotes,
     loading,
@@ -109,6 +142,8 @@ export function useUserQuotes() {
     loadQuotes,
     removeQuote,
     pinQuote,
-    editQuote
+    editQuote,
+    unpinAllQuotes,
+    setRandomQuotes
   }
 }
