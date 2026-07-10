@@ -3,19 +3,18 @@ import { supabase } from '@/services/supabase.js'
 import {
   getUserQuotes,
   deleteUserQuote,
-  togglePin,
   updateUserQuote
 } from '@/services/userQuotes'
-import { useAuthStore } from '@/store/auth.js'
 import { showSuccess, showError} from '@/utils/toast.js'
 import { useQuotes } from '@/composable/useQuotes.js'
+import { clearPinnedQuote } from '@/services/quotes'
 
 export function useUserQuotes() {
 
   const quotes = ref([])
   const loading = ref(false)
   const errorMessage = ref(null)
-  const { loadQuote } = useQuotes()
+  const { loadQuote, pinCurrentUserQuote } = useQuotes()
 
   const loadQuotes = async (userId) => {
 
@@ -49,34 +48,20 @@ export function useUserQuotes() {
 
   const pinQuote = async (quoteId) => {
 
-    const current = quotes.value.find(q => q.id === quoteId)
-    const authStore = useAuthStore()
-
     try {
 
-      await togglePin(authStore.user.id, quoteId)
+      await pinCurrentUserQuote(quoteId)
 
-      // UI обновление
-      if (current.is_pinned) {
-
-        // был pinned → снимаем
-        quotes.value = quotes.value.map(q => ({
-          ...q,
-          is_pinned: false
-        }))
-
-      } else {
-
-        // не был → делаем pinned
-        quotes.value = quotes.value.map(q => ({
-          ...q,
-          is_pinned: q.id === quoteId
-        }))
-      }
+      quotes.value.forEach(q => {
+        q.is_pinned = q.id === quoteId
+      })
 
     } catch (err) {
+
       showError(err.message || 'Failed to update pin')
+
     }
+
   }
 
   const editQuote = async (payload) => {
@@ -106,19 +91,13 @@ export function useUserQuotes() {
 
   const unpinAllQuotes = async (userId) => {
 
-    const { error } = await supabase
-      .from('user_quotes')
-      .update({
-        is_pinned: false
-      })
-      .eq('user_id', userId)
-
-    if (error)
-      throw error
+    await clearPinnedQuote(userId)
 
     quotes.value.forEach(q => {
       q.is_pinned = false
     })
+
+    await loadQuote()
   }
 
   const setRandomQuotes = async (userId, enabled) => {

@@ -24,16 +24,6 @@ export const deleteUserQuote = async (id) => {
   if (error) handleSupabaseError(error, 'deleteUserQuote')
 }
 
-export const togglePin = async (userId, quoteId) => {
-
-  const { error } = await supabase.rpc('toggle_pin', {
-    p_user_id: userId,
-    p_quote_id: quoteId
-  })
-
-  if (error) handleSupabaseError(error, 'togglePin')
-}
-
 export const updateUserQuote = async (quoteId, payload) => {
 
   const { data, error } = await supabase

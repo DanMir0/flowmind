@@ -99,3 +99,16 @@ export const pinSystemQuote = async (quoteId) => {
 
   if (error) throw error
 }
+
+export const clearPinnedQuote = async (userId) => {
+
+  const { error } = await supabase
+    .from('profiles')
+    .update({
+      pinned_quote_id: null,
+      pinned_quote_type: null
+    })
+    .eq('user_id', userId)
+
+  if (error) throw error
+}
