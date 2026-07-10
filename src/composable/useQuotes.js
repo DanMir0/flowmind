@@ -194,6 +194,7 @@ export function useQuotes() {
       displayedQuote.value.quote_id
     )
 
+    await authStore.fetchProfile()
     await loadQuote()
 
   }
@@ -204,7 +205,7 @@ export function useQuotes() {
       quoteId,
       authStore.user.id
     )
-
+    await authStore.fetchProfile()
   }
 
   watch(

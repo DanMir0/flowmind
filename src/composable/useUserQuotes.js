@@ -8,6 +8,7 @@ import {
 import { showSuccess, showError} from '@/utils/toast.js'
 import { useQuotes } from '@/composable/useQuotes.js'
 import { clearPinnedQuote } from '@/services/quotes'
+import { useAuthStore } from '@/store/auth.js'
 
 export function useUserQuotes() {
 
@@ -17,16 +18,26 @@ export function useUserQuotes() {
   const { loadQuote, pinCurrentUserQuote } = useQuotes()
 
   const loadQuotes = async (userId) => {
-
+    const authStore = useAuthStore()
     if (!userId) return
 
     try {
       loading.value = true
       errorMessage.value = null
 
+      await authStore.fetchProfile()
+
       const data = await getUserQuotes(userId)
 
-      quotes.value = data
+      const pinnedId = authStore.profile?.pinned_quote_id
+      const pinnedType = authStore.profile?.pinned_quote_type
+
+      quotes.value = data.map(q => ({
+        ...q,
+        is_pinned:
+          pinnedType === 'user' &&
+          pinnedId === q.id
+      }))
     } catch (err) {
       errorMessage.value = err.message || 'Failed to load quotes'
     } finally {
@@ -101,7 +112,7 @@ export function useUserQuotes() {
   }
 
   const setRandomQuotes = async (userId, enabled) => {
-
+    const authStore = useAuthStore()
     const { error } = await supabase
       .from('profiles')
       .update({
@@ -109,6 +120,7 @@ export function useUserQuotes() {
       })
       .eq('user_id', userId)
 
+    await authStore.fetchProfile()
     await loadQuote()
 
     if (error) throw error
