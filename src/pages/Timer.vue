@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onUnmounted, nextTick, onMounted, watch } from 'vue'
+import { ref, computed, nextTick, onMounted } from 'vue'
 import { useQuotes } from '@/composable/useQuotes.js'
 import { useSubscriptionStore } from '@/store/subscription'
 import QuoteMenu from '@/components/quotes/QuoteMenu.vue'
@@ -344,21 +344,27 @@ onMounted(async () => {
   align-items: center;
   justify-content: space-between;
   margin-top: 40px;
-  max-width: 520px;
-  gap: 20px;
-  padding: 22px 28px;
+  width: clamp(420px, fit-content, 820px);
+  gap: 32px;
+  padding: 28px 32px;
   margin-left: auto;
   margin-right: auto;
   background: #ffffff;
   border-radius: 16px;
   box-shadow: 0 12px 30px rgba(0,0,0,0.06);
   min-height: 110px;
+  overflow: hidden;
 }
 
 .quote-text {
-  font-size: 16px;
-  color: #5f5f6a;
-  line-height: 1.6;
+  flex:1;
+  min-width:0;
+  color:#4b5563;
+  font-size:16px;
+  line-height:1.4;
+  word-break:break-word;
+  overflow-wrap:anywhere;
+  max-width: 680px;
 }
 
 .quote-author {
