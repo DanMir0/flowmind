@@ -17,6 +17,7 @@ let sessionStartedAt = null
 const router = useRouter()
 const showQuoteMenu = ref(false)
 const showAddQuote = ref(false)
+const showPinnedToast = ref(false)
 
 const openMyQuotes = () => {
   showQuoteMenu.value = false
@@ -30,8 +31,9 @@ const openAddQuote = () => {
 const {
   displayedQuote,
   loading,
-  pinQuote,
+  isPinned,
   loadQuote,
+  pinCurrentSystemQuote
 } = useQuotes()
 
 /* ====== Settings ====== */
@@ -127,11 +129,15 @@ const tick = () => {
 }
 
 const handlePinQuote = async () => {
-  await pinQuote(displayedQuote.value.id)
 
-  await loadQuote()
+  await pinCurrentSystemQuote()
+  showPinnedToast.value = true
 
+  setTimeout(() => {
+    showPinnedToast.value = false
+  }, 2500)
   showQuoteMenu.value = false
+
 }
 
 const start = () => {
@@ -283,7 +289,17 @@ onMounted(async () => {
     </div>
 
     <div class="quote-card" v-if="loading || displayedQuote">
-
+      <Transition name="badge">
+        <div
+          v-if="isPinned"
+          class="quote-badge"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">
+            <path fill="none" stroke="#8B5CF6" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 4v6l-2 4v2h10v-2l-2-4V4m-3 12v5M8 4h8"/>
+          </svg>
+          <span>Pinned</span>
+        </div>
+      </Transition>
       <template v-if="loading">
         <div class="quote-skeleton-text"></div>
         <div class="quote-skeleton-author"></div>
@@ -336,6 +352,7 @@ onMounted(async () => {
   background: #ffffff;
   border-radius: 16px;
   box-shadow: 0 12px 30px rgba(0,0,0,0.06);
+  min-height: 110px;
 }
 
 .quote-text {
@@ -378,6 +395,23 @@ onMounted(async () => {
   animation: skeleton 1.4s infinite;
   border-radius: 6px;
   margin-bottom: 12px;
+}
+
+.quote-badge{
+  position:absolute;
+  top: 0;
+  right: 0;
+  display:flex;
+  align-items:center;
+  gap:6px;
+  padding:6px 12px;
+  border-radius:999px;
+  background:#F3E8FF;
+  color:#7C3AED;
+  font-size:12px;
+  font-weight:700;
+  border:1px solid #DDD6FE;
+  user-select:none;
 }
 
 .quote-skeleton-author {
@@ -500,5 +534,16 @@ button {
 
 .secondary:hover {
   background: #f2f2f7;
+}
+
+.badge-enter-active,
+.badge-leave-active{
+  transition:all .25s ease;
+}
+
+.badge-enter-from,
+.badge-leave-to{
+  opacity:0;
+  transform:translateY(-6px);
 }
 </style>

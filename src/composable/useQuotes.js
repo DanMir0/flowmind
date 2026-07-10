@@ -1,6 +1,7 @@
 import { ref, watch } from 'vue'
 import { useSettingsStore } from '@/store/settings'
 import { useAuthStore } from '@/store/auth'
+import { supabase } from '@/services/supabase'
 
 import {
   getPinnedQuote,
@@ -8,13 +9,14 @@ import {
   getQuoteIdByIndex,
   getQuoteTranslation,
   addUserQuote,
-  clearPinned,
-  pinUserQuote
+  pinUserQuote,
+  pinSystemQuote
 } from '@/services/quotes'
 import { useSubscriptionStore } from '@/store/subscription.js'
 
 const DEFAULT_LOCALE = 'en'
 const CACHE_KEY = 'daily_quote'
+const isPinned = ref(false)
 
 const saveCache = (quote) => {
   localStorage.setItem(
@@ -40,6 +42,7 @@ const loadCache = () => {
   return parsed.quote
 }
 
+
 export function useQuotes() {
 
   const settingsStore = useSettingsStore()
@@ -49,68 +52,121 @@ export function useQuotes() {
   const displayedQuote = ref(null)
   const loading = ref(false)
 
-  const loadQuote = async () => {
+  const getUserQuoteById = async (id) => {
 
+    const { data, error } = await supabase
+      .from('user_quotes')
+      .select('*')
+      .eq('id', id)
+      .maybeSingle()
+
+    if (error) throw error
+
+    return data
+  }
+
+  const getSystemQuoteById = async (quoteId, locale) => {
+
+    const { data, error } = await supabase
+      .from('quote_translations')
+      .select('*')
+      .eq('quote_id', quoteId)
+      .eq('locale', locale)
+      .maybeSingle()
+
+    if (error) throw error
+
+    return data
+  }
+
+  const loadQuote = async () => {
+    isPinned.value = false
     try {
 
       loading.value = true
 
-      // pinned quote
-      const pinned = await getPinnedQuote(authStore.user?.id)
+      const pinned = await getPinnedQuote()
 
-      if (pinned) {
-        displayedQuote.value = pinned
-        loading.value = false
-        return
+      if (pinned?.pinned_quote_id) {
+
+        let quote = null
+
+        if (pinned.pinned_quote_type === 'user') {
+
+          quote = await getUserQuoteById(
+            pinned.pinned_quote_id
+          )
+
+        } else {
+
+          quote = await getSystemQuoteById(
+            pinned.pinned_quote_id,
+            settingsStore.locale
+          )
+
+          if (!quote && settingsStore.locale !== DEFAULT_LOCALE) {
+
+            quote = await getSystemQuoteById(
+              pinned.pinned_quote_id,
+              DEFAULT_LOCALE
+            )
+
+          }
+
+        }
+
+        if (quote) {
+          displayedQuote.value = quote
+          isPinned.value = true
+          return
+        }
+
       }
 
-      // daily quote
+      // -----------------------
+      // обычная ежедневная цитата
+      // -----------------------
+
       const count = await getQuotesCount()
 
-
-      if (count === null || count === undefined) {
-        loading.value = false
-        return
-      }
+      if (!count) return
 
       const today = new Date()
 
       const dayOfYear = Math.floor(
-        (today - new Date(today.getFullYear(), 0, 0)) / 86400000
+        (today - new Date(today.getFullYear(), 0, 0))
+        / 86400000
       )
 
       const index = dayOfYear % count
 
       const quoteId = await getQuoteIdByIndex(index)
 
-
       let translation = await getQuoteTranslation(
         quoteId,
         settingsStore.locale
       )
 
-      // fallback language
-      if (!translation && settingsStore.locale !== DEFAULT_LOCALE) {
+      if (!translation &&
+        settingsStore.locale !== DEFAULT_LOCALE) {
+
         translation = await getQuoteTranslation(
           quoteId,
           DEFAULT_LOCALE
         )
+
       }
 
       displayedQuote.value = translation
 
-      // cache only system quotes
-      if (translation) {
+      if (translation)
         saveCache(translation)
-      }
-
-    } catch (error) {
-
-    } finally {
-
-      loading.value = false
 
     }
+    finally {
+      loading.value = false
+    }
+
   }
 
   const createUserQuote = async (quoteText, authorText) => {
@@ -129,16 +185,25 @@ export function useQuotes() {
     )
 
   }
+  const pinCurrentSystemQuote = async () => {
 
-  const pinQuote = async (quoteId) => {
+    if (!displayedQuote.value)
+      return
 
-    if (!authStore.user) return
-
-    await clearPinned(authStore.user.id)
-
-    await pinUserQuote(quoteId)
+    await pinSystemQuote(
+      displayedQuote.value.quote_id
+    )
 
     await loadQuote()
+
+  }
+
+  const pinCurrentUserQuote = async (quoteId) => {
+
+    await pinUserQuote(
+      quoteId,
+      authStore.user.id
+    )
 
   }
 
@@ -153,7 +218,9 @@ export function useQuotes() {
     loading,
     loadQuote,
     createUserQuote,
-    pinQuote
+    pinCurrentUserQuote,
+    pinCurrentSystemQuote,
+    isPinned,
   }
 
 }

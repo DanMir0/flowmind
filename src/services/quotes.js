@@ -1,13 +1,21 @@
 // services/quotes.js
 import { supabase } from '@/services/supabase'
+import { useAuthStore } from '@/store/auth'
 
-export const getPinnedQuote = async (userId) => {
-  const {data} =  await supabase
-    .from('user_quotes')
-    .select('*')
-    .eq('user_id', userId)
-    .eq('is_pinned', true)
+export const getPinnedQuote = async () => {
+  const authStore = useAuthStore()
+  const { data, error } = await supabase
+    .from('profiles')
+    .select(`
+      pinned_quote_id,
+      pinned_quote_type
+    `)
+    .eq('user_id', authStore.user.id)
     .maybeSingle()
+
+  if (error)
+    throw error
+
   return data
 }
 
@@ -27,36 +35,20 @@ export const getQuoteIdByIndex = async (index) => {
     .range(index, index)
     .maybeSingle()
 
-  console.log(data)
   return data?.id
 }
 
 export const getQuoteTranslation = async (quoteId, locale) => {
-  console.log('quoteId', quoteId)
-  console.log('locale', locale)
 
   const { data: all } = await supabase
     .from('quote_translations')
     .select('*')
-
-  console.log('ALL', all.length)
-
-  const byId = all.filter(q => q.quote_id === quoteId)
-
-  console.log('BY ID', byId)
-
-  const byLocale = byId.filter(q => q.locale === locale)
-
-  console.log('BY LOCALE', byLocale)
 
   const { data, error } = await supabase
     .from('quote_translations')
     .select('*')
     .eq('quote_id', quoteId)
     .eq('locale', locale)
-
-  console.log('QUERY RESULT', data)
-  console.log(error)
 
   return data?.[0] ?? null
 }
@@ -80,10 +72,30 @@ export const clearPinned = async (userId) => {
   return data
 }
 
-export const pinUserQuote = async (quoteId) => {
-  const { data } = await supabase
-    .from('user_quotes')
-    .update({ is_pinned: true })
-    .eq('id', quoteId)
-  return data
+export const pinUserQuote = async (quoteId, userId) => {
+
+  const { error } = await supabase
+    .from('profiles')
+    .update({
+      pinned_quote_id: quoteId,
+      pinned_quote_type: 'user',
+      use_random_quotes: false
+    })
+    .eq('user_id', userId)
+
+  if (error) throw error
+}
+
+export const pinSystemQuote = async (quoteId) => {
+  const authStore = useAuthStore()
+  const { error } = await supabase
+    .from('profiles')
+    .update({
+      pinned_quote_id: quoteId,
+      pinned_quote_type: 'system',
+      use_random_quotes: false
+    })
+    .eq('user_id', authStore.user.id)
+
+  if (error) throw error
 }
