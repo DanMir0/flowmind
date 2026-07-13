@@ -3,13 +3,13 @@ import { ref, computed } from 'vue'
 import { useTasksStore } from '@/store/tasks.js'
 
 const showAllTasks = ref(false)
-const TASK_LIMIT_CALENDAR = 2;
-const TASK_LIMIT_UPCOMING = 3;
+const TASK_LIMIT_CALENDAR = 2
+const TASK_LIMIT_UPCOMING = 3
 const tasksStore = useTasksStore()
 const currentDate = ref(new Date())
 const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 const selectedDate = ref(new Date())
-const now = new Date();
+const now = new Date()
 
 const upcomingTasks = computed(() => {
   return tasksStore.tasks
@@ -193,7 +193,7 @@ function hasOverflowTasks(day) {
 
       <section class="card">
         <h4>Monthly Summary</h4>
-        <div class="big">{{monthTasksCount}} Tasks</div>
+        <div class="big">{{ monthTasksCount }} Tasks</div>
         <p class="upcoming-due">Upcoming Due</p>
         <template v-if="upcomingTasks.length">
 
@@ -234,10 +234,34 @@ function hasOverflowTasks(day) {
     <div class="calendar">
 
       <!-- header -->
-      <div class="header">
-        <button @click="prevMonth">←</button>
-        <span>{{ monthLabel }}</span>
-        <button @click="nextMonth">→</button>
+      <div class="calendar-header">
+
+        <div class="calendar-actions">
+          <button class="today-btn">
+            Today
+          </button>
+
+          <button
+            class="nav-btn"
+            @click="prevMonth">
+            ←
+          </button>
+
+          <button
+            class="nav-btn"
+            @click="nextMonth">
+            →
+          </button>
+        </div>
+
+        <h2 class="month-title">
+          {{ monthLabel }}
+        </h2>
+
+        <button class="view-btn">
+          Month
+        </button>
+
       </div>
 
       <!-- дни недели -->
@@ -301,10 +325,10 @@ function hasOverflowTasks(day) {
 }
 
 .sidebar-task {
-  padding: 10px;
-  border-radius: 10px;
-  background: #f8f2ff;
-  font-size: 13px;
+  background: #F8FAFC;
+  border-radius: 14px;
+  padding: 14px;
+  border: 1px solid #EEF2F7;
 }
 
 .empty {
@@ -313,11 +337,13 @@ function hasOverflowTasks(day) {
 }
 
 .calendar {
-  background: white;
-  border-radius: 20px;
-  padding: 24px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-  border: 1px solid #c5aada;
+  background: #fff;
+  border: 1px solid #E9D5FF;
+  border-radius: 18px;
+  padding: 20px;
+  box-shadow: 0 10px 30px rgba(124, 58, 237, .08);
+  height: 760px;
+  overflow: hidden;
 }
 
 .tasks {
@@ -326,70 +352,111 @@ function hasOverflowTasks(day) {
   gap: 3px;
 }
 
-.header {
+.calendar-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 }
 
-.header span {
-  font-size: 18px;
-  font-weight: 600;
+.calendar-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
 }
 
-.header button {
-  background: transparent;
-  border: none;
-  font-size: 18px;
+.month-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.today-btn,
+.view-btn,
+.nav-btn {
+  height: 44px;
+  border: 1px solid #E5E7EB;
+  background: white;
+  border-radius: 14px;
   cursor: pointer;
+  transition: .2s;
+}
+
+.today-btn {
+  padding: 0 22px;
+}
+
+.view-btn {
+  padding: 0 20px;
+}
+
+.nav-btn {
+  width: 44px;
+}
+
+.today-btn:hover,
+.view-btn:hover,
+.nav-btn:hover {
+  background: #F9FAFB;
 }
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 10px;
+  grid-template-columns:repeat(7, 1fr);
+  grid-template-rows:repeat(6, 1fr);
+  height: 640px;
+  border-top: 1px solid #EEF1F7;
 }
 
 .date {
-  font-size: 12px;
+  font-size: 18px;
   font-weight: 600;
-  color: #64748b;
+  color: #111827;
 }
 
 .weekdays {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  margin-bottom: 10px;
+  margin-bottom: 4px;
   font-size: 12px;
   color: #9ca3af;
 }
 
 .task {
+  background: #F3E8FF;
+  color: #6d28d9;
+  height: 24px;
+  display: flex;
+  font-weight: 600;
+  align-items: center;
+  padding: 0 8px;
   font-size: 11px;
-  background: #f3e8ff;
-  color: #5b21b6;
-  border-radius: 999px;
-  padding: 3px 8px;
-  max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  border-radius: 8px;
 }
 
 .day {
-  padding: 12px;
-  min-height: 110px;
-  border-radius: 16px;
-  background: #f8f9fc;
+  padding: 10px;
+  border: 1px solid #EEF1F7;
+  border-right: 1px solid #EEF2F7;
+  border-bottom: 1px solid #EEF2F7;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  transition: all 0.2s ease;
+  gap: 4px;
 }
 
 .day:hover {
-  background: #f1f5f9;
+  background: #F8F5FF;
+}
+
+.day.selected:hover {
+  background: #7C3AED;
+  color: #000000;
+}
+
+.day.today:hover .date {
+  background: #7C3AED;
+  color: #fff;
 }
 
 .today .date {
@@ -402,13 +469,10 @@ function hasOverflowTasks(day) {
   justify-content: center;
   border-radius: 50%;
 }
+
 /* выбранный день (главный фокус) */
 .selected {
   background: linear-gradient(135deg, #7c3aed, #6d28d9);
-  color: white;
-  box-shadow: 0 10px 25px rgba(124, 58, 237, 0.4);
-  transform: scale(1.02);
-
 }
 
 .selected .date {
@@ -423,6 +487,7 @@ function hasOverflowTasks(day) {
 .selected .dots span {
   background: white;
 }
+
 /* чужой месяц */
 .other-month {
   opacity: 0.35;
@@ -431,21 +496,21 @@ function hasOverflowTasks(day) {
 
 .card {
   background: white;
-  border-radius: 20px;
-  padding: 16px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.04);
-  border: 1px solid #c5aada;
+  border: 1px solid #E9D5FF;
+  border-radius: 22px;
+  padding: 24px;
+  box-shadow: 0 10px 30px rgba(124, 58, 237, .05);
 }
 
 .card h4 {
-  font-size: 13px;
-  color: #9539ff;
+  color: #7C3AED;
+  font-size: 16px;
+  margin-bottom: 20px;
 }
 
 .big {
-  font-size: 24px;
-  font-weight: 500;
-  margin-bottom: 13px;
+  font-size: 36px;
+  font-weight: 700;
 }
 
 .task-time {
