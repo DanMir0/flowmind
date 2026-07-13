@@ -1,13 +1,18 @@
 import { supabase } from '@/services/supabase'
 import {handleSupabaseError} from '@/utils/appError.js'
 
-export const getUserQuotes = async (userId) => {
+export const getUserQuotes = async (userId, page, pageSize) => {
+
+  const from = page * pageSize
+  const to = from + pageSize - 1
+
   const { data, error } = await supabase
     .from('user_quotes')
     .select('*')
     .eq('user_id', userId)
     .order('is_pinned', { ascending: false })
     .order('created_at', { ascending: false })
+    .range(from, to)
 
   if (error) handleSupabaseError(error, 'getUserQuotes')
 

@@ -15,12 +15,14 @@ const {
   quotes,
   loading,
   errorMessage,
+  hasMore,
   loadQuotes,
   removeQuote,
   pinQuote,
   editQuote: saveQuote,
   unpinAllQuotes,
   setRandomQuotes,
+  loadMore,
 } = useUserQuotes()
 
 /* DELETE MODAL */
@@ -291,6 +293,27 @@ watch(
           You haven't added any quotes yet.
         </div>
       </div>
+      <div
+        v-if="hasMore && quotes.length"
+        class="load-more-wrapper">
+
+        <button
+          class="load-more-btn"
+          @click="loadMore">
+
+          Load More
+
+        </button>
+
+      </div>
+
+      <div
+        v-else-if="quotes.length"
+        class="end-list">
+
+        ✓ You've reached the end
+
+      </div>
     </div>
 
     <ConfirmDeleteModal
@@ -303,7 +326,8 @@ watch(
 
     <AddQuoteModal
       :open="showAddQuote"
-      @close="showAddQuote = false" />
+      @close="showAddQuote = false"
+      @saved="loadQuotes(authStore.user.id)"/>
 
     <QuoteEditModal
       :open="showEditQuote"
@@ -641,6 +665,35 @@ watch(
   width: 18px;
   height: 18px;
   color: #9CA3AF;
+}
+
+.load-more-wrapper{
+  display:flex;
+  justify-content:center;
+  margin-top:32px;
+}
+
+.load-more-btn{
+  height:48px;
+  padding:0 32px;
+  border:none;
+  border-radius:999px;
+  background:#7C3AED;
+  color:#fff;
+  font-weight:600;
+  cursor:pointer;
+  transition:.25s;
+}
+
+.load-more-btn:hover{
+  background:#6D28D9;
+}
+
+.end-list{
+  margin-top:30px;
+  text-align:center;
+  color:#9CA3AF;
+  font-size:14px;
 }
 
 /* анимация появления */

@@ -16,6 +16,9 @@ export function useUserQuotes() {
   const loading = ref(false)
   const errorMessage = ref(null)
   const { loadQuote, pinCurrentUserQuote } = useQuotes()
+  const PAGE_SIZE = 8
+  const page = ref(0)
+  const hasMore = ref(true)
 
   const loadQuotes = async (userId) => {
     const authStore = useAuthStore()
@@ -23,11 +26,12 @@ export function useUserQuotes() {
 
     try {
       loading.value = true
+      page.value = 0
       errorMessage.value = null
 
       await authStore.fetchProfile()
 
-      const data = await getUserQuotes(userId)
+      const data = await getUserQuotes(userId, page.value, PAGE_SIZE)
 
       const pinnedId = authStore.profile?.pinned_quote_id
       const pinnedType = authStore.profile?.pinned_quote_type
@@ -38,11 +42,39 @@ export function useUserQuotes() {
           pinnedType === 'user' &&
           pinnedId === q.id
       }))
+
+      hasMore.value = data.length === PAGE_SIZE
     } catch (err) {
       errorMessage.value = err.message || 'Failed to load quotes'
     } finally {
       loading.value = false
     }
+  }
+
+  const loadMore = async () => {
+    const authStore = useAuthStore()
+
+    page.value++
+
+    const data = await getUserQuotes(
+      authStore.user.id,
+      page.value,
+      PAGE_SIZE
+    )
+
+    const pinnedId = authStore.profile?.pinned_quote_id
+    const pinnedType = authStore.profile?.pinned_quote_type
+
+    const mapped = data.map(q => ({
+      ...q,
+      is_pinned:
+        pinnedType === 'user' &&
+        pinnedId === q.id
+    }))
+
+    quotes.value.push(...mapped)
+
+    hasMore.value = data.length === PAGE_SIZE
   }
 
   const removeQuote = async (quoteId) => {
@@ -130,6 +162,8 @@ export function useUserQuotes() {
     quotes,
     loading,
     errorMessage,
+    hasMore,
+    loadMore,
     loadQuotes,
     removeQuote,
     pinQuote,

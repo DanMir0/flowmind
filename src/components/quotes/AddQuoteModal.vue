@@ -8,7 +8,7 @@ const props = defineProps({
   open: Boolean
 })
 
-const emit = defineEmits(['close'])
+const emit = defineEmits(['close', 'saved'])
 
 const quoteText = ref('')
 const quoteAuthor = ref('')
@@ -28,6 +28,7 @@ const save = async () => {
     quoteText.value = ''
     quoteAuthor.value = ''
 
+    emit('saved')
     emit('close')
   } catch (e) {
     showError('Failed to add quote', e)

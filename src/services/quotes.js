@@ -61,6 +61,8 @@ export const addUserQuote = async (userId, text, locale, author) => {
       locale: locale,
       author: author,
     })
+    .select()
+    .single()
   return data
 }
 
