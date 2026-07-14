@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useTasksStore } from '@/store/tasks.js'
+import AddCalendarTaskModal from '@/components/AddCalendarTaskModal.vue'
 
 const showAllTasks = ref(false)
 const TASK_LIMIT_CALENDAR = 2
@@ -10,6 +11,7 @@ const currentDate = ref(new Date())
 const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 const selectedDate = ref(new Date())
 const now = new Date()
+const showAddTaskModal = ref(false)
 
 const upcomingTasks = computed(() => {
   return tasksStore.tasks
@@ -78,6 +80,11 @@ const monthTasksCount = computed(() => {
   }).length
 })
 
+const selectedDayTasks = computed(() => {
+  const key = formatDateLocal(selectedDate.value)
+  return tasksByDate.value[key] || []
+})
+
 function startOfDay(date) {
   const d = new Date(date)
   d.setHours(0, 0, 0, 0)
@@ -95,6 +102,10 @@ function isToday(date) {
 function isSelected(date) {
   if (!selectedDate.value) return false
   return formatDateLocal(date) === formatDateLocal(selectedDate.value)
+}
+
+function hiddenTasksCount(day) {
+  return Math.max(0, getTasks(day).length - TASK_LIMIT_CALENDAR)
 }
 
 function selectDay(day) {
@@ -226,6 +237,39 @@ function hasOverflowTasks(day) {
 
       <section>
 
+        <div class="day-panel">
+
+          <h3>Selected Day</h3>
+
+          <div class="selected-date">
+            {{ formatTaskDate(selectedDate) }}
+          </div>
+
+          <template v-if="selectedDayTasks.length">
+
+            <div
+              v-for="task in selectedDayTasks"
+              :key="task.id"
+              class="day-task">
+
+              {{ task.title }}
+
+            </div>
+
+          </template>
+
+          <div
+            v-else
+            class="empty-day">
+            No tasks for this day
+          </div>
+
+          <button class="add-task-btn" @click="showAddTaskModal = true">
+            + Add task
+          </button>
+
+        </div>
+
       </section>
 
     </div>
@@ -297,16 +341,21 @@ function hasOverflowTasks(day) {
               {{ task.title }}
             </div>
 
-            <div v-if="hasOverflowTasks(day)" class="dots">
-              <span></span>
-              <span></span>
-              <span></span>
+            <div
+              v-if="hasOverflowTasks(day)"
+              class="more-tasks">
+              +{{ hiddenTasksCount(day) }} more
             </div>
           </div>
         </div>
       </div>
 
     </div>
+    <AddCalendarTaskModal
+      :open="showAddTaskModal"
+      :selected-date="selectedDate"
+      @close="showAddTaskModal = false"
+    />
   </div>
 </template>
 
@@ -470,6 +519,60 @@ function hasOverflowTasks(day) {
   border-radius: 50%;
 }
 
+.day-panel {
+  background: white;
+  border: 1px solid #E9D5FF;
+  border-radius: 22px;
+  padding: 24px;
+  box-shadow: 0 10px 30px rgba(124,58,237,.05);
+}
+
+.day-panel h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.selected-date {
+  margin-top: 6px;
+  margin-bottom: 20px;
+  color: #7C3AED;
+  font-weight: 600;
+}
+
+.day-task {
+  padding: 12px;
+  margin-bottom: 10px;
+  background: #F8FAFC;
+  border: 1px solid #EEF2F7;
+  border-radius: 12px;
+  font-size: 14px;
+}
+
+.empty-day {
+  padding: 20px 0;
+  color: #9CA3AF;
+  text-align: center;
+}
+
+.add-task-btn {
+  width: 100%;
+  margin-top: 16px;
+  height: 44px;
+  border: none;
+  border-radius: 12px;
+  background: #7C3AED;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: .2s;
+}
+
+.add-task-btn:hover {
+  background: #6D28D9;
+}
+
 /* выбранный день (главный фокус) */
 .selected {
   background: linear-gradient(135deg, #7c3aed, #6d28d9);
@@ -482,10 +585,6 @@ function hasOverflowTasks(day) {
 .selected .task {
   background: white;
   color: #6d28d9;
-}
-
-.selected .dots span {
-  background: white;
 }
 
 /* чужой месяц */
@@ -519,18 +618,14 @@ function hasOverflowTasks(day) {
   font-weight: 500;
 }
 
-.dots {
-  display: flex;
-  gap: 3px;
-  margin-top: 2px;
-  margin-left: 5px;
+.more-tasks {
+  font-size: 9px;
+  font-weight: 600;
+  color: #7C3AED;
 }
 
-.dots span {
-  width: 4px;
-  height: 4px;
-  background: #7c3aed;
-  border-radius: 50%;
+.selected .more-tasks {
+  color: white;
 }
 
 .tasks-list {
