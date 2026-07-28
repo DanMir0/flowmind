@@ -335,16 +335,20 @@ function hasOverflowTasks(day) {
           <!-- задачи -->
           <div class="tasks">
             <div
-              v-for="task in getVisibleTasks(day)"
+              v-for="(task,index) in getVisibleTasks(day)"
               :key="task.id"
-              class="task">
-              {{ task.title }}
-            </div>
+              class="task"
+            >
+    <span class="task-title">
+        {{ task.title }}
+    </span>
 
-            <div
-              v-if="hasOverflowTasks(day)"
-              class="more-tasks">
-              +{{ hiddenTasksCount(day) }} more
+              <span
+                v-if="index === TASK_LIMIT_CALENDAR - 1 && hasOverflowTasks(day)"
+                class="task-more"
+              >
+        +{{ hiddenTasksCount(day) }}
+    </span>
             </div>
           </div>
         </div>
@@ -399,6 +403,21 @@ function hasOverflowTasks(day) {
   display: flex;
   flex-direction: column;
   gap: 3px;
+}
+
+.task-title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.task-more {
+  flex-shrink: 0;
+  margin-left: 6px;
+  font-size: 10px;
+  font-weight: 700;
 }
 
 .calendar-header {
@@ -484,7 +503,7 @@ function hasOverflowTasks(day) {
 }
 
 .day {
-  padding: 10px;
+  padding: 6px;
   border: 1px solid #EEF1F7;
   border-right: 1px solid #EEF2F7;
   border-bottom: 1px solid #EEF2F7;
