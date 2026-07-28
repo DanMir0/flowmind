@@ -522,21 +522,6 @@ function hasOverflowTasks(day) {
   color: #000000;
 }
 
-.day.today:hover .date {
-  background: #7C3AED;
-  color: #fff;
-}
-
-.today .date {
-  background: #7c3aed;
-  color: white;
-  width: 24px;
-  height: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-}
 
 .day-panel {
   background: white;
@@ -597,8 +582,41 @@ function hasOverflowTasks(day) {
   background: linear-gradient(135deg, #7c3aed, #6d28d9);
 }
 
+.today .date,
 .selected .date {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: #fff;
+}
+
+.today {
+  background: #F3EEFF;
+  border: 1px solid #D8B4FE;
+}
+
+.today .date {
+  background: #8B5CF6;
   color: white;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(124,58,237,.25);
+}
+
+.today.selected {
+  background: linear-gradient(135deg, #8B5CF6, #6D28D9);
+}
+
+.today.selected .date {
+  background: white;
+  color: #7C3AED;
 }
 
 .selected .task {
@@ -608,8 +626,8 @@ function hasOverflowTasks(day) {
 
 /* чужой месяц */
 .other-month {
-  opacity: 0.35;
-  background: #e5deff;
+  background: #FAFAFA;
+  color: #C4C4C4;
 }
 
 .card {
