@@ -91,6 +91,18 @@ function startOfDay(date) {
   return d
 }
 
+function goToToday() {
+  const today = new Date()
+
+  currentDate.value = new Date(
+    today.getFullYear(),
+    today.getMonth(),
+    1
+  )
+
+  selectedDate.value = today
+}
+
 function getVisibleTasks(day) {
   return getTasks(day).slice(0, TASK_LIMIT_CALENDAR)
 }
@@ -281,7 +293,8 @@ function hasOverflowTasks(day) {
       <div class="calendar-header">
 
         <div class="calendar-actions">
-          <button class="today-btn">
+          <button class="today-btn"
+                  @click="goToToday">
             Today
           </button>
 
