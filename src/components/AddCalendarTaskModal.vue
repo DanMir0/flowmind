@@ -68,7 +68,7 @@ const save = async () => {
 
   <Teleport to="body">
 
-    <Transition name="fade">
+    <Transition name="modal" appear>
 
       <div
         v-if="open"
@@ -240,4 +240,49 @@ label {
   opacity: 0;
 }
 
+</style>
+<style>
+/* TransitionGroup animations */
+.file-enter-active,
+.file-leave-active,
+.file-move {
+  transition:
+    transform .2s ease,
+    opacity .2s ease;
+}
+
+.file-enter-from {
+  opacity: 0;
+  transform: translateY(-6px);
+}
+
+.file-leave-to {
+  opacity: 0;
+  position: absolute;
+  transform: translateX(6px);
+}
+
+.modal-enter-active,
+.modal-leave-active {
+  transition: opacity .25s ease;
+}
+
+.modal-enter-from,
+.modal-leave-to {
+  opacity: 0;
+}
+.modal-enter-active .modal,
+.modal-leave-active .modal {
+  transition:
+    transform .35s cubic-bezier(.16,1,.3,1),
+    opacity .25s ease;
+}
+.modal-enter-from .modal {
+  transform: translateY(45px) scale(.95);
+  opacity: 0;
+}
+.modal-leave-to .modal {
+  transform: translateY(20px) scale(.98);
+  opacity: 0;
+}
 </style>
