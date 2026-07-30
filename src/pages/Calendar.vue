@@ -184,14 +184,28 @@ function getCalendarDays(date) {
 function prevMonth() {
   currentDate.value = new Date(
     currentDate.value.getFullYear(),
-    currentDate.value.getMonth() - 1
+    currentDate.value.getMonth() - 1,
+    1
+  )
+
+  selectedDate.value = new Date(
+    currentDate.value.getFullYear(),
+    currentDate.value.getMonth(),
+    1
   )
 }
 
 function nextMonth() {
   currentDate.value = new Date(
     currentDate.value.getFullYear(),
-    currentDate.value.getMonth() + 1
+    currentDate.value.getMonth() + 1,
+    1
+  )
+
+  selectedDate.value = new Date(
+    currentDate.value.getFullYear(),
+    currentDate.value.getMonth(),
+    1
   )
 }
 
