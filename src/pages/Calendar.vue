@@ -12,6 +12,12 @@ const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 const selectedDate = ref(new Date())
 const now = new Date()
 const showAddTaskModal = ref(false)
+const calendarView = ref('month')
+const calendarViews = [
+  'Month',
+  'Week',
+  'Day'
+]
 
 const upcomingTasks = computed(() => {
   return tasksStore.tasks
@@ -45,7 +51,8 @@ const hasMoreTasks = computed(() => {
 const days = computed(() => getCalendarDays(currentDate.value))
 
 const monthLabel = computed(() => {
-  return currentDate.value.toLocaleString('default', {
+  return currentDate.value.toLocaleString('en-Us', {
+    day: "numeric",
     month: 'long',
     year: 'numeric'
   })
@@ -329,10 +336,6 @@ function hasOverflowTasks(day) {
           {{ monthLabel }}
         </h2>
 
-        <button class="view-btn">
-          Month
-        </button>
-
       </div>
 
       <!-- дни недели -->
@@ -364,18 +367,16 @@ function hasOverflowTasks(day) {
             <div
               v-for="(task,index) in getVisibleTasks(day)"
               :key="task.id"
-              class="task"
-            >
-    <span class="task-title">
-        {{ task.title }}
-    </span>
+              class="task">
+              <span class="task-title">
+                  {{ task.title }}
+              </span>
 
               <span
                 v-if="index === TASK_LIMIT_CALENDAR - 1 && hasOverflowTasks(day)"
-                class="task-more"
-              >
-        +{{ hiddenTasksCount(day) }}
-    </span>
+                class="task-more">
+                  +{{ hiddenTasksCount(day) }}
+              </span>
             </div>
           </div>
         </div>
