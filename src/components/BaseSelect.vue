@@ -215,13 +215,10 @@ onUnmounted(() => document.removeEventListener('click', onClickOutside))
   top: calc(100% + 4px);
   left: 0;
   width: 100%;
-
   background: white;
   border: 1px solid #eee;
   border-radius: 12px;
-
   box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-
   max-height: 220px;
   overflow-y: auto;
   z-index: 10;

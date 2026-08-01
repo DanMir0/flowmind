@@ -2,6 +2,7 @@
 import { ref, watch, computed } from 'vue'
 import { useTasksStore } from '@/store/tasks'
 import { showSuccess, showError } from '@/utils/toast'
+import BaseSelect from '@/components/BaseSelect.vue'
 
 const props = defineProps({
   open: Boolean,
@@ -18,6 +19,11 @@ const tasksStore = useTasksStore()
 const title = ref('')
 const description = ref('')
 const priority = ref(3)
+const priorities = [
+  { label: 'High', value: 1},
+  { label: 'Medium', value: 2},
+  { label: 'Low', value: 3},
+]
 
 watch(
   () => props.open,
@@ -96,13 +102,12 @@ const save = async () => {
 
           <label>Priority</label>
 
-          <select v-model="priority">
-
-            <option :value="1">High</option>
-            <option :value="2">Medium</option>
-            <option :value="3">Low</option>
-
-          </select>
+          <BaseSelect
+            v-model="priority"
+            :options="priorities"
+            labelKey="label"
+            valueKey="value"
+            placeholder="Select priority"/>
 
           <div class="buttons">
 

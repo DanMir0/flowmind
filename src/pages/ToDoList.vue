@@ -9,6 +9,7 @@ import EditTaskModal from '@/components/EditTaskModal.vue'
 import EmptyState from '@/components/EmptyState.vue'
 import { showSuccess } from '@/utils/toast.js'
 import { useRoute } from 'vue-router'
+import BaseSelect from '@/components/BaseSelect.vue'
 
 const tasksStore = useTasksStore()
 const { tasks, loading, error, isInitialized, searchQuery } = storeToRefs(tasksStore)
@@ -27,10 +28,20 @@ const draggingId = ref(null)
 const visibleCount = ref(15)
 
 const priorityFilters = [
-  { label: 'All', value: 'all' },
-  { label: 'High', value: 1 },
-  { label: 'Medium', value: 2 },
-  { label: 'Low', value: 3 }
+    { label: 'All', value: 'all' },
+    { label: 'High', value: 1 },
+    { label: 'Medium', value: 2 },
+    { label: 'Low', value: 3 }
+  ]
+
+const sortValue = [
+  { label: 'Manual', value: 'manual'},
+  { label: 'Newest first', value: 'created_desc'},
+  { label: 'Oldest first', value: 'created_asc'},
+  { label: 'High priority', value: 'priority_desc'},
+  { label: 'Low priority', value: 'priority_asc'},
+  { label: 'Nearest deadline', value: 'deadline_asc'},
+  { label: 'Farthest deadline', value: 'deadline_desc'},
 ]
 
 const sortedTasks = computed(() => {
@@ -355,22 +366,20 @@ onMounted(() => {
           </button>
         </div>
 
-        <div
-          v-if="sortKey !== 'manual'"
-          class="drag-disabled-warning">
-          Drag & drop available only in Manual mode
-        </div>
+<!--        <div-->
+<!--          v-if="sortKey !== 'manual'"-->
+<!--          class="drag-disabled-warning">-->
+<!--          Drag & drop available only in Manual mode-->
+<!--        </div>-->
 
         <!-- SORT -->
-        <select v-model="sortKey" class="sort-select">
-          <option value="manual">Manual</option>
-          <option value="created_desc">Newest first</option>
-          <option value="created_asc">Oldest first</option>
-          <option value="priority_desc">High priority</option>
-          <option value="priority_asc">Low priority</option>
-          <option value="deadline_asc">Nearest deadline</option>
-          <option value="deadline_desc">Farthest deadline</option>
-        </select>
+        <BaseSelect
+          v-model="sortKey"
+          :options="sortValue"
+          labelKey="label"
+          valueKey="value"
+          placeholder="Select sort"
+          class="sort-select"/>
 
         <button class="add-btn" @click="showAddModal = true">
           Add Task
@@ -573,11 +582,7 @@ onMounted(() => {
 }
 
 .sort-select {
-  height: 42px;
-  padding: 0 14px;
-  border-radius: 16px;
-  border: 1px solid #e5e7eb;
-  background: white;
+  width: 220px;
 }
 
 .error-wrapper {
