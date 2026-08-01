@@ -26,7 +26,7 @@ const router = createRouter({
     { path: '/forgot-password', name: 'forgotPassword', component: ForgotPassword },
     { path: '/reset-password', name: 'resetPassword', component: ResetPassword },
     { path: '/check-email', name: 'checkEmail', component: CheckEmail },
-    { path: '/archive', name: 'archive', component: Arhive, meta: {requiresAuth: true}},
+    // { path: '/archive', name: 'archive', component: Arhive, meta: {requiresAuth: true}},
     { path: '/my-quotes', name: 'myQuotes', component: MyQuotes, meta: {requiresAuth: true}},
     { path: '/settings', name: 'settings', component: Settings, meta: {requiresAuth: true}},
   ]

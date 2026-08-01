@@ -7,7 +7,10 @@ import QuoteItem from '@/components/quotes/QuoteItem.vue'
 import ConfirmDeleteModal from '@/components/ConfirmDeleteModal.vue'
 import AddQuoteModal from '@/components/quotes/AddQuoteModal.vue'
 import QuoteEditModal from '@/components/quotes/QuoteEditModal.vue'
-
+import PremiumRequired from '@/pages/PremiumRequired.vue'
+import router from '@/router/router.js'
+import ProgressIcon from "@/assets/progress1.svg"
+import QuotePremiumIcon from "@/assets/premium.svg"
 const authStore = useAuthStore()
 const subscriptionStore = useSubscriptionStore()
 
@@ -36,6 +39,9 @@ const editingQuote = ref(null)
 const randomQuotesEnabled = ref(false)
 const initialized = ref(false)
 
+const isPremium = computed(() =>
+  authStore.profile?.subscription_plan !== 'free'
+)
 const editQuote = (quoteId) => {
   editingQuote.value = quotes.value.find(q => q.id === quoteId)
   showEditQuote.value = true
@@ -150,7 +156,21 @@ watch(
 )
 </script>
 <template>
-  <div class="page">
+  <PremiumRequired
+    v-if="!isPremium"
+    title="Quotes are available with Premium"
+    description="Unlock daily inspiration and save your favorite quotes to keep you motivated every day."
+    :features="[
+        'Access to unlimited quotes',
+        'Save and pin your favorite quotes',
+        'Daily inspirational quotes on the dashboard'
+    ]"
+    :icon="QuotePremiumIcon"
+    :image="ProgressIcon"
+    @upgrade="router.push('/premium')"
+  />
+
+  <div v-else class="page">
 
     <div class="page-header">
       <div class="header-left">
