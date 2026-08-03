@@ -12,6 +12,7 @@ import CheckEmail from '@/pages/auth/CheckEmail.vue'
 import Arhive from '@/pages/Arhive.vue'
 import MyQuotes from '@/pages/MyQuotes.vue'
 import Settings from '@/pages/Settings.vue'
+import NotFound from '@/pages/NotFound.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -29,6 +30,7 @@ const router = createRouter({
     // { path: '/archive', name: 'archive', component: Arhive, meta: {requiresAuth: true}},
     { path: '/my-quotes', name: 'myQuotes', component: MyQuotes, meta: {requiresAuth: true}},
     { path: '/settings', name: 'settings', component: Settings, meta: {requiresAuth: true}},
+    { path: '/:pathMatch(.*)', name: 'NotFound', component: NotFound, },
   ]
 })
 
