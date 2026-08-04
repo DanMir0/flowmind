@@ -4,7 +4,7 @@ import { ref } from 'vue'
 export const activeSelect = ref(null)
 </script>
 <script setup>
-import { computed, watch, onMounted, onUnmounted } from 'vue'
+import { computed, watch, onMounted, onUnmounted, useSlots } from 'vue'
 
 const id = Symbol()
 const props = defineProps({
@@ -34,6 +34,12 @@ const props = defineProps({
     type: Boolean,
     default: true
   }
+})
+
+const slots = useSlots()
+
+const hasIconSlot = computed(() => {
+  return !!slots.icon
 })
 
 const isTyping = ref(false)
@@ -148,12 +154,17 @@ onUnmounted(() => document.removeEventListener('click', onClickOutside))
 <template>
   <div class="select" ref="refEl">
     <div class="select-trigger">
+      <slot name="icon" />
+
       <input
         :value="search"
         @input="e => search = e.target.value"
         :placeholder="placeholder"
         @focus="openSelect"
         :readonly="!searchable"
+        :style="{
+            paddingLeft: hasIconSlot ? '30px' : '14px'
+          }"
       />
 
       <span v-show="hasValue" class="clear" @click.stop="clear">✕</span>
@@ -189,9 +200,16 @@ onUnmounted(() => document.removeEventListener('click', onClickOutside))
   position: relative;
 }
 
+.select-trigger svg {
+  flex-shrink: 0;
+  position: absolute;
+  top: 16px;
+  left: 10px;
+}
+
 .select-trigger input {
   width: 100%;
-  padding: 12px 40px 12px 14px;
+  padding: 12px 40px 12px 0;
   border-radius: 12px;
   border: 1px solid #ddd;
   outline: none;
