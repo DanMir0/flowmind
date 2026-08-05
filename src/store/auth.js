@@ -87,6 +87,27 @@ export const useAuthStore = defineStore('auth', {
       return data
     },
 
+    async updateEmail(newEmail) {
+      // Убедитесь, что пользователь подтвержден
+      const { data: { user } } = await supabase.auth.getUser()
+
+      if (!user) {
+        throw new Error('User not authenticated')
+      }
+
+      const { error } = await supabase.auth.updateUser({
+        email: newEmail
+      })
+
+      if (error) {
+        console.error('Update email error:', error)
+        throw error
+      }
+
+      // Не обновляйте локально email - ждите подтверждения
+      return { success: true, message: 'Confirmation email sent' }
+    },
+
     // Если пользователь не авторизирован и нажимает на любую кнопку в dashboard, то перекидыват на страницу логина
     goToLoginIfGuest(router) {
       if (!this.user) {

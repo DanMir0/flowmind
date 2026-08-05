@@ -1,9 +1,13 @@
 <script setup>
-import {ref } from 'vue'
+import { computed, ref } from 'vue'
+import {useAuthStore} from '@/store/auth.js'
+import {showSuccess, showError} from '@/utils/toast.js'
 import BaseSelect from '@/components/BaseSelect.vue'
+import ChangeEmailModal from '@/components/ChangeEmailModal.vue'
 
-const email = ref('test2@example.com')
-const password = ref('••••••••••••••')
+const auth = useAuthStore()
+const showPassword = ref(false)
+const showModalEmail = ref(false)
 const language = ref('EN')
 const theme = ref('light')
 const subscription = ref({
@@ -18,8 +22,15 @@ const languages = [
   { 'label': 'Русский', value: 'RU' }
 ]
 
+const email = computed(() => auth.user?.email || '')
+const password = computed(() => showPassword.value ? 'Password is hidden' : '••••••••••••••')
+
+function togglePassword() {
+  showPassword.value = !showPassword.value
+}
+
 function changeEmail() {
-  console.log('Change email')
+  showModalEmail.value = true
 }
 
 function changePassword() {
@@ -32,6 +43,18 @@ function manageSubscription() {
 
 function deleteAccount() {
   console.log('Delete account')
+}
+
+async function saveNewEmail(newEmail) {
+  try {
+    await auth.updateEmail(newEmail)
+    showSuccess(
+      'Confirmation email has been sent to your new address.'
+    )
+    showModalEmail.value = false
+  } catch (err) {
+    showError(err.message)
+  }
 }
 </script>
 
@@ -123,10 +146,13 @@ function deleteAccount() {
             <div class="password-input">
 
               <input
-                v-model="password"
+                :type="showPassword ? 'text' : 'password'"
+                :value="password"
                 readonly>
-              <span>
-              👁
+              <span
+                class="eye"
+                @click="togglePassword">
+               {{ showPassword ? '🙈' : '👁' }}
               </span>
 
             </div>
@@ -411,7 +437,11 @@ function deleteAccount() {
     </div>
 
   </div>
-
+  <ChangeEmailModal
+    :open="showModalEmail"
+    :currentEmail="email"
+    @close="showModalEmail = false"
+    @save="saveNewEmail"/>
 </template>
 <style scoped>
 .select input {
@@ -788,6 +818,18 @@ select:focus {
 .danger-btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 10px 24px rgba(220, 38, 38, .25);
+}
+
+.eye{
+  cursor:pointer;
+  user-select:none;
+  font-size:18px;
+  color:#6B7280;
+  transition:.2s;
+}
+
+.eye:hover{
+  color:#7C3AED;
 }
 
 @media (max-width: 1200px) {
