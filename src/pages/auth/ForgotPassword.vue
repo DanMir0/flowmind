@@ -18,8 +18,11 @@
         </button>
       </form>
 
-      <p class="switch">
+      <p v-if="!auth.user" class="switch">
         <router-link to="/login">Back to login</router-link>
+      </p>
+      <p v-else class="switch">
+        <router-link to="/settings">Back</router-link>
       </p>
     </div>
   </div>
@@ -28,10 +31,12 @@
 <script setup>
 import { ref } from 'vue'
 import { supabase } from '@/services/supabase'
+import { useAuthStore } from '@/store/auth.js'
 
 const email = ref('')
 const loading = ref(false)
 const message = ref('')
+const auth = useAuthStore()
 
 async function submit() {
   loading.value = true

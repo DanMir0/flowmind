@@ -5,6 +5,7 @@ import {showSuccess, showError} from '@/utils/toast.js'
 import BaseSelect from '@/components/BaseSelect.vue'
 import ChangeEmailModal from '@/components/ChangeEmailModal.vue'
 import { useSettingsStore} from '@/store/settings.js'
+import router from '@/router/router.js'
 
 const auth = useAuthStore()
 const settingsStore = useSettingsStore()
@@ -42,7 +43,7 @@ function changeEmail() {
 }
 
 function changePassword() {
-  console.log('Change password')
+  router.push({name: 'forgotPassword'})
 }
 
 function manageSubscription() {
@@ -136,9 +137,7 @@ async function saveNewEmail(newEmail) {
             <button
               class="outline-btn"
               @click="changeEmail">
-
               Change
-
             </button>
 
           </div>
