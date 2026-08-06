@@ -103,7 +103,7 @@ export const useAuthStore = defineStore('auth', {
         console.error('Update email error:', error)
         throw error
       }
-
+      await this.init()
       // Не обновляйте локально email - ждите подтверждения
       return { success: true, message: 'Confirmation email sent' }
     },
