@@ -4,12 +4,14 @@ import {useAuthStore} from '@/store/auth.js'
 import {showSuccess, showError} from '@/utils/toast.js'
 import BaseSelect from '@/components/BaseSelect.vue'
 import ChangeEmailModal from '@/components/ChangeEmailModal.vue'
+import { useSettingsStore} from '@/store/settings.js'
 
 const auth = useAuthStore()
+const settingsStore = useSettingsStore()
 const showPassword = ref(false)
 const showModalEmail = ref(false)
-const language = ref('EN')
 const theme = ref('light')
+
 const subscription = ref({
   plan: 'Premium Plan',
   status: 'Active',
@@ -18,10 +20,16 @@ const subscription = ref({
 })
 
 const languages = [
-  { 'label': 'English', value: 'EN' },
-  { 'label': 'Русский', value: 'RU' }
+  { label: 'English', value: 'en' },
+  { label: 'Русский', value: 'ru' }
 ]
 
+const language = computed({
+  get: () => settingsStore.locale,
+  set: async (value) => {
+    await settingsStore.changeLocale(value)
+  }
+})
 const email = computed(() => auth.user?.email || '')
 const password = computed(() => showPassword.value ? 'Password is hidden' : '••••••••••••••')
 

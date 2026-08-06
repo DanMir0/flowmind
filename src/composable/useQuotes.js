@@ -28,21 +28,6 @@ const saveCache = (quote) => {
   )
 }
 
-const loadCache = () => {
-  const cache = localStorage.getItem(CACHE_KEY)
-
-  if (!cache) return null
-
-  const parsed = JSON.parse(cache)
-
-  if (parsed.date !== new Date().toDateString()) {
-    return null
-  }
-
-  return parsed.quote
-}
-
-
 export function useQuotes() {
 
   const settingsStore = useSettingsStore()

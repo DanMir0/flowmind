@@ -16,5 +16,4 @@ app.use(pinia)
   .mount('#app')
 
 
-const settingStore = useSettingsStore()
-settingStore.loadFromStorage()
+

@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import {useTasksStore} from '@/store/tasks.js'
 import {supabase} from '@/services/supabase.js'
 import { useSubscriptionStore } from '@/store/subscription.js'
+import { useSettingsStore } from '@/store/settings.js'
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
@@ -14,6 +15,8 @@ export const useAuthStore = defineStore('auth', {
   actions: {
     async init() {
       const subscriptionStore = useSubscriptionStore()
+      const settingsStore = useSettingsStore()
+      await settingsStore.loadSettings()
 
       const { data } = await supabase.auth.getSession()
 
@@ -47,7 +50,8 @@ export const useAuthStore = defineStore('auth', {
 
     async signIn(email, password) {
       const subscriptionStore = useSubscriptionStore()
-
+      const settingsStore = useSettingsStore()
+      await settingsStore.loadSettings()
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password

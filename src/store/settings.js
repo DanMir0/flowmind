@@ -1,28 +1,51 @@
 import { defineStore } from 'pinia'
+import { supabase } from '@/services/supabase'
+import { useAuthStore } from '@/store/auth'
 
 export const useSettingsStore = defineStore('settings', {
+
   state: () => ({
-    locale: 'en',      // 'en' | 'ru'
-    theme: 'light'      // 'dark' | 'light'
+    locale: 'en'
   }),
 
   actions: {
-    setLocale(locale) {
+
+    async loadSettings() {
+
+      const auth = useAuthStore()
+
+      if (!auth.user)
+        return
+
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('quote_locale')
+        .eq('user_id', auth.user.id)
+        .maybeSingle()
+
+      if (error)
+        throw error
+
+      this.locale = data?.quote_locale || 'en'
+    },
+
+    async changeLocale(locale) {
+
+      const auth = useAuthStore()
+
       this.locale = locale
-      localStorage.setItem('locale', locale)
-    },
 
-    setTheme(theme) {
-      this.theme = theme
-      localStorage.setItem('theme', theme)
-    },
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          quote_locale: locale
+        })
+        .eq('user_id', auth.user.id)
 
-    loadFromStorage() {
-      const savedLocale = localStorage.getItem('locale')
-      const savedTheme = localStorage.getItem('theme')
-
-      if (savedLocale) this.locale = savedLocale
-      if (savedTheme) this.theme = savedTheme
+      if (error)
+        throw error
     }
+
   }
+
 })
