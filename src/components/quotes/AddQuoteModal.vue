@@ -104,12 +104,13 @@ const save = async () => {
 .modal {
   width: 420px;
   max-width: 90%;
-  background: white;
+  background: var(--bg);
   border-radius: 16px;
   padding: 24px;
   display: flex;
   flex-direction: column;
   gap: 14px;
+  color: var(--text);
   box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
 }
 
@@ -122,16 +123,18 @@ const save = async () => {
   min-height: 100px;
   padding: 10px;
   border-radius: 8px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border-card);
   font-size: 14px;
   resize: vertical;
+  background: var(--quick-input-bg);;
 }
 
 .modal input {
   padding: 10px;
   border-radius: 8px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border-card);;
   font-size: 14px;
+  background: var(--quick-input-bg);;
 }
 
 .actions {
@@ -143,8 +146,8 @@ const save = async () => {
 .cancel {
   padding: 12px 18px;
   border-radius: 10px;
-  border: 1px solid #ddd;
-  background: white;
+  border: 1px solid var(--border-card);;
+  background: var(--bg);
   cursor: pointer;
   transition: .2s;
 }
@@ -157,7 +160,7 @@ const save = async () => {
 }
 
 .cancel:hover {
-  background: #F9FAFB;
+  background: var(--quick-input-bg);
 }
 
 .save {
@@ -165,7 +168,7 @@ const save = async () => {
   border: none;
   border-radius: 10px;
   background: #7b5cff;
-  color: white;
+  color: var(--bg);
   font-size: 14px;
   cursor: pointer;
   transition: opacity 0.2s ease;
@@ -173,6 +176,12 @@ const save = async () => {
 
 .save:hover {
   opacity: 0.9;
+}
+
+.modal input:focus, textarea:focus {
+  outline: none;
+  border-color: #7C3AED;
+  box-shadow: 0 0 0 3px rgba(124,58,237,.12);
 }
 
 .fade-enter-active,

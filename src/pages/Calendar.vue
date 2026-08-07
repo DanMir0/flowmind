@@ -393,6 +393,7 @@ function hasOverflowTasks(day) {
 
 <style scoped>
 .calendar-layout {
+  background: var(--bg-page);
   display: grid;
   grid-template-columns: 300px 1fr;
   gap: 24px;
@@ -406,10 +407,10 @@ function hasOverflowTasks(day) {
 }
 
 .sidebar-task {
-  background: #F8FAFC;
+  background: var(--bg-task);
   border-radius: 14px;
   padding: 14px;
-  border: 1px solid #EEF2F7;
+  border: 1px solid var(--border-card);
 }
 
 .empty {
@@ -418,8 +419,8 @@ function hasOverflowTasks(day) {
 }
 
 .calendar {
-  background: #fff;
-  border: 1px solid #E9D5FF;
+  background: var(--bg);
+  border: 1px solid var(--border-pink);
   border-radius: 18px;
   padding: 20px;
   box-shadow: 0 10px 30px rgba(124, 58, 237, .08);
@@ -464,15 +465,16 @@ function hasOverflowTasks(day) {
 .month-title {
   font-size: 28px;
   font-weight: 700;
-  color: #111827;
+  color: var(--text);
 }
 
 .today-btn,
 .view-btn,
 .nav-btn {
+  color: var(--text);
   height: 44px;
-  border: 1px solid #E5E7EB;
-  background: white;
+  border: 1px solid var(--border-grey);
+  background: var(--bg);
   border-radius: 14px;
   cursor: pointer;
   transition: .2s;
@@ -493,7 +495,7 @@ function hasOverflowTasks(day) {
 .today-btn:hover,
 .view-btn:hover,
 .nav-btn:hover {
-  background: #F9FAFB;
+  background: var(--quick-input-bg);
 }
 
 .grid {
@@ -507,7 +509,7 @@ function hasOverflowTasks(day) {
 .date {
   font-size: 18px;
   font-weight: 600;
-  color: #111827;
+  color: var(--text);
 }
 
 .weekdays {
@@ -515,12 +517,12 @@ function hasOverflowTasks(day) {
   grid-template-columns: repeat(7, 1fr);
   margin-bottom: 4px;
   font-size: 12px;
-  color: #9ca3af;
+  color: var(--text-grey);
 }
 
 .task {
-  background: #F3E8FF;
-  color: #6d28d9;
+  background: var(--bg-pink);
+  color: var(--dark-purple);
   height: 24px;
   display: flex;
   font-weight: 600;
@@ -532,9 +534,9 @@ function hasOverflowTasks(day) {
 
 .day {
   padding: 6px;
-  border: 1px solid #EEF1F7;
-  border-right: 1px solid #EEF2F7;
-  border-bottom: 1px solid #EEF2F7;
+  border: 1px solid var(--border-calen);
+  border-right: 1px solid var(--border-calen-r);
+  border-bottom: 1px solid var(--border-calen-r);
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -542,18 +544,18 @@ function hasOverflowTasks(day) {
 }
 
 .day:hover {
-  background: #F8F5FF;
+  background: var(--day-hover);
 }
 
 .day.selected:hover {
-  background: #7C3AED;
+  background: var(--premium-bg);
   color: #000000;
 }
 
 
 .day-panel {
-  background: white;
-  border: 1px solid #E9D5FF;
+  background: var(--bg);
+  border: 1px solid var(--border-pink);
   border-radius: 22px;
   padding: 24px;
   box-shadow: 0 10px 30px rgba(124,58,237,.05);
@@ -563,21 +565,21 @@ function hasOverflowTasks(day) {
   margin: 0;
   font-size: 18px;
   font-weight: 700;
-  color: #111827;
+  color: var(--text);
 }
 
 .selected-date {
   margin-top: 6px;
   margin-bottom: 20px;
-  color: #7C3AED;
+  color: var(--premium-bg);
   font-weight: 600;
 }
 
 .day-task {
   padding: 12px;
   margin-bottom: 10px;
-  background: #F8FAFC;
-  border: 1px solid #EEF2F7;
+  background: var(--bg-task);
+  border: 1px solid var(--border-card);
   border-radius: 12px;
   font-size: 14px;
 }
@@ -594,20 +596,20 @@ function hasOverflowTasks(day) {
   height: 44px;
   border: none;
   border-radius: 12px;
-  background: #7C3AED;
-  color: white;
+  background: var(--premium-bg);
+  color: var(--bg);
   font-weight: 600;
   cursor: pointer;
   transition: .2s;
 }
 
 .add-task-btn:hover {
-  background: #6D28D9;
+  background: var(--dark-purple);
 }
 
 /* выбранный день (главный фокус) */
 .selected {
-  background: linear-gradient(135deg, #7c3aed, #6d28d9);
+  background: linear-gradient(135deg, var(--premium-bg), var(--dark-purple));
 }
 
 .today .date,
@@ -618,17 +620,17 @@ function hasOverflowTasks(day) {
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  color: #fff;
+  color: var(--bg);
 }
 
 .today {
-  background: #F3EEFF;
-  border: 1px solid #D8B4FE;
+  background: var(--bg-today);
+  border: 1px solid var(--border-today);
 }
 
 .today .date {
-  background: #8B5CF6;
-  color: white;
+  background: var(--premium-bg);
+  color: var(--bg);
   width: 30px;
   height: 30px;
   border-radius: 50%;
@@ -639,40 +641,41 @@ function hasOverflowTasks(day) {
 }
 
 .today.selected {
-  background: linear-gradient(135deg, #8B5CF6, #6D28D9);
+  background: linear-gradient(135deg, #8B5CF6, var(--dark-purple));
 }
 
 .today.selected .date {
-  background: white;
-  color: #7C3AED;
+  background: var(--bg);
+  color: var(--premium-bg);
 }
 
 .selected .task {
-  background: white;
-  color: #6d28d9;
+  background: var(--bg);
+  color: var(--dark-purple);
 }
 
 /* чужой месяц */
 .other-month {
-  background: #FAFAFA;
-  color: #C4C4C4;
+  background: var(--bg-other-month);
+  color: var(--text-other-month);
 }
 
 .card {
-  background: white;
-  border: 1px solid #E9D5FF;
+  background: var(--bg);
+  border: 1px solid var(--border-pink);
   border-radius: 22px;
   padding: 24px;
   box-shadow: 0 10px 30px rgba(124, 58, 237, .05);
 }
 
 .card h4 {
-  color: #7C3AED;
+  color: var(--premium-bg);
   font-size: 16px;
   margin-bottom: 20px;
 }
 
 .big {
+  color: var(--text);
   font-size: 36px;
   font-weight: 700;
 }
@@ -686,11 +689,15 @@ function hasOverflowTasks(day) {
 .more-tasks {
   font-size: 9px;
   font-weight: 600;
-  color: #7C3AED;
+  color: var(--premium-bg);
 }
 
 .selected .more-tasks {
-  color: white;
+  background: var(--bg);
+}
+
+.upcoming-due {
+  color: var(--text);
 }
 
 .tasks-list {
@@ -716,7 +723,7 @@ function hasOverflowTasks(day) {
   left: 0;
   right: 0;
   height: 40px;
-  background: linear-gradient(to bottom, transparent, white);
+  background: linear-gradient(to bottom, transparent, var(--bg));
   pointer-events: none;
 }
 
@@ -724,7 +731,7 @@ function hasOverflowTasks(day) {
 .show-more {
   margin-top: 8px;
   font-size: 13px;
-  color: #7c3aed;
+  color: var(--premium-bg);
   cursor: pointer;
   font-weight: 500;
 }

@@ -1,0 +1,135 @@
+:root {
+  /* Основной фон */
+  --bg: #ffffff;
+  --bg-page: #f8fafc;
+  --bg-badge: #FEF2F2;
+  --bg-task: #F8FAFC;
+  --bg-pink: #F3E8FF;
+  --bg-other-month: #FAFAFA;
+
+  /* Инпуты */
+  --quick-input-bg: #f9fafb;
+  --quick-input-focus-bg: #f3f4f6;
+
+  /* Текст */
+  --text: #111827;
+  --text-grey: #6B7280;
+  --text-focuc-grey: #4b5563;
+  --text-red: #DC2626;
+  --text-other-month: #C4C4C4;
+  --text-danger: #991B1B;
+
+  /* Светло-фиолетовые элементы */
+  --bg-purple-light: #ede9fe;
+
+  /* Основной акцент */
+  --premium-bg: #7c3aed;
+  --dark-purple: #6d28d9;
+  --pink-bg: #fdf2f8;
+
+  /* Меню */
+  --menu-item-color: #374151;
+  --menu-link: #7a3cff;
+  --menu-hover: #f5f3ff;
+
+  /* border */
+  --border: #eee;
+  --border-red: #FECACA;
+  --border-grey: #f5f5f5;
+  --border-pink: #E9D5FF;
+  --border-card: #EEF2F7;
+  --border-calen-r: #EEF2F7;
+  --border-calen: #EEF1F7;
+
+  /* hover */
+  --day-hover: #F8F5FF;
+  --timer-btn-sec-hover: #f2f2f7;
+
+  /* today */
+  --bg-today: #F3EEFF;
+  --border-today: #D8B4FE;
+
+  --ring-br: #ebe8f5;
+  --color-icon: #000000;
+  --btn-active-quotes: #7a3cff;
+
+  --error-card-bg: rgba(255, 255, 255, 0.7);
+  --error-card-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  --error-card-inset: rgba(255, 255, 255, 0.6);
+
+  --pin-btn-bg: white;
+  --pin-btn-border: #E6D9FF;
+  --pin-btn-color: #7C3AED;
+
+  --icon-pencil: #080341;
+
+  --bg-btn-cancel: #f5f5f5;
+}
+
+[data-theme="dark"] {
+
+  /* Основной фон */
+  --bg: #0f1117;
+  --bg-page: #171521;
+  --bg-badge: #2D1B1B;
+  --bg-task: #1F2230;
+  --bg-pink: #2D1F4A;
+  --bg-other-month: #454545;
+
+  /* Инпуты */
+  --quick-input-bg: #181b23;
+  --quick-input-focus-bg: #232734;
+
+  /* Текст */
+  --text: #f8fafc;
+  --text-grey: #9ca3af;
+  --text-focuc-grey: #d1d5db;
+  --text-red: #F87171;
+  --text-other-month: #9A3AF;
+  --text-danger: #EF4444;
+
+  /* Светло-фиолетовые элементы */
+  --bg-purple-light: #23183d;
+
+  /* Основной акцент */
+  --premium-bg: #8b5cf6;
+  --dark-purple: #7c3aed;
+  --pink-bg: #787878;
+
+  /* Меню */
+  --menu-item-color: #d4d4d8;
+  --menu-link: #a78bfa;
+  --menu-hover: #69529d;
+
+  /* border */
+  --border: #8972bb;
+  --border-red: #991B1B;
+  --border-grey: #555;
+  --border-pink: #64418a;
+  --border-card: #353B4A;
+  --border-calen-r: #232736;
+  --border-calen: #1A1D26;
+
+  /* hover */
+  --day-hover: #2D1F4A;
+  --timer-btn-sec-hover: #2D2D3D;
+
+  /* today */
+  --bg-today: #2D1F4A;
+  --border-today: #6D28D9;
+
+  --ring-br: #2A2A2A;
+  --color-icon: #ffffff;
+
+  --error-card-bg: rgba(15, 17, 23, 0.85);
+  --error-card-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  --error-card-inset: rgba(255, 255, 255, 0.05);
+
+  --pin-btn-bg: #1A1D27;
+  --pin-btn-border: #3D2B5E;
+  --pin-btn-color: #A78BFA;
+
+  --icon-pencil: #fff;
+
+  --bg-btn-cancel: #d2d2d2;
+}

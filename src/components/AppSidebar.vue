@@ -89,13 +89,13 @@ async function addQuickTask() {
            xmlns="http://www.w3.org/2000/svg">
         <path
           d="M864 512a32 32 0 0 0-32 32v96a32 32 0 0 0 64 0v-96a32 32 0 0 0-32-32zM881.92 389.44a23.68 23.68 0 0 0-5.76-2.88 19.84 19.84 0 0 0-6.08-1.92 32 32 0 0 0-28.8 8.64A32 32 0 0 0 832 416a32 32 0 1 0 64 0 33.6 33.6 0 0 0-9.28-22.72z"
-          fill="#231815" />
+          fill="currentColor" />
         <path
           d="M800 128h-32a96 96 0 0 0-96-96H352a96 96 0 0 0-96 96H224a96 96 0 0 0-96 93.44v677.12A96 96 0 0 0 224 992h576a96 96 0 0 0 96-93.44V736a32 32 0 0 0-64 0v162.56a32 32 0 0 1-32 29.44H224a32 32 0 0 1-32-29.44V221.44A32 32 0 0 1 224 192h32a96 96 0 0 0 96 96h320a96 96 0 0 0 96-96h32a32 32 0 0 1 32 29.44V288a32 32 0 0 0 64 0V221.44A96 96 0 0 0 800 128z m-96 64a32 32 0 0 1-32 32H352a32 32 0 0 1-32-32V128a32 32 0 0 1 32-32h320a32 32 0 0 1 32 32z"
-          fill="#231815" />
+          fill="currentColor" />
         <path
           d="M712.32 426.56L448 721.6l-137.28-136.32A32 32 0 0 0 265.6 630.4l160 160a32 32 0 0 0 22.4 9.6 32 32 0 0 0 23.04-10.56l288-320a32 32 0 0 0-47.68-42.88z"
-          fill="#231815" />
+          fill="currentColor" />
       </svg>
       <span>To-Do List</span>
     </router-link>
@@ -142,7 +142,7 @@ async function addQuickTask() {
     </router-link>
 
     <router-link to="/my-quotes" class="menu-item">
-      <svg fill="#000000" width="18px" height="18px" viewBox="0 0 56 56"
+      <svg fill="currentColor" width="18px" height="18px" viewBox="0 0 56 56"
            xmlns="http://www.w3.org/2000/svg">
         <path
           d="M 16.5860 52.2461 C 17.7579 52.2461 18.5548 51.6367 19.9610 50.3711 L 28.0704 43.1758 L 43.0938 43.1758 C 50.0783 43.1758 53.8280 39.3086 53.8280 32.4414 L 53.8280 14.4883 C 53.8280 7.6211 50.0783 3.7539 43.0938 3.7539 L 12.9064 3.7539 C 5.9454 3.7539 2.1720 7.5976 2.1720 14.4883 L 2.1720 32.4414 C 2.1720 39.3320 5.9454 43.1758 12.9064 43.1758 L 14.0313 43.1758 L 14.0313 49.2695 C 14.0313 51.0742 14.9688 52.2461 16.5860 52.2461 Z M 17.5469 47.9570 L 17.5469 41.1602 C 17.5469 39.8945 17.0782 39.4023 15.7891 39.4023 L 12.9298 39.4023 C 8.1720 39.4023 5.9454 36.9883 5.9454 32.4180 L 5.9454 14.4883 C 5.9454 9.9180 8.1720 7.5273 12.9298 7.5273 L 43.0938 7.5273 C 47.8280 7.5273 50.0548 9.9180 50.0548 14.4883 L 50.0548 32.4180 C 50.0548 36.9883 47.8280 39.4023 43.0938 39.4023 L 27.9064 39.4023 C 26.6173 39.4023 25.9376 39.5898 25.0469 40.5039 Z M 17.2423 22.3633 C 17.2423 24.9414 18.8360 26.9336 21.4142 26.9336 C 22.3516 26.9336 23.2891 26.7695 23.8751 26.0430 L 24.0626 26.0430 C 23.2188 27.8945 21.5079 29.0898 20.0313 29.4649 C 19.1876 29.6992 18.9298 30.0742 18.9298 30.6133 C 18.9298 31.1992 19.3985 31.6445 20.0548 31.6445 C 22.3516 31.6445 26.9220 28.9258 26.9220 23.2071 C 26.9220 20.1367 24.9298 17.7695 22.0001 17.7695 C 19.2813 17.7695 17.2423 19.6680 17.2423 22.3633 Z M 29.4298 22.3633 C 29.4298 24.9414 31.0235 26.9336 33.6016 26.9336 C 34.5391 26.9336 35.4766 26.7695 36.0626 26.0430 L 36.2501 26.0430 C 35.4064 27.8945 33.6954 29.0898 32.2188 29.4649 C 31.3751 29.6992 31.1173 30.0742 31.1173 30.6133 C 31.1173 31.1992 31.5860 31.6445 32.2423 31.6445 C 34.5391 31.6445 39.1329 28.9258 39.1329 23.2071 C 39.1329 20.1367 37.1173 17.7695 34.1876 17.7695 C 31.4688 17.7695 29.4298 19.6680 29.4298 22.3633 Z" />
@@ -246,8 +246,8 @@ async function addQuickTask() {
 .sidebar {
   width: 240px;
   min-height: calc(100vh - 73px);
-  background: white;
-  border-right: 1px solid #eee;
+  background: var(--bg);
+  border-right: 1px solid var(--border);
   padding: 24px 16px;
   display: flex;
   flex-direction: column;
@@ -260,7 +260,7 @@ async function addQuickTask() {
   align-items: center;
   gap: 5px;
   text-decoration: none;
-  color: #374151;
+  color: var(--menu-item-color);
   padding: 14px 16px;
   border-radius: 14px;
   transition: 0.2s;
@@ -268,12 +268,12 @@ async function addQuickTask() {
 }
 
 .menu-item:hover {
-  background: #f5f3ff;
+  background: var(--menu-hover);
 }
 
 .router-link-active {
-  background: #ede9fe;
-  color: #7a3cff;
+  background: var(--bg-purple-light);
+  color: var(--menu-link);
 }
 
 .empty-focus {
@@ -289,8 +289,8 @@ async function addQuickTask() {
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  background: #F5F3FF;
-  color: #7C3AED;
+  background: var(--bg);
+  color: var(--premium-bg);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -301,19 +301,19 @@ async function addQuickTask() {
 .empty-title {
   font-size: 15px;
   font-weight: 600;
-  color: #111827;
+  color: var(--text);
 }
 
 .empty-subtitle {
   font-size: 13px;
-  color: #6B7280;
+  color: var(--text-grey);
   text-align: center;
 }
 
 .focus-card {
   margin-top: 24px;
-  background: white;
-  border: 1px solid #eee;
+  background: var(--bg);
+  border: 1px solid var(--border);
   border-radius: 20px;
   padding: 20px;
   display: flex;
@@ -327,7 +327,7 @@ async function addQuickTask() {
   width: 100%;
   font-size: 15px;
   font-weight: 600;
-  color: #111827;
+  color: var(--text);
 }
 
 .progress-wrapper {
@@ -345,13 +345,13 @@ async function addQuickTask() {
 
 .progress-bg {
   fill: none;
-  stroke: #ede9fe;
+  stroke: var(--bg-purple-light);
   stroke-width: 10;
 }
 
 .progress-value {
   fill: none;
-  stroke: #7c3aed;
+  stroke: var(--premium-bg);
   stroke-width: 10;
   stroke-linecap: round;
   transition: stroke-dashoffset 0.3s ease;
@@ -367,23 +367,23 @@ async function addQuickTask() {
 .big {
   font-size: 24px;
   font-weight: 700;
-  color: #111827;
+  color: var(--text);
 }
 
 .small {
   font-size: 12px;
-  color: #6b7280;
+  color: var(--text-grey);
 }
 
 .focus-footer {
   font-size: 14px;
-  color: #4b5563;
+  color: var(--text-focuc-grey);
 }
 
 .quick-add-card {
   margin-top: 16px;
-  background: white;
-  border: 1px solid #eee;
+  background: var(--bg);
+  border: 1px solid var(--border);
   border-radius: 20px;
   padding: 18px;
   display: flex;
@@ -394,7 +394,7 @@ async function addQuickTask() {
 .quick-add-title {
   font-size: 15px;
   font-weight: 600;
-  color: #111827;
+  color: var(--text);
 }
 
 .quick-add-input-wrapper {
@@ -408,7 +408,7 @@ async function addQuickTask() {
   flex: 1;
   border: none;
   outline: none;
-  background: #f9fafb;
+  background: var(--quick-input-bg);
   border-radius: 12px;
   padding: 12px 14px;
   font-size: 12px;
@@ -428,7 +428,7 @@ async function addQuickTask() {
 }
 
 .quick-add-input:focus {
-  background: #f3f4f6;
+  background: var(--quick-input-focus-bg);
 }
 
 .quick-add-btn {
@@ -437,7 +437,7 @@ async function addQuickTask() {
   height: 38px;
   border: none;
   border-radius: 12px;
-  background: #7c3aed;
+  background: var(--premium-bg);
   color: white;
   font-size: 24px;
   cursor: pointer;
@@ -448,7 +448,7 @@ async function addQuickTask() {
 }
 
 .quick-add-btn:hover {
-  background: #6d28d9;
+  background: var(--dark-purple);
   transform: translateY(-1px);
 }
 

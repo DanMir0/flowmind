@@ -9,8 +9,9 @@ import AddQuoteModal from '@/components/quotes/AddQuoteModal.vue'
 import QuoteEditModal from '@/components/quotes/QuoteEditModal.vue'
 import PremiumRequired from '@/pages/PremiumRequired.vue'
 import router from '@/router/router.js'
-import ProgressIcon from "@/assets/progress1.svg"
-import QuotePremiumIcon from "@/assets/premium.svg"
+import ProgressIcon from '@/assets/progress1.svg'
+import QuotePremiumIcon from '@/assets/premium.svg'
+
 const authStore = useAuthStore()
 const subscriptionStore = useSubscriptionStore()
 
@@ -25,7 +26,7 @@ const {
   editQuote: saveQuote,
   unpinAllQuotes,
   setRandomQuotes,
-  loadMore,
+  loadMore
 } = useUserQuotes()
 
 /* DELETE MODAL */
@@ -171,190 +172,192 @@ watch(
   />
 
   <div v-else class="page">
+    <div class="container">
+      <div class="page-header">
+        <div class="header-left">
+          <h1 class="page-title">My Quotes</h1>
 
-    <div class="page-header">
-      <div class="header-left">
-        <h1 class="page-title">My Quotes</h1>
+          <div class="search-wrapper">
+            <svg
+              class="search-icon"
+              viewBox="0 0 24 24"
+              fill="none">
+              <circle
+                cx="11"
+                cy="11"
+                r="7"
+                stroke="currentColor"
+                stroke-width="2" />
+              <path
+                d="M20 20L17 17"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round" />
+            </svg>
+            <input
+              v-model="search"
+              placeholder="Search quotes..."
+            />
+          </div>
 
-        <div class="search-wrapper">
-          <svg
-            class="search-icon"
-            viewBox="0 0 24 24"
-            fill="none">
-            <circle
-              cx="11"
-              cy="11"
-              r="7"
-              stroke="currentColor"
-              stroke-width="2" />
-            <path
-              d="M20 20L17 17"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round" />
-          </svg>
-          <input
-            v-model="search"
-            placeholder="Search quotes..."
-          />
-        </div>
+          <div class="tabs">
+            <button
+              :class="{active: filter==='all'}"
+              @click="filter='all'">
+              All Quotes
+            </button>
 
-        <div class="tabs">
-          <button
-            :class="{active: filter==='all'}"
-            @click="filter='all'">
-            All Quotes
-          </button>
-
-          <button
-            :class="{active: filter==='pinned'}"
-            @click="filter='pinned'">
-            Pinned
-          </button>
+            <button
+              :class="{active: filter==='pinned'}"
+              @click="filter='pinned'">
+              Pinned
+            </button>
 
 
-          <div class="tabs-spacer"></div>
+            <div class="tabs-spacer"></div>
 
-          <label class="random-toggle">
+            <label class="random-toggle">
 
           <span class="toggle-text">
             Random Quotes
           </span>
 
-            <input
-              type="checkbox"
-              v-model="randomQuotesEnabled"
-            >
+              <input
+                type="checkbox"
+                v-model="randomQuotesEnabled"
+              >
 
-            <span class="toggle-slider"></span>
+              <span class="toggle-slider"></span>
 
-          </label>
+            </label>
+          </div>
         </div>
+
+        <button class="add-btn" @click="showAddQuote = true">
+          + Add Quote
+        </button>
       </div>
 
-      <button class="add-btn" @click="showAddQuote = true">
-        + Add Quote
-      </button>
-    </div>
-
-    <div class="quotes-divider"></div>
-    <!-- subscription loading -->
-    <div v-if="subscriptionStore.loading" class="loading">
-      Loading...
-    </div>
-
-    <!-- NOT PRO -->
-    <div
-      v-else-if="!subscriptionStore.isPro"
-      class="pro-lock">
-
-      <h2>Custom quotes are a Pro feature</h2>
-
-      <p>
-        Upgrade to Pro to create and manage your own quotes.
-      </p>
-
-      <button class="upgrade-btn">
-        Upgrade to Pro
-      </button>
-
-    </div>
-
-    <!-- PRO USER -->
-    <div v-else>
-
-      <div v-if="errorMessage && !loading" class="error-wrapper">
-        <div class="error-card">
-          <h2 class="error-title">Connection error!</h2>
-
-          <div class="error-illustration"></div>
-
-          <p class="error-text">
-            {{ errorMessage }}
-          </p>
-
-          <p class="error-subtext">
-            Please try again.
-          </p>
-
-          <button
-            class="error-btn"
-            @click="loadQuotes(authStore.user.id)">
-            Retry
-          </button>
-
-        </div>
+      <div class="quotes-divider"></div>
+      <!-- subscription loading -->
+      <div v-if="subscriptionStore.loading" class="loading">
+        Loading...
       </div>
 
-      <!-- Skeleton loading -->
-      <div v-else-if="loading">
-
-        <div
-          v-for="n in 3"
-          :key="n"
-          class="quote-skeleton" />
-
-      </div>
-
-      <!-- Quotes list -->
-      <div v-else class="quotes-list">
-
-        <QuoteItem
-          v-for="quote in filteredQuotes"
-          :key="quote.id"
-          :quote="quote"
-          @pin="handlePin"
-          @delete="deleteQuote"
-          @edit="editQuote" />
-
-        <div
-          v-if="!quotes.length"
-          class="empty">
-          You haven't added any quotes yet.
-        </div>
-      </div>
+      <!-- NOT PRO -->
       <div
-        v-if="hasMore && quotes.length"
-        class="load-more-wrapper">
+        v-else-if="!subscriptionStore.isPro"
+        class="pro-lock">
 
-        <button
-          class="load-more-btn"
-          @click="loadMore">
+        <h2>Custom quotes are a Pro feature</h2>
 
-          Load More
+        <p>
+          Upgrade to Pro to create and manage your own quotes.
+        </p>
 
+        <button class="upgrade-btn">
+          Upgrade to Pro
         </button>
 
       </div>
 
-      <div
-        v-else-if="quotes.length"
-        class="end-list">
+      <!-- PRO USER -->
+      <div v-else>
 
-        ✓ You've reached the end
+        <div v-if="errorMessage && !loading" class="error-wrapper">
+          <div class="error-card">
+            <h2 class="error-title">Connection error!</h2>
 
+            <div class="error-illustration"></div>
+
+            <p class="error-text">
+              {{ errorMessage }}
+            </p>
+
+            <p class="error-subtext">
+              Please try again.
+            </p>
+
+            <button
+              class="error-btn"
+              @click="loadQuotes(authStore.user.id)">
+              Retry
+            </button>
+
+          </div>
+        </div>
+
+        <!-- Skeleton loading -->
+        <div v-else-if="loading">
+
+          <div
+            v-for="n in 3"
+            :key="n"
+            class="quote-skeleton" />
+
+        </div>
+
+        <!-- Quotes list -->
+        <div v-else class="quotes-list">
+
+          <QuoteItem
+            v-for="quote in filteredQuotes"
+            :key="quote.id"
+            :quote="quote"
+            @pin="handlePin"
+            @delete="deleteQuote"
+            @edit="editQuote" />
+
+          <div
+            v-if="!quotes.length"
+            class="empty">
+            You haven't added any quotes yet.
+          </div>
+        </div>
+        <div
+          v-if="hasMore && quotes.length"
+          class="load-more-wrapper">
+
+          <button
+            class="load-more-btn"
+            @click="loadMore">
+
+            Load More
+
+          </button>
+
+        </div>
+
+        <div
+          v-else-if="quotes.length"
+          class="end-list">
+
+          ✓ You've reached the end
+
+        </div>
       </div>
+
+      <ConfirmDeleteModal
+        :isOpen="showDeleteModal"
+        entity="quote"
+        :title="deleteTitle"
+        @confirm="confirmDelete"
+        @cancel="showDeleteModal=false"
+      />
+
+      <AddQuoteModal
+        :open="showAddQuote"
+        @close="showAddQuote = false"
+        @saved="loadQuotes(authStore.user.id)" />
+
+      <QuoteEditModal
+        :open="showEditQuote"
+        :quote="editingQuote"
+        @close="showEditQuote = false"
+        @save="updateQuote"
+      />
     </div>
 
-    <ConfirmDeleteModal
-      :isOpen="showDeleteModal"
-      entity="quote"
-      :title="deleteTitle"
-      @confirm="confirmDelete"
-      @cancel="showDeleteModal=false"
-    />
-
-    <AddQuoteModal
-      :open="showAddQuote"
-      @close="showAddQuote = false"
-      @saved="loadQuotes(authStore.user.id)"/>
-
-    <QuoteEditModal
-      :open="showEditQuote"
-      :quote="editingQuote"
-      @close="showEditQuote = false"
-      @save="updateQuote"
-    />
   </div>
 
 </template>
@@ -362,6 +365,11 @@ watch(
 <style scoped>
 .page {
   width: 100%;
+  height: 100vh;
+  background: var(--bg-page);
+}
+
+.container {
   max-width: 1280px;
   margin: 0 auto;
   padding: 36px 52px 60px;
@@ -386,7 +394,7 @@ watch(
   font-weight: 700;
   line-height: 1;
   letter-spacing: -1.5px;
-  color: #111827;
+  color: var(--text);
 }
 
 .search-wrapper {
@@ -396,18 +404,18 @@ watch(
   align-items: center;
   gap: 12px;
   padding: 0 18px;
-  background: #fff;
-  border: 1px solid #ECEEF3;
+  background: var(--quick-input-bg);
+  border: 1px solid var(--border);
   border-radius: 28px;
   transition: .25s;
 }
 
 .search-wrapper:hover {
-  border-color: #D8DCE6;
+  border-color: #ac95e5;
 }
 
 .search-wrapper:focus-within {
-  border-color: #7C3AED;
+  border-color: var(--premium-bg);
   box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
 }
 
@@ -418,7 +426,7 @@ watch(
   background: none;
   font-size: 15px;
   font-weight: 500;
-  color: #111827;
+  color: var(--text);
 }
 
 .search-wrapper input::placeholder {
@@ -426,18 +434,18 @@ watch(
 }
 
 .tabs {
-  display:flex;
-  align-items:center;
-  gap:12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .tabs button {
   height: 40px;
   padding: 0 24px;
   border-radius: 999px;
-  border: 1px solid #ECEEF3;
-  background: #fff;
-  color: #6B7280;
+  border: 1px solid var(--border-card);
+  background: var(--bg);
+  color: var(--text-grey);
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
@@ -445,14 +453,14 @@ watch(
 }
 
 .tabs button:hover {
-  border-color: #DDD6FE;
-  color: #7C3AED;
+  border-color: var(--border-pink);
+  color: var(--premium-bg);
 }
 
 .tabs button.active {
-  background: #7a3cff;
+  background: var(--dark-purple);
   color: white;
-  border-color: #7a3cff;
+  border-color: var(--dark-purple);
   box-shadow: 0 8px 18px rgba(124, 58, 237, .22);
 }
 
@@ -528,71 +536,71 @@ watch(
   }
 }
 
-.tabs-spacer{
-  width:18px;
+.tabs-spacer {
+  width: 18px;
 }
 
-.random-toggle{
-  margin-left:8px;
-  display:flex;
-  align-items:center;
-  gap:12px;
-  cursor:pointer;
-  user-select:none;
+.random-toggle {
+  margin-left: 8px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  user-select: none;
 }
 
-.toggle-text{
-  font-size:15px;
-  font-weight:600;
-  color:#6B7280;
+.toggle-text {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-grey);
 }
 
 /* скрываем настоящий checkbox */
 
-.random-toggle input{
-  display:none;
+.random-toggle input {
+  display: none;
 }
 
 /* переключатель */
 
-.toggle-slider{
-  position:relative;
-  width:52px;
-  height:30px;
-  border-radius:999px;
-  background:#E5E7EB;
-  transition:.25s;
+.toggle-slider {
+  position: relative;
+  width: 52px;
+  height: 30px;
+  border-radius: 999px;
+  background: #e5e5ea;
+  transition: .25s;
 }
 
-.toggle-slider::before{
-  content:"";
-  position:absolute;
-  top:3px;
-  left:3px;
-  width:24px;
-  height:24px;
-  border-radius:50%;
-  background:white;
-  transition:.25s;
-  box-shadow:0 3px 8px rgba(0,0,0,.15);
+.toggle-slider::before {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--bg);
+  transition: .25s;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, .15);
 }
 
-.random-toggle input:checked + .toggle-slider{
-  background:#7C3AED;
+.random-toggle input:checked + .toggle-slider {
+  background: var(--premium-bg);
 }
 
-.random-toggle input:checked + .toggle-slider::before{
-  transform:translateX(22px);
+.random-toggle input:checked + .toggle-slider::before {
+  transform: translateX(22px);
 }
 
-.random-toggle:hover .toggle-slider{
-  box-shadow:0 0 0 4px rgba(124,58,237,.08);
+.random-toggle:hover .toggle-slider {
+  box-shadow: 0 0 0 4px rgba(124, 58, 237, .08);
 }
 
 .quotes-divider {
   width: 100%;
   height: 1px;
-  background: #ECEEF3;
+  background: var(--border-card);
   margin-bottom: 15px;
 }
 
@@ -616,10 +624,10 @@ watch(
   max-width: 720px;
   padding: 40px 30px;
   border-radius: 24px;
-  background: rgba(255, 255, 255, 0.7);
+  background: var(--error-card-bg);
   backdrop-filter: blur(12px);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08),
-  inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  box-shadow: var(--error-card-shadow),
+  inset 0 1px 0 var(--error-card-inset);
   text-align: center;
   position: relative;
   overflow: hidden;
@@ -687,33 +695,33 @@ watch(
   color: #9CA3AF;
 }
 
-.load-more-wrapper{
-  display:flex;
-  justify-content:center;
-  margin-top:32px;
+.load-more-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 32px;
 }
 
-.load-more-btn{
-  height:48px;
-  padding:0 32px;
-  border:none;
-  border-radius:999px;
-  background:#7C3AED;
-  color:#fff;
-  font-weight:600;
-  cursor:pointer;
-  transition:.25s;
+.load-more-btn {
+  height: 48px;
+  padding: 0 32px;
+  border: none;
+  border-radius: 999px;
+  background: var(--premium-bg);
+  color: var(--text);
+  font-weight: 600;
+  cursor: pointer;
+  transition: .25s;
 }
 
-.load-more-btn:hover{
-  background:#6D28D9;
+.load-more-btn:hover {
+  background: #6D28D9;
 }
 
-.end-list{
-  margin-top:30px;
-  text-align:center;
-  color:#9CA3AF;
-  font-size:14px;
+.end-list {
+  margin-top: 30px;
+  text-align: center;
+  color: #9CA3AF;
+  font-size: 14px;
 }
 
 /* анимация появления */

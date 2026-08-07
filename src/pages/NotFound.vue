@@ -72,11 +72,18 @@ const goBack = () => {
       #f5f3ff);
 }
 
+[data-theme="dark"] .page404 {
+  background: linear-gradient(
+    180deg,
+    #1A1730,
+    #0f1117
+  );
+}
 .card{
   position:relative;
   width:900px;
   max-width:100%;
-  background:white;
+  background: var(--bg);
   border-radius:32px;
   padding:30px;
   text-align:center;
@@ -103,13 +110,14 @@ const goBack = () => {
   display:block;
   width: 700px;
   margin: 0 auto;
+  border-radius: 30px;
 }
 
 h1{
   margin:0;
   font-size:42px;
   font-weight:700;
-  color:#111827;
+  color: var(--text);
 }
 
 p{

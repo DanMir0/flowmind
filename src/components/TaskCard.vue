@@ -317,18 +317,13 @@ async function openFile(file) {
 .checkbox-custom {
   width: 18px;
   height: 18px;
-
-  border: 2px solid #D1D5DB;
+  border: 2px solid var(--text-focuc-grey);
   border-radius: 6px;
-
-  background: white;
-
+  background: var(--bg);
   display: flex;
   align-items: center;
   justify-content: center;
-
   transition: all 0.2s ease;
-
   flex-shrink: 0;
 }
 
@@ -337,23 +332,20 @@ async function openFile(file) {
 }
 
 .task-checkbox:hover .checkbox-custom {
-  border-color: #7C3AED;
+  border-color: var(--premium-bg);
 }
 
 .task-checkbox input:checked + .checkbox-custom {
-  background: #7C3AED;
-  border-color: #7C3AED;
+  background: var(--premium-bg);
+  border-color: var(--premium-bg);
 }
 
 .check-icon {
   width: 12px;
   height: 12px;
-
-  color: white;
-
+  color: var(--bg);
   opacity: 0;
   transform: scale(0.8);
-
   transition: all 0.15s ease;
 }
 
@@ -384,12 +376,12 @@ async function openFile(file) {
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
+  var(--bg)-space: nowrap;
 }
 
 .show-more {
   font-size: 12px;
-  color: #7a3cff;
+  color: var(--menu-link);
   cursor: pointer;
   margin-top: 6px;
   font-weight: 500;
@@ -400,15 +392,13 @@ async function openFile(file) {
 }
 
 .task-card {
-  background: #fff;
+  background: var(--bg);
   border-radius: 16px;
   padding: 16px;
-  border: 1px solid #f1f1f1;
-
+  border: 1px solid var(--border);
   display: flex;
   flex-direction: column;
   gap: 8px;
-
   transition:
     box-shadow 0.2s ease,
     transform 0.2s ease,
@@ -438,7 +428,7 @@ async function openFile(file) {
   font-weight: 600;
   line-height: 1.35;
   margin: 0;
-  color: #111827;
+  color: var(--text);
 }
 
 /* BADGE */
@@ -450,9 +440,9 @@ async function openFile(file) {
 }
 
 .badge.overdue {
-  background: #FEF2F2;
-  color: #DC2626;
-  border: 1px solid #FECACA;
+  background: var(--bg-badge);
+  color: var(--text-red);
+  border: 1px solid var(--border-red);
 }
 
 /* CATEGORY */
@@ -475,7 +465,7 @@ async function openFile(file) {
 /* Personal */
 .category-personal {
   background: #F5F3FF;
-  color: #7C3AED;
+  color: var(--premium-bg);
 }
 
 /* Health */
@@ -499,7 +489,7 @@ async function openFile(file) {
 /* Default */
 .category-default {
   background: #F3F4F6;
-  color: #6B7280;
+  color: var(--text-grey);
 }
 
 /* DESCRIPTION */
@@ -508,7 +498,7 @@ async function openFile(file) {
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  color: #6B7280;
+  color: var(--text-grey);
   font-size: 14px;
   line-height: 1.5;
   margin: 0;
@@ -542,13 +532,13 @@ async function openFile(file) {
 
 /* ATTACHMENTS */
 .attachments {
-  border-top: 1px solid #f3f4f6;
+  border-top: 1px solid var(--quick-input-focus-bg);
   padding-top: 8px;
 }
 
 .attachments-title {
   font-size: 13px;
-  color: #6b7280;
+  color: var(--text-grey);
   margin-bottom: 6px;
 }
 
@@ -567,14 +557,14 @@ async function openFile(file) {
 
 /* FOOTER */
 .footer {
-  border-top: 1px solid #f5f5f5;
+  border-top: 1px solid var(--border-grey);
   padding-top: 10px;
   margin-top: auto;
 }
 
 .meta {
   font-size: 13px;
-  color: #6b7280;
+  color: var(--text-grey);
 }
 
 .dot {
@@ -585,7 +575,7 @@ async function openFile(file) {
 }
 
 .date-default {
-  color: #6B7280;
+  color: var(--text-grey);
 }
 
 .date-overdue {
@@ -593,7 +583,7 @@ async function openFile(file) {
 }
 
 .date-today {
-  color: #7C3AED;
+  color: var(--premium-bg);
 }
 
 
@@ -624,8 +614,8 @@ async function openFile(file) {
 
 .btn.edit {
   background: transparent;
-  color: #7C3AED;
-  border: 1px solid #E9D5FF;
+  color: var(--premium-bg);
+  border: 1px solid var(--border-pink);
 }
 
 .btn.edit:hover {
@@ -635,7 +625,7 @@ async function openFile(file) {
 .btn.delete {
   background: transparent;
   border: 1px solid #fecaca;
-  color: #dc2626;
+  color: var(--text-red)
 }
 
 .btn.delete:hover {

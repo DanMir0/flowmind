@@ -74,7 +74,7 @@ const isLong = computed(() => props.quote.text.length > 180)
 
       <button class="icon-btn"  @click="emit('edit', quote.id)">
        <span>
-         <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+         <svg class="icon-pencil" width="24" height="24" viewBox="0 0 24 24" fill="none"
               xmlns="http://www.w3.org/2000/svg">
           <path fill-rule="evenodd" clip-rule="evenodd"
                 d="M8.56078 20.2501L20.5608 8.25011L15.7501 3.43945L3.75012 15.4395V20.2501H8.56078ZM15.7501 5.56077L18.4395 8.25011L16.5001 10.1895L13.8108 7.50013L15.7501 5.56077ZM12.7501 8.56079L15.4395 11.2501L7.93946 18.7501H5.25012L5.25012 16.0608L12.7501 8.56079Z"
@@ -114,7 +114,7 @@ const isLong = computed(() => props.quote.text.length > 180)
   padding: 28px 34px;
   margin-bottom: 22px;
   border-radius: 22px;
-  background: #fff;
+  background: var(--bg);
   box-shadow: 0 8px 30px rgba(30, 30, 30, .06);
   transition: .25s;
   gap: 20px;
@@ -139,7 +139,7 @@ const isLong = computed(() => props.quote.text.length > 180)
 }
 
 .quote-icon {
-  color: #7C3AED;
+  color: var(--premium-bg);
   font-size: 34px;
   font-weight: bold;
   line-height: 1;
@@ -148,7 +148,7 @@ const isLong = computed(() => props.quote.text.length > 180)
 .text{
   font-size:18px;
   line-height:1.7;
-  color:#222;
+  color: var(--text);
   font-weight:500;
   overflow:hidden;
   display:-webkit-box;
@@ -168,7 +168,7 @@ const isLong = computed(() => props.quote.text.length > 180)
   padding:0;
   border:none;
   background:none;
-  color:#7C3AED;
+  color: var(--premium-bg);
   font-size:14px;
   font-weight:600;
   cursor:pointer;
@@ -198,13 +198,17 @@ const isLong = computed(() => props.quote.text.length > 180)
   height: 48px;
   padding: 0 28px;
   border-radius: 14px;
-  background: white;
-  border: 1px solid #E6D9FF;
-  color: #7C3AED;
+  background: var(--pin-btn-bg);
+  border: 1px solid var(--pin-btn-border);
+  color: var(--pin-btn-color);
   font-weight: 600;
   display: flex;
   align-items: center;
   gap: 8px; /* Отступ между иконкой и текстом */
+}
+
+.pin-btn:hover {
+  transform: translateY(-1px);
 }
 
 .pin-btn.active {
@@ -222,6 +226,15 @@ const isLong = computed(() => props.quote.text.length > 180)
   align-items: center;
   justify-content: center;
   line-height: 0; /* Убирает лишний отступ */
+}
+
+[data-theme="dark"] .icon-btn {
+  background: #1A1D27;
+  border: 1px solid #2D323E;
+}
+
+.icon-pencil path {
+  fill: var(--icon-pencil);
 }
 
 .icon-btn.danger {

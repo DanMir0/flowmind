@@ -11,7 +11,6 @@ const auth = useAuthStore()
 const settingsStore = useSettingsStore()
 const showPassword = ref(false)
 const showModalEmail = ref(false)
-const theme = ref('light')
 
 const subscription = ref({
   plan: 'Premium Plan',
@@ -29,6 +28,12 @@ const language = computed({
   get: () => settingsStore.locale,
   set: async (value) => {
     await settingsStore.changeLocale(value)
+  }
+})
+const theme = computed({
+  get: () => settingsStore.theme,
+  set: async (value) => {
+    await settingsStore.changeTheme(value)
   }
 })
 const email = computed(() => auth.user?.email || '')
@@ -98,7 +103,7 @@ async function saveNewEmail(newEmail) {
               </defs>
               <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
                 <g id="Dribbble-Light-Preview" transform="translate(-180.000000, -2159.000000)"
-                   fill="#7c3aed">
+                   fill="var(--premium-bg)">
                   <g id="icons" transform="translate(56.000000, 160.000000)">
                     <path
                       d="M134,2008.99998 C131.783496,2008.99998 129.980955,2007.20598 129.980955,2004.99998 C129.980955,2002.79398 131.783496,2000.99998 134,2000.99998 C136.216504,2000.99998 138.019045,2002.79398 138.019045,2004.99998 C138.019045,2007.20598 136.216504,2008.99998 134,2008.99998 M137.775893,2009.67298 C139.370449,2008.39598 140.299854,2006.33098 139.958235,2004.06998 C139.561354,2001.44698 137.368965,1999.34798 134.722423,1999.04198 C131.070116,1998.61898 127.971432,2001.44898 127.971432,2004.99998 C127.971432,2006.88998 128.851603,2008.57398 130.224107,2009.67298 C126.852128,2010.93398 124.390463,2013.89498 124.004634,2017.89098 C123.948368,2018.48198 124.411563,2018.99998 125.008391,2018.99998 C125.519814,2018.99998 125.955881,2018.61598 126.001095,2018.10898 C126.404004,2013.64598 129.837274,2010.99998 134,2010.99998 C138.162726,2010.99998 141.595996,2013.64598 141.998905,2018.10898 C142.044119,2018.61598 142.480186,2018.99998 142.991609,2018.99998 C143.588437,2018.99998 144.051632,2018.48198 143.995366,2017.89098 C143.609537,2013.89498 141.147872,2010.93398 137.775893,2009.67298"
@@ -188,7 +193,7 @@ async function saveNewEmail(newEmail) {
                  xmlns="http://www.w3.org/2000/svg">
               <path fill-rule="evenodd" clip-rule="evenodd"
                     d="M12.0001 3C12.3334 3 12.6449 3.16613 12.8306 3.443L16.6106 9.07917L21.2523 3.85213C21.5515 3.51525 22.039 3.42002 22.4429 3.61953C22.8469 3.81904 23.0675 4.26404 22.9818 4.70634L20.2956 18.5706C20.0223 19.9812 18.7872 21 17.3504 21H6.64977C5.21293 21 3.97784 19.9812 3.70454 18.5706L1.01833 4.70634C0.932635 4.26404 1.15329 3.81904 1.55723 3.61953C1.96117 3.42002 2.44865 3.51525 2.74781 3.85213L7.38953 9.07917L11.1696 3.443C11.3553 3.16613 11.6667 3 12.0001 3ZM12.0001 5.79533L8.33059 11.2667C8.1582 11.5237 7.8765 11.6865 7.56772 11.7074C7.25893 11.7283 6.95785 11.6051 6.75234 11.3737L3.67615 7.90958L5.66802 18.1902C5.75913 18.6604 6.17082 19 6.64977 19H17.3504C17.8293 19 18.241 18.6604 18.3321 18.1902L20.324 7.90958L17.2478 11.3737C17.0423 11.6051 16.7412 11.7283 16.4324 11.7074C16.1236 11.6865 15.842 11.5237 15.6696 11.2667L12.0001 5.79533Z"
-                    fill="#7c3aed" />
+                    fill="var(--premium-bg)" />
             </svg>
 
           </div>
@@ -235,7 +240,7 @@ async function saveNewEmail(newEmail) {
               </svg>
             </div>
             <div>
-              <h3>
+              <h3 class="subscription-title">
                 Your subscription is active
               </h3>
               <p>
@@ -279,12 +284,12 @@ async function saveNewEmail(newEmail) {
     c1.224-0.612,2.448-1.224,3.06-3.06c9.18-17.136,4.284-30.6-11.016-41.616c-17.748-12.852-45.9,0-59.976,11.628
     C38.054,85.518,1.946,136.313,3.782,184.662c-6.12,32.437-4.896,67.32,4.284,96.084c6.12,18.36,23.868,27.54,42.228,28.764
     c18.36,1.225,56.304,6.732,72.828-4.283c16.524-11.017,17.748-32.437,19.584-50.796c1.836-20.196,7.344-58.141-9.792-74.053
-    C115.778,165.078,66.818,181.602,72.326,147.33z" fill="#7C3AED" />
+    C115.778,165.078,66.818,181.602,72.326,147.33z" fill="var(--premium-bg)" />
               <path d="M274.286,147.33c4.284-26.928,37.943-55.692,64.26-56.304c1.836,0,3.672-0.612,4.896-1.836
     c1.225-0.612,2.448-1.224,3.061-3.06c9.18-17.136,4.284-30.6-11.016-41.616c-17.748-12.852-45.9,0-59.977,11.628
     c-35.496,29.376-71.604,80.172-69.768,128.52c-6.12,32.437-4.896,67.32,4.283,96.084c6.12,18.36,23.868,27.54,42.229,28.764
     c18.36,1.225,56.304,6.732,72.828-4.283c16.523-11.017,17.748-32.437,19.584-50.796c1.836-20.196,7.344-58.141-9.792-74.053
-    C317.738,165.078,268.166,181.602,274.286,147.33z" fill="#7C3AED" />
+    C317.738,165.078,268.166,181.602,274.286,147.33z" fill="var(--premium-bg)" />
             </svg>
           </div>
 
@@ -331,7 +336,7 @@ async function saveNewEmail(newEmail) {
 
           <div class="icon purple">
             <svg width="18px" height="18px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
-              <path fill="#7c3aed"
+              <path fill="var(--premium-bg)"
                     d="M8,0 C12.4183,0 16,3.58172 16,8 C16,8.15958 15.9953,8.31807 15.9861,8.47533 C15.9328,9.38596 15.1095,10.0039 14.1974,10.0039 L11.0106,10.0039 C9.22875,10.0039 8.33642,12.1582 9.59635,13.4181 C10.4823,14.304 10.198,15.7959 8.95388,15.9437 C8.6411,15.9809 8.32278,16 8,16 C3.58172,16 0,12.4183 0,8 C0,3.58172 3.58172,0 8,0 Z M8,2 C4.68629,2 2,4.68629 2,8 C2,11.1538 4.4333,13.7393 7.52492,13.9815 C6.059,11.4506 7.82321,8.00391 11.0106,8.00391 L14,8.00391 C14,4.68629 11.3137,2 8,2 Z M5,8 C5.55228,8 6,8.44771 6,9 C6,9.55228 5.55228,10 5,10 C4.44772,10 4,9.55228 4,9 C4,8.44771 4.44772,8 5,8 Z M6,5 C6.55228,5 7,5.44772 7,6 C7,6.55228 6.55228,7 6,7 C5.44772,7 5,6.55228 5,6 C5,5.44772 5.44772,5 6,5 Z M9,4 C9.55228,4 10,4.44772 10,5 C10,5.55228 9.55228,6 9,6 C8.44771,6 8,5.55228 8,5 C8,4.44772 8.44771,4 9,4 Z" />
             </svg>
           </div>
@@ -348,7 +353,7 @@ async function saveNewEmail(newEmail) {
 
         </div>
 
-        <label>
+        <label class="theme-title">
           Theme
         </label>
 
@@ -364,8 +369,8 @@ async function saveNewEmail(newEmail) {
             </div>
 
             <div>
-              <svg width="60px" height="60px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path fill-rule="evenodd" clip-rule="evenodd" d="M12 1.25C12.4142 1.25 12.75 1.58579 12.75 2V4C12.75 4.41421 12.4142 4.75 12 4.75C11.5858 4.75 11.25 4.41421 11.25 4V2C11.25 1.58579 11.5858 1.25 12 1.25ZM3.66865 3.71609C3.94815 3.41039 4.42255 3.38915 4.72825 3.66865L6.95026 5.70024C7.25596 5.97974 7.2772 6.45413 6.9977 6.75983C6.7182 7.06553 6.2438 7.08677 5.9381 6.80727L3.71609 4.77569C3.41039 4.49619 3.38915 4.02179 3.66865 3.71609ZM20.3314 3.71609C20.6109 4.02179 20.5896 4.49619 20.2839 4.77569L18.0619 6.80727C17.7562 7.08677 17.2818 7.06553 17.0023 6.75983C16.7228 6.45413 16.744 5.97974 17.0497 5.70024L19.2718 3.66865C19.5775 3.38915 20.0518 3.41039 20.3314 3.71609ZM12 7.75C9.65279 7.75 7.75 9.65279 7.75 12C7.75 14.3472 9.65279 16.25 12 16.25C14.3472 16.25 16.25 14.3472 16.25 12C16.25 9.65279 14.3472 7.75 12 7.75ZM6.25 12C6.25 8.82436 8.82436 6.25 12 6.25C15.1756 6.25 17.75 8.82436 17.75 12C17.75 15.1756 15.1756 17.75 12 17.75C8.82436 17.75 6.25 15.1756 6.25 12ZM1.25 12C1.25 11.5858 1.58579 11.25 2 11.25H4C4.41421 11.25 4.75 11.5858 4.75 12C4.75 12.4142 4.41421 12.75 4 12.75H2C1.58579 12.75 1.25 12.4142 1.25 12ZM19.25 12C19.25 11.5858 19.5858 11.25 20 11.25H22C22.4142 11.25 22.75 11.5858 22.75 12C22.75 12.4142 22.4142 12.75 22 12.75H20C19.5858 12.75 19.25 12.4142 19.25 12ZM17.0255 17.0252C17.3184 16.7323 17.7933 16.7323 18.0862 17.0252L20.3082 19.2475C20.6011 19.5404 20.601 20.0153 20.3081 20.3082C20.0152 20.6011 19.5403 20.601 19.2475 20.3081L17.0255 18.0858C16.7326 17.7929 16.7326 17.3181 17.0255 17.0252ZM6.97467 17.0253C7.26756 17.3182 7.26756 17.7931 6.97467 18.086L4.75244 20.3082C4.45955 20.6011 3.98468 20.6011 3.69178 20.3082C3.39889 20.0153 3.39889 19.5404 3.69178 19.2476L5.91401 17.0253C6.2069 16.7324 6.68177 16.7324 6.97467 17.0253ZM12 19.25C12.4142 19.25 12.75 19.5858 12.75 20V22C12.75 22.4142 12.4142 22.75 12 22.75C11.5858 22.75 11.25 22.4142 11.25 22V20C11.25 19.5858 11.5858 19.25 12 19.25Z" fill="#000000"/>
+              <svg class="theme-icon theme-light-icon" width="60px" height="60px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M12 1.25C12.4142 1.25 12.75 1.58579 12.75 2V4C12.75 4.41421 12.4142 4.75 12 4.75C11.5858 4.75 11.25 4.41421 11.25 4V2C11.25 1.58579 11.5858 1.25 12 1.25ZM3.66865 3.71609C3.94815 3.41039 4.42255 3.38915 4.72825 3.66865L6.95026 5.70024C7.25596 5.97974 7.2772 6.45413 6.9977 6.75983C6.7182 7.06553 6.2438 7.08677 5.9381 6.80727L3.71609 4.77569C3.41039 4.49619 3.38915 4.02179 3.66865 3.71609ZM20.3314 3.71609C20.6109 4.02179 20.5896 4.49619 20.2839 4.77569L18.0619 6.80727C17.7562 7.08677 17.2818 7.06553 17.0023 6.75983C16.7228 6.45413 16.744 5.97974 17.0497 5.70024L19.2718 3.66865C19.5775 3.38915 20.0518 3.41039 20.3314 3.71609ZM12 7.75C9.65279 7.75 7.75 9.65279 7.75 12C7.75 14.3472 9.65279 16.25 12 16.25C14.3472 16.25 16.25 14.3472 16.25 12C16.25 9.65279 14.3472 7.75 12 7.75ZM6.25 12C6.25 8.82436 8.82436 6.25 12 6.25C15.1756 6.25 17.75 8.82436 17.75 12C17.75 15.1756 15.1756 17.75 12 17.75C8.82436 17.75 6.25 15.1756 6.25 12ZM1.25 12C1.25 11.5858 1.58579 11.25 2 11.25H4C4.41421 11.25 4.75 11.5858 4.75 12C4.75 12.4142 4.41421 12.75 4 12.75H2C1.58579 12.75 1.25 12.4142 1.25 12ZM19.25 12C19.25 11.5858 19.5858 11.25 20 11.25H22C22.4142 11.25 22.75 11.5858 22.75 12C22.75 12.4142 22.4142 12.75 22 12.75H20C19.5858 12.75 19.25 12.4142 19.25 12ZM17.0255 17.0252C17.3184 16.7323 17.7933 16.7323 18.0862 17.0252L20.3082 19.2475C20.6011 19.5404 20.601 20.0153 20.3081 20.3082C20.0152 20.6011 19.5403 20.601 19.2475 20.3081L17.0255 18.0858C16.7326 17.7929 16.7326 17.3181 17.0255 17.0252ZM6.97467 17.0253C7.26756 17.3182 7.26756 17.7931 6.97467 18.086L4.75244 20.3082C4.45955 20.6011 3.98468 20.6011 3.69178 20.3082C3.39889 20.0153 3.39889 19.5404 3.69178 19.2476L5.91401 17.0253C6.2069 16.7324 6.68177 16.7324 6.97467 17.0253ZM12 19.25C12.4142 19.25 12.75 19.5858 12.75 20V22C12.75 22.4142 12.4142 22.75 12 22.75C11.5858 22.75 11.25 22.4142 11.25 22V20C11.25 19.5858 11.5858 19.25 12 19.25Z" fill="#fff"/>
               </svg>
             </div>
             <span>
@@ -384,7 +389,7 @@ async function saveNewEmail(newEmail) {
             </div>
 
             <div>
-              <svg width="60px" height="60px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <svg class="theme-icon" width="60px" height="60px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M21 12.79C20.8427 14.4922 20.2039 16.1144 19.1583 17.4668C18.1127 18.8192 16.7035 19.8458 15.0957 20.4265C13.4879 21.0073 11.748 21.1181 10.0795 20.7461C8.41104 20.3741 6.88299 19.5345 5.67423 18.3258C4.46548 17.117 3.62592 15.589 3.2539 13.9205C2.88188 12.252 2.99268 10.5121 3.57346 8.9043C4.15424 7.29651 5.18082 5.88733 6.53323 4.84171C7.88563 3.79609 9.50779 3.15732 11.21 3C10.2134 4.34827 9.73384 6.00945 9.85853 7.68141C9.98323 9.35338 10.7039 10.9251 11.8894 12.1106C13.0749 13.2961 14.6466 14.0168 16.3186 14.1415C17.9906 14.2662 19.6517 13.7866 21 12.79Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
               </svg>
             </div>
@@ -459,9 +464,11 @@ async function saveNewEmail(newEmail) {
   position: absolute;
   top: 15px;
   left: 10px;
+  fill: var(--color-icon);
 }
 
 .settings-page {
+  background: var(--bg-page);
   width: 100%;
   padding: 34px 28px 48px;
 }
@@ -473,7 +480,7 @@ async function saveNewEmail(newEmail) {
 .page-header h1 {
   font-size: 36px;
   font-weight: 700;
-  color: #111827;
+  color: var(--text);
   margin-bottom: 8px;
 }
 
@@ -489,13 +496,17 @@ async function saveNewEmail(newEmail) {
 }
 
 .card {
-  background: #fff;
+  background: var(--bg);
   border-radius: 24px;
   padding: 28px;
-  border: 1px solid #ECECEC;
+  border: 1px solid var(--border-card);
   box-shadow: 0 8px 24px rgba(15, 23, 42, .05),
   0 2px 6px rgba(15, 23, 42, .04);
   transition: .25s;
+}
+
+.card small {
+  color: #9CA3AF;
 }
 
 .card:hover {
@@ -515,7 +526,7 @@ async function saveNewEmail(newEmail) {
   margin: 0;
   font-size: 22px;
   font-weight: 700;
-  color: #111827;
+  color: var(--text);
 }
 
 .card-header span {
@@ -538,7 +549,7 @@ async function saveNewEmail(newEmail) {
 
 .icon.purple {
   background: #F3E8FF;
-  color: #7C3AED;
+  color: var(--premium-bg);
 }
 
 .icon.red {
@@ -559,7 +570,7 @@ async function saveNewEmail(newEmail) {
 .field label {
   font-size: 14px;
   font-weight: 600;
-  color: #374151;
+  color: var(--menu-item-color);
 }
 
 .field small {
@@ -578,10 +589,11 @@ select {
   width: 100%;
   height: 52px;
   border-radius: 14px;
-  border: 1px solid #E5E7EB;
+  border: 1px solid var(--border-card);
   padding: 0 16px;
   font-size: 14px;
-  background: white;
+  background: var(--quick-input-bg);
+  color: var(--text);
   outline: none;
   transition: .2s;
 }
@@ -592,7 +604,7 @@ textarea {
 
 input:focus,
 select:focus {
-  border-color: #7C3AED;
+  border-color: var(--premium-bg);
   box-shadow: 0 0 0 4px rgba(124, 58, 237, .08);
 }
 
@@ -614,9 +626,9 @@ select:focus {
   height: 52px;
   padding: 0 24px;
   border-radius: 14px;
-  border: 2px solid #7C3AED;
-  background: white;
-  color: #7C3AED;
+  border: 2px solid var(--premium-bg);
+  background: var(--bg);
+  color: var(--premium-bg);
   font-weight: 600;
   cursor: pointer;
   transition: .2s;
@@ -624,12 +636,12 @@ select:focus {
 }
 
 .outline-btn:hover {
-  background: #7C3AED;
+  background: var(--premium-bg);
   color: white;
 }
 
 .subscription {
-  border: 1px solid #ECECEC;
+  border: 1px solid var(--border-card);
   border-radius: 18px;
   overflow: hidden;
 }
@@ -639,12 +651,16 @@ select:focus {
   justify-content: space-between;
   align-items: center;
   padding: 16px 18px;
-  border-bottom: 1px solid #ECECEC;
+  border-bottom: 1px solid var(--border-card);
+}
+
+.subscription-title {
+  color: var(--text);
 }
 
 .badge {
   background: #F3E8FF;
-  color: #7C3AED;
+  color: var(--premium-bg);
   padding: 7px 14px;
   border-radius: 999px;
   font-size: 13px;
@@ -685,7 +701,7 @@ select:focus {
 
 .subscription-body p {
   margin: 0;
-  color: #374151;
+  color: var(--menu-item-color);
 }
 
 .subscription-body span {
@@ -699,8 +715,9 @@ select:focus {
   width: 100%;
   height: 62px;
   border: none;
-  border-top: 1px solid #ECECEC;
-  background: white;
+  border-top: 1px solid var(--border-card);
+  color: var(--text);
+  background: var(--bg);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -712,12 +729,12 @@ select:focus {
 }
 
 .manage-btn:hover {
-  background: #F9FAFB;
+  background: var(--quick-input-bg);
 }
 
 .manage-btn span {
   font-size: 28px;
-  color: #6B7280;
+  color: var(--text-grey);
 }
 
 .theme-grid {
@@ -728,10 +745,14 @@ select:focus {
   margin-bottom: 18px;
 }
 
+.theme-title {
+  color: var(--text);
+}
+
 .theme-card {
   position: relative;
   height: 170px;
-  border: 2px solid #E5E7EB;
+  border: 2px solid var(--border-card);
   border-radius: 18px;
   display: flex;
   flex-direction: column;
@@ -741,7 +762,7 @@ select:focus {
   cursor: pointer;
   transition: .25s;
   overflow: hidden;
-  background: white;
+  background: var(--bg);
 }
 
 .theme-card:hover {
@@ -751,7 +772,7 @@ select:focus {
 }
 
 .theme-card.active {
-  border-color: #7C3AED;
+  border-color: var(--premium-bg);
   box-shadow: 0 0 0 4px rgba(124, 58, 237, .08);
 }
 
@@ -762,7 +783,7 @@ select:focus {
   width: 26px;
   height: 26px;
   border-radius: 50%;
-  background: #7C3AED;
+  background: var(--premium-bg);
   color: white;
   display: flex;
   align-items: center;
@@ -778,10 +799,18 @@ select:focus {
   transform: scale(1);
 }
 
+.theme-icon path {
+  stroke: var(--color-icon);
+}
+
+.theme-light-icon path {
+  fill: var(--color-icon);
+}
+
 .theme-card span {
   font-size: 17px;
   font-weight: 600;
-  color: #111827;
+  color: var(--text);
 }
 
 .danger-card {
@@ -799,7 +828,7 @@ select:focus {
 
 .danger-left h2 {
   margin: 0;
-  color: #991B1B;
+  color: var(--text-danger);
   font-size: 22px;
 }
 
@@ -807,14 +836,15 @@ select:focus {
   display: block;
   margin-top: 6px;
   font-size: 14px;
+  color: var(--text-grey);
 }
 
 .danger-btn {
   height: 54px;
   padding: 0 28px;
-  border: 1px solid #DC2626;
+  border: 1px solid var(--text-red);
   border-radius: 14px;
-  color: #DC2626;
+  color: var(--text-red);
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
@@ -836,7 +866,7 @@ select:focus {
 }
 
 .eye:hover{
-  color:#7C3AED;
+  color:var(--premium-bg);
 }
 
 @media (max-width: 1200px) {

@@ -68,11 +68,12 @@ const emit = defineEmits(['confirm','cancel'])
 }
 
 .modal {
-  background: white;
+  background: var(--bg);
   padding: 30px;
   border-radius: 20px;
   width: 360px;
   text-align: center;
+  color: var(--text);
 }
 
 .modal h3 {
@@ -82,7 +83,7 @@ const emit = defineEmits(['confirm','cancel'])
 
 .modal p {
   font-size: 15px;
-  color: #444;
+  color: var(--text-grey);
 }
 
 .actions {
@@ -105,7 +106,7 @@ const emit = defineEmits(['confirm','cancel'])
 
 .btn-primary {
   background: #7a3cff;
-  color: #ffffff;
+  color: var(--bg);;
   border: none;
   box-shadow: 0 2px 6px rgba(122, 60, 255, 0.25);
 }
@@ -125,7 +126,7 @@ const emit = defineEmits(['confirm','cancel'])
 }
 
 .btn-cancel {
-  background: #f5f5f5;
+  background: var(--bg-btn-cancel);;
   border: 1px solid #e0e0e0;
   color: #444;
 }

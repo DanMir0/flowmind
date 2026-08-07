@@ -5,7 +5,8 @@ import { useAuthStore } from '@/store/auth'
 export const useSettingsStore = defineStore('settings', {
 
   state: () => ({
-    locale: 'en'
+    locale: 'en',
+    theme: 'light'
   }),
 
   actions: {
@@ -19,7 +20,7 @@ export const useSettingsStore = defineStore('settings', {
 
       const { data, error } = await supabase
         .from('profiles')
-        .select('quote_locale')
+        .select(`quote_locale, theme`)
         .eq('user_id', auth.user.id)
         .maybeSingle()
 
@@ -27,6 +28,12 @@ export const useSettingsStore = defineStore('settings', {
         throw error
 
       this.locale = data?.quote_locale || 'en'
+      this.theme = data?.theme || 'light'
+      localStorage.setItem('theme', this.theme)
+      document.documentElement.setAttribute(
+        'data-theme',
+        this.theme
+      )
     },
 
     async changeLocale(locale) {
@@ -44,7 +51,29 @@ export const useSettingsStore = defineStore('settings', {
 
       if (error)
         throw error
-    }
+    },
+
+    async changeTheme(theme) {
+
+      this.theme = theme
+      localStorage.setItem('theme', theme)
+      document.documentElement.setAttribute(
+        'data-theme',
+        theme
+      )
+
+      const auth = useAuthStore()
+
+      if (!auth.user) return
+
+      await supabase
+        .from('profiles')
+        .update({
+          theme: theme
+        })
+        .eq('user_id', auth.user.id)
+
+    },
 
   }
 

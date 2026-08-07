@@ -125,10 +125,11 @@ function submit() {
 
 .modal{
   width:440px;
-  background:#fff;
+  background: var(--bg);
   border-radius:22px;
   padding:28px;
   box-shadow:0 24px 60px rgba(0,0,0,.15);
+  color: var(--text);
 }
 
 h2{
@@ -158,20 +159,24 @@ label{
 
 input{
   height:48px;
-  border:1px solid #E5E7EB;
+  border:1px solid var(--border);;
   border-radius:12px;
   padding:0 14px;
   font-size:14px;
   outline:none;
   transition:.2s;
+  background: var(--quick-input-bg);
+  color: var(--text);
 }
 
 input:focus{
-  border-color:#7C3AED;
+  outline: none;
+  border-color: #7C3AED;
+  box-shadow: 0 0 0 3px rgba(124,58,237,.12);
 }
 
 input[readonly]{
-  background:#F9FAFB;
+  background: var(--quick-input-bg);
   color:#6B7280;
 }
 
@@ -186,13 +191,16 @@ input[readonly]{
   height:46px;
   padding:0 18px;
   border-radius:12px;
-  border:1px solid #E5E7EB;
-  background:white;
+  border:1px solid #e0e0e0;
+  background: var(--bg-btn-cancel);
   cursor:pointer;
+  color: #444;
 }
 
-.cancel:hover{
-  background:#F9FAFB;
+.cancel:hover {
+  background: #e8e8e8;
+  border-color: #ccc;
+  transform: translateY(-2px);
 }
 
 .save{
@@ -200,13 +208,15 @@ input[readonly]{
   padding:0 22px;
   border:none;
   border-radius:12px;
-  background:#7C3AED;
-  color:white;
+  background:#7a3cff;
+  color:var(--bg);
   cursor:pointer;
 }
 
 .save:hover{
-  opacity:.92;
+  background: #6633d9;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(122, 60, 255, 0.35);
 }
 
 .modal-enter-active,

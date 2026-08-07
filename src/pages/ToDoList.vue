@@ -366,12 +366,6 @@ onMounted(() => {
           </button>
         </div>
 
-<!--        <div-->
-<!--          v-if="sortKey !== 'manual'"-->
-<!--          class="drag-disabled-warning">-->
-<!--          Drag & drop available only in Manual mode-->
-<!--        </div>-->
-
         <!-- SORT -->
         <BaseSelect
           v-model="sortKey"
@@ -495,6 +489,8 @@ onMounted(() => {
 
 <style scoped>
 .page {
+  height: 100vh;
+  background: var(--bg-page);
   width: 100%;
   padding: 32px 24px 40px;
 }
@@ -514,11 +510,12 @@ onMounted(() => {
 }
 
 .header-title {
+  color: var(--text);
   font-size: 26px;
 }
 
 .header-description {
-  color: #6b7280;
+  color: var(--text-grey);
   font-size: 18px;
 }
 
@@ -526,8 +523,8 @@ onMounted(() => {
   padding: 10px 18px;
   border-radius: 20px;
   border: none;
-  background: #7a3cff;
-  color: white;
+  background: var(--menu-link);
+  color: var(--bg);
   font-weight: 600;
   cursor: pointer;
 }
@@ -556,9 +553,9 @@ onMounted(() => {
   align-items: center;
   gap: 8px;
   padding: 6px;
-  background: white;
+  background: var(--quick-input-bg);
   border-radius: 14px;
-  border: 1px solid #eee;
+  border: 1px solid var(--border);
 }
 
 .filter-pill {
@@ -568,17 +565,17 @@ onMounted(() => {
   background: transparent;
   cursor: pointer;
   font-weight: 500;
-  color: #555;
+  color: var(--text);
   transition: all 0.2s ease;
 }
 
 .filter-pill:hover {
-  color: #7C3AED;
+  color: var(--premium-bg);
 }
 
 .filter-pill.active {
-  background: #7a3cff;
-  color: white;
+  background: var(--menu-link);
+  color: var(--bg);
 }
 
 .sort-select {
@@ -646,7 +643,7 @@ onMounted(() => {
   border: none;
   border-radius: 14px;
   background: linear-gradient(135deg, #7b5cff, #5b4dff);
-  color: white;
+  color: var(--bg);
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
@@ -708,14 +705,14 @@ onMounted(() => {
   width: 50px;
   height: 24px;
   border-radius: 20px;
-  background: #eee;
+  background: var(--border);
   margin-bottom: 12px;
 }
 
 .skeleton-title {
   width: 60%;
   height: 18px;
-  background: #eee;
+  background: var(--border);
   border-radius: 6px;
   margin-bottom: 10px;
 }
@@ -723,7 +720,7 @@ onMounted(() => {
 .skeleton-deadline {
   width: 30%;
   height: 12px;
-  background: #eee;
+  background: var(--border);
   border-radius: 6px;
   margin-bottom: 12px;
 }
@@ -731,7 +728,7 @@ onMounted(() => {
 .skeleton-priority {
   width: 80px;
   height: 28px;
-  background: #eee;
+  background: var(--border);
   border-radius: 20px;
   margin-bottom: 16px;
 }
@@ -745,7 +742,7 @@ onMounted(() => {
   width: 80px;
   height: 36px;
   border-radius: 20px;
-  background: #eee;
+  background: var(--border);
 }
 
 .load-more-wrapper {
@@ -758,8 +755,8 @@ onMounted(() => {
   padding: 12px 20px;
   border-radius: 14px;
   border: 1px solid #E5E7EB;
-  background: white;
-  color: #6B7280;
+  background: var(--bg);
+  color: var(--text-grey);
   font-weight: 600;
   cursor: pointer;
   transition: all .2s ease;

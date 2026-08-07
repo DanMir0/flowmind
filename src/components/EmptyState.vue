@@ -96,12 +96,12 @@ const content = computed(() => contentMap[props.type])
   font-size: 22px;
   font-weight: 700;
   margin-bottom: 12px;
-  color: #1f2937;
+  color: var(--text);
 }
 
 .subtitle {
   font-size: 15px;
-  color: #6b7280;
+  color: var(--text-grey);
   margin-bottom: 28px;
   line-height: 1.5;
 }

@@ -76,45 +76,35 @@ const subscriptionStore = useSubscriptionStore()
 .sheet-overlay{
   position: fixed;
   inset:0;
-
   background: rgba(0,0,0,0.25);
-
   display:flex;
   align-items:flex-end;
   justify-content:center;
-
   z-index:100;
 }
 
 .sheet{
   width:100%;
   max-width:520px;
-
-  background:white;
-
+  background: var(--bg);
   border-radius:20px 20px 0 0;
-
   padding:20px;
-
   animation: slideUp .25s ease;
 }
 
 .sheet-item{
   width:100%;
   padding:16px;
-
   border:none;
   background:none;
-
   font-size:16px;
-
   cursor:pointer;
-
   text-align:left;
+  color: var(--text);
 }
 
 .sheet-item:hover{
-  background:#f5f5fa;
+  background: var(--menu-hover);
   border-radius:10px;
 }
 
@@ -126,14 +116,10 @@ const subscriptionStore = useSubscriptionStore()
 .sheet-cancel{
   width:100%;
   padding:16px;
-
   margin-top:10px;
-
   border:none;
-  background:#f3f3f7;
-
+  background: #f3f3f7;
   border-radius:12px;
-
   cursor:pointer;
 }
 

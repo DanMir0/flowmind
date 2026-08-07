@@ -104,6 +104,8 @@ const emit = defineEmits([
 <style scoped>
 .premium{
   padding:32px 42px;
+  background: var(--bg-page);
+  height: 100vh;
 }
 
 .premium-card{
@@ -117,9 +119,9 @@ const emit = defineEmits([
   width:100%;
   min-height:620px;
   padding:70px 85px;
-  background:#FFFEFD;
+  background: var(--bg);
   border-radius:28px;
-  border:1px solid #F3ECFF;
+  border:1px solid var(--quick-input-focus-bg);
   box-shadow:
     0 20px 55px rgba(124,58,237,.08);
 }
@@ -143,7 +145,7 @@ h1{
   font-size:27px;
   font-weight:800;
   line-height:1.3;
-  color:#111827;
+  color: var(--text);
 }
 
 .description{

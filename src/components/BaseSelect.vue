@@ -209,10 +209,18 @@ onUnmounted(() => document.removeEventListener('click', onClickOutside))
 
 .select-trigger input {
   width: 100%;
+  color: var(--text);
   padding: 12px 40px 12px 0;
   border-radius: 12px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border);
   outline: none;
+  background: var(--quick-input-bg);
+}
+
+.select-trigger input:focus {
+  outline: none;
+  border-color: #7C3AED;
+  box-shadow: 0 0 0 3px rgba(124,58,237,.12);
 }
 
 .arrow {
@@ -233,28 +241,30 @@ onUnmounted(() => document.removeEventListener('click', onClickOutside))
   top: calc(100% + 4px);
   left: 0;
   width: 100%;
-  background: white;
-  border: 1px solid #eee;
+  background: var(--bg);
+  border: 1px solid var(--border);
   border-radius: 12px;
   box-shadow: 0 10px 25px rgba(0,0,0,0.08);
   max-height: 220px;
   overflow-y: auto;
   z-index: 10;
+  color: var(--text);
 }
 
 .select-item {
   padding: 10px 14px;
+  color: var(--text);
   cursor: pointer;
 }
 
 .select-item:hover {
-  background: #f5f3ff;
+  background: var(--menu-hover);
 }
 
 .empty {
   padding: 14px;
   font-size: 13px;
-  color: #9ca3af;
+  color: var(--text-grey);
   text-align: center;
 }
 
@@ -265,10 +275,11 @@ onUnmounted(() => document.removeEventListener('click', onClickOutside))
   transform: translateY(-50%);
   cursor: pointer;
   font-size: 14px;
-  color: #9ca3af;
+  color: var(--text-grey);
 }
 
 .clear:hover {
-  color: #111827;
+  color: var(--text);
 }
+
 </style>

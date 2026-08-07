@@ -16,13 +16,13 @@ export const useAuthStore = defineStore('auth', {
     async init() {
       const subscriptionStore = useSubscriptionStore()
       const settingsStore = useSettingsStore()
-      await settingsStore.loadSettings()
 
       const { data } = await supabase.auth.getSession()
 
       if (data.session) {
         this.user = data.session.user
 
+        await settingsStore.loadSettings()
         // profile НЕ блокирует init
         this.fetchProfile().catch(() => {})
         await subscriptionStore.loadSubscription(this.user.id)
@@ -51,7 +51,7 @@ export const useAuthStore = defineStore('auth', {
     async signIn(email, password) {
       const subscriptionStore = useSubscriptionStore()
       const settingsStore = useSettingsStore()
-      await settingsStore.loadSettings()
+
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password
@@ -59,6 +59,8 @@ export const useAuthStore = defineStore('auth', {
       if (error) throw error
 
       this.user = data.user
+
+      await settingsStore.loadSettings()
       await this.fetchProfile()
       await subscriptionStore.loadSubscription(this.user.id)
 

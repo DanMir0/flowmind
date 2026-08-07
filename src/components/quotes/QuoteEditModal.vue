@@ -103,7 +103,7 @@ const save = () => {
 .modal {
   width: 420px;
   max-width: 90%;
-  background: white;
+  background: var(--bg);
   border-radius: 16px;
   padding: 24px;
   display: flex;
@@ -116,17 +116,19 @@ const save = () => {
   margin: 0;
   font-size: 20px;
   font-weight: 700;
-  color: #111827;
+  color: var(--text);
 }
 
 .modal textarea {
   min-height: 120px;
   padding: 12px;
   border-radius: 10px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border-card);
   font-size: 14px;
   resize: vertical;
   transition: .2s;
+  background: var(--quick-input-bg);
+  color: var(--text);
 }
 
 .modal textarea:focus {
@@ -138,9 +140,11 @@ const save = () => {
 .modal input {
   padding: 12px;
   border-radius: 10px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border-card);
   font-size: 14px;
   transition: .2s;
+  background: var(--quick-input-bg);
+  color: var(--text);
 }
 
 .modal input:focus {

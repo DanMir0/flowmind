@@ -349,7 +349,7 @@ onMounted(async () => {
   padding: 28px 32px;
   margin-left: auto;
   margin-right: auto;
-  background: #ffffff;
+  background: var(--bg);
   border-radius: 16px;
   box-shadow: 0 12px 30px rgba(0,0,0,0.06);
   min-height: 110px;
@@ -359,7 +359,7 @@ onMounted(async () => {
 .quote-text {
   flex:1;
   min-width:0;
-  color:#4b5563;
+  color:var(--text-focuc-grey);
   font-size:16px;
   line-height:1.4;
   word-break:break-word;
@@ -412,7 +412,7 @@ onMounted(async () => {
   gap:6px;
   padding:6px 12px;
   border-radius:999px;
-  background:#F3E8FF;
+  background: var(--bg-pink);
   color:#7C3AED;
   font-size:12px;
   font-weight:700;
@@ -457,12 +457,12 @@ onMounted(async () => {
 }
 
 .timer-page {
-  height: calc(100vh - 80px);
+  height: calc(100vh - 72px);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: #f4f4f7;
+  background: var(--bg-page);
 }
 
 /* ===== Circle ===== */
@@ -477,7 +477,7 @@ onMounted(async () => {
 }
 
 .progress-bg {
-  stroke: #ebe8f5;
+  stroke: var(--ring-br);
 }
 
 .progress-bar {
@@ -506,7 +506,7 @@ onMounted(async () => {
 /* ===== Buttons ===== */
 .actions {
   display: flex;
-  background: #ffffff;
+  background: var(--bg);
   border-radius: 999px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
 }
@@ -539,7 +539,7 @@ button {
 }
 
 .secondary:hover {
-  background: #f2f2f7;
+  background: var(--timer-btn-sec-hover);
 }
 
 .badge-enter-active,

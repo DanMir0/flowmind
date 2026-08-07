@@ -149,13 +149,14 @@ const save = async () => {
 
 .modal {
   width: 430px;
-  background: white;
+  background: var(--bg);
   border-radius: 22px;
   padding: 28px;
   display: flex;
   flex-direction: column;
   gap: 16px;
   box-shadow: 0 25px 60px rgba(0, 0, 0, .12);
+  color: var(--text);
 }
 
 h2 {
@@ -165,7 +166,7 @@ h2 {
 }
 
 .selected-date {
-  background: #F3F4F6;
+  background: var(--quick-input-bg);
   border-radius: 12px;
   padding: 12px;
   font-size: 14px;
@@ -175,16 +176,16 @@ h2 {
 input,
 textarea,
 select {
-
   width: 100%;
-  border: 1px solid #E5E7EB;
+  border: 1px solid var(--border);
   border-radius: 12px;
   padding: 12px;
   font-size: 14px;
   outline: none;
   transition: .2s;
   box-sizing: border-box;
-
+  background: var(--quick-input-bg);
+  color: var(--text);
 }
 
 textarea {
@@ -211,28 +212,33 @@ label {
 }
 
 .cancel {
-  border: 1px solid #E5E7EB;
-  background: white;
+  border: 1px solid var(--bg-btn-cancel);
   border-radius: 12px;
   padding: 12px 18px;
   cursor: pointer;
+  background: var(--bg-btn-cancel);
+  color: #444;
 }
 
 .cancel:hover {
-  background: #F9FAFB;
+  background: #e8e8e8;
+  border-color: #ccc;
+  transform: translateY(-2px);
 }
 
 .save {
   border: none;
-  background: #7C3AED;
-  color: white;
+  background: #7a3cff;
+  color: var(--bg);;
   border-radius: 12px;
   padding: 12px 22px;
   cursor: pointer;
 }
 
 .save:hover {
-  opacity: .9;
+  background: #6633d9;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(122, 60, 255, 0.35);
 }
 
 .fade-enter-active,
