@@ -114,6 +114,26 @@ export const useAuthStore = defineStore('auth', {
       return { success: true, message: 'Confirmation email sent' }
     },
 
+    async deleteAccount() {
+      const { data, error } = await supabase.functions.invoke(
+        'delete-account'
+      )
+
+      if (error) {
+        console.error('Delete account error:', error)
+        throw error
+      }
+
+      if (!data?.success) {
+        throw new Error(data?.error || 'Failed to delete account')
+      }
+      await supabase.auth.signOut()
+      this.user = null
+      this.profile = null
+
+      return true
+    },
+
     // Если пользователь не авторизирован и нажимает на любую кнопку в dashboard, то перекидыват на страницу логина
     goToLoginIfGuest(router) {
       if (!this.user) {

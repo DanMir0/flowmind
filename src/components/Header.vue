@@ -14,6 +14,9 @@ const isOpen = ref(false)
 const username = computed(() => {
   return auth.profile?.username || 'User'
 })
+const email = computed(() => {
+  return auth.user?.email
+})
 
 const searchInput = ref('')
 
@@ -177,7 +180,7 @@ onBeforeUnmount(() => {
                   </div>
 
                   <div class="dropdown-email">
-                    {{ auth.user?.email }}
+                    {{ email }}
                   </div>
                 </div>
               </div>

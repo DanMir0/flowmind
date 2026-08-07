@@ -6,11 +6,18 @@ import BaseSelect from '@/components/BaseSelect.vue'
 import ChangeEmailModal from '@/components/ChangeEmailModal.vue'
 import { useSettingsStore} from '@/store/settings.js'
 import router from '@/router/router.js'
+import DeleteAccountModal from '@/components/DeleteAccountModal.vue'
 
 const auth = useAuthStore()
 const settingsStore = useSettingsStore()
 const showPassword = ref(false)
 const showModalEmail = ref(false)
+const showDeleteModal = ref(false)
+const deletingAccount = ref(false)
+
+async function deleteAccount() {
+  showDeleteModal.value = true
+}
 
 const subscription = ref({
   plan: 'Premium Plan',
@@ -55,8 +62,26 @@ function manageSubscription() {
   console.log('Subscription')
 }
 
-function deleteAccount() {
-  console.log('Delete account')
+async function confirmDeleteAccount() {
+  try {
+    deletingAccount.value = true
+
+    await auth.deleteAccount()
+
+    showDeleteModal.value = false
+
+    showSuccess('Your account has been deleted.')
+
+    await router.push({
+      name: 'login'
+    })
+
+  } catch (err) {
+    console.error(err)
+    showError(err.message)
+  } finally {
+    deletingAccount.value = false
+  }
 }
 
 async function saveNewEmail(newEmail) {
@@ -454,6 +479,13 @@ async function saveNewEmail(newEmail) {
     :currentEmail="email"
     @close="showModalEmail = false"
     @save="saveNewEmail"/>
+
+  <DeleteAccountModal
+  :open="showDeleteModal"
+  :loading="deletingAccount"
+  @cancel="showDeleteModal = false"
+  @confirm="confirmDeleteAccount"
+  />
 </template>
 <style scoped>
 .select input {
