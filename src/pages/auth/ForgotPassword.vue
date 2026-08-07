@@ -55,16 +55,17 @@ async function submit() {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: white;
+  background: var(--bg-page);
 }
 
 .auth-card {
   width: 380px;
-  background: white;
+  background: var(--bg);
   padding: 35px;
   border-radius: 20px;
   box-shadow: 0 0 20px rgba(0,0,0,0.08);
   text-align: center;
+  color: var(--text);
 }
 
 .auth-card h2 {
@@ -83,8 +84,10 @@ input {
   width: 100%;
   padding: 14px 16px;
   border-radius: 12px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border);;
   font-size: 15px;
+  background: var(--quick-input-bg);
+  color: var(--text);
 }
 
 .btn {
@@ -93,7 +96,7 @@ input {
   border: none;
   border-radius: 30px;
   background: #7a3cff;
-  color: white;
+  color: var(--bg);
   font-weight: bold;
   cursor: pointer;
 }

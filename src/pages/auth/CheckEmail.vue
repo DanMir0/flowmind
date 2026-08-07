@@ -59,16 +59,17 @@ async function resend() {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: white;
+  background: var(--bg-page);
 }
 
 .auth-card {
   width: 380px;
-  background: white;
+  background: var(--bg);
   padding: 35px;
   border-radius: 20px;
   box-shadow: 0 0 20px rgba(0,0,0,0.08);
   text-align: center;
+  color: var(--text);
 }
 
 .auth-card h2 {
@@ -79,9 +80,10 @@ async function resend() {
 
 .text {
   font-size: 15px;
-  color: #555;
+  color: var(--text-grey);
   margin-bottom: 25px;
   line-height: 1.5;
+
 }
 
 .btn {
