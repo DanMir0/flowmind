@@ -4,8 +4,10 @@ import { useAuthStore } from '@/store/auth'
 import router from '@/router/router'
 import { useTasksStore } from '@/store/tasks.js'
 import { useRoute } from 'vue-router'
+import { useSettingsStore } from '@/store/settings.js'
 
 const auth = useAuthStore()
+const settingsStore = useSettingsStore()
 const tasksStore = useTasksStore()
 const route = useRoute()
 
@@ -26,6 +28,13 @@ const initials = computed(() => {
   return username.value
     .slice(0, 2)
     .toUpperCase()
+})
+
+const isDarkMode = computed({
+  get: () => settingsStore.theme === 'dark',
+  set: async (value) => {
+    await settingsStore.changeTheme(value ? 'dark' : 'light')
+  }
 })
 
 function toggleDropdown() {
@@ -209,10 +218,10 @@ onBeforeUnmount(() => {
                     fill="none" />
                 </svg>
 
-                <span class="menu-label">Dark mode</span>
+                <span class="menu-label">{{ isDarkMode ? 'Dark mode' : 'Light mode' }}</span>
 
                 <label class="switch">
-                  <input type="checkbox">
+                  <input v-model="isDarkMode" type="checkbox">
                   <span class="slider"></span>
                 </label>
               </button>
@@ -434,7 +443,11 @@ onBeforeUnmount(() => {
   padding: 16px 20px;
   cursor: pointer;
   font-size: 18px;
-  color: #222;
+  color: var(--menu-item-color);
+}
+
+.appearance-item:hover {
+  background: var(--menu-hover);
 }
 
 .menu-label {
