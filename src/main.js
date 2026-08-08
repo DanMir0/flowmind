@@ -20,12 +20,38 @@ if (savedTheme) {
 const app = createApp(App)
 const pinia = createPinia()
 
-supabase.auth.onAuthStateChange(async (event, session) => {
-  if (event === 'USER_UPDATED') {
+supabase.auth.onAuthStateChange((event, session) => {
+  if (event === 'USER_UPDATED' && session?.user) {
     const authStore = useAuthStore()
 
-    authStore.user = session.user
-    await authStore.fetchProfile()
+    authStore.setUser(session.user)
+
+    authStore.fetchProfile().catch(console.error)
+  }
+
+  if (event === 'SIGNED_OUT') {
+    const authStore = useAuthStore()
+
+    authStore.user = null
+    authStore.profile = null
+  }
+})
+
+document.addEventListener('visibilitychange', async () => {
+  if (document.visibilityState !== 'visible') {
+    return
+  }
+
+  const authStore = useAuthStore()
+
+  if (!authStore.user) {
+    return
+  }
+
+  try {
+    await authStore.refreshUser()
+  } catch (error) {
+    console.error('Failed to refresh user:', error)
   }
 })
 

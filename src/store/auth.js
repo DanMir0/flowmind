@@ -13,6 +13,10 @@ export const useAuthStore = defineStore('auth', {
   }),
 
   actions: {
+    setUser(user) {
+      this.user = user
+    },
+
     async init() {
       const subscriptionStore = useSubscriptionStore()
       const settingsStore = useSettingsStore()
@@ -58,7 +62,7 @@ export const useAuthStore = defineStore('auth', {
       })
       if (error) throw error
 
-      this.user = data.user
+      this.setUser(data.user)
 
       await settingsStore.loadSettings()
       await this.fetchProfile()
@@ -94,14 +98,18 @@ export const useAuthStore = defineStore('auth', {
     },
 
     async updateEmail(newEmail) {
-      // Убедитесь, что пользователь подтвержден
-      const { data: { user } } = await supabase.auth.getUser()
+      const { data: { user }, error: userError } =
+        await supabase.auth.getUser()
+
+      if (userError) {
+        throw userError
+      }
 
       if (!user) {
         throw new Error('User not authenticated')
       }
 
-      const { error } = await supabase.auth.updateUser({
+      const { data, error } = await supabase.auth.updateUser({
         email: newEmail
       })
 
@@ -109,9 +117,25 @@ export const useAuthStore = defineStore('auth', {
         console.error('Update email error:', error)
         throw error
       }
-      await this.init()
-      // Не обновляйте локально email - ждите подтверждения
-      return { success: true, message: 'Confirmation email sent' }
+
+      // Берём актуального пользователя из Supabase
+      const {
+        data: { user: updatedUser },
+        error: updatedUserError
+      } = await supabase.auth.getUser()
+
+      if (updatedUserError) {
+        throw updatedUserError
+      }
+
+      // Обновляем Pinia
+      this.user = updatedUser
+
+      return {
+        success: true,
+        user: updatedUser,
+        message: 'Confirmation email has been sent'
+      }
     },
 
     async deleteAccount() {
@@ -132,6 +156,25 @@ export const useAuthStore = defineStore('auth', {
       this.profile = null
 
       return true
+    },
+
+    async refreshUser() {
+      const {
+        data: { user },
+        error
+      } = await supabase.auth.getUser()
+
+      if (error) {
+        throw error
+      }
+
+      this.user = user
+
+      if (user) {
+        await this.fetchProfile()
+      }
+
+      return user
     },
 
     // Если пользователь не авторизирован и нажимает на любую кнопку в dashboard, то перекидыват на страницу логина

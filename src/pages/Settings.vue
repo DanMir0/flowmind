@@ -86,12 +86,21 @@ async function confirmDeleteAccount() {
 
 async function saveNewEmail(newEmail) {
   try {
-    await auth.updateEmail(newEmail)
+    console.log('1. Saving email:', newEmail)
+
+    const result = await auth.updateEmail(newEmail)
+
+    console.log('2. updateEmail result:', result)
+    console.log('3. auth.user:', auth.user)
+
     showSuccess(
       'Confirmation email has been sent to your new address.'
     )
+
     showModalEmail.value = false
+
   } catch (err) {
+    console.error('SAVE EMAIL ERROR:', err)
     showError(err.message)
   }
 }
