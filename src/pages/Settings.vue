@@ -1,29 +1,67 @@
 <script setup>
-import { computed, ref } from 'vue'
-import {useAuthStore} from '@/store/auth.js'
-import {showSuccess, showError} from '@/utils/toast.js'
+import { computed, onMounted, ref } from 'vue'
+import { useAuthStore } from '@/store/auth.js'
+import { showSuccess, showError } from '@/utils/toast.js'
 import BaseSelect from '@/components/BaseSelect.vue'
 import ChangeEmailModal from '@/components/ChangeEmailModal.vue'
-import { useSettingsStore} from '@/store/settings.js'
+import { useSettingsStore } from '@/store/settings.js'
 import router from '@/router/router.js'
 import DeleteAccountModal from '@/components/DeleteAccountModal.vue'
+import { useSubscriptionStore } from '@/store/subscription.js'
+import SubscriptionModal from '@/components/SubsriptionModal.vue'
 
 const auth = useAuthStore()
 const settingsStore = useSettingsStore()
+const subscriptionStore = useSubscriptionStore()
 const showPassword = ref(false)
 const showModalEmail = ref(false)
 const showDeleteModal = ref(false)
 const deletingAccount = ref(false)
-
+const showSubscriptionModal = ref(false)
 async function deleteAccount() {
   showDeleteModal.value = true
 }
 
-const subscription = ref({
-  plan: 'Premium Plan',
-  status: 'Active',
-  daysLeft: 23,
-  renewDate: 'June 13, 2026'
+const subscriptionPlan = computed(() => {
+  const plans = {
+    free: 'Free Plan',
+    '1_month': '1 Month',
+    '3_months': '3 Months',
+    '6_months': '6 Months',
+    '1_year': '1 Year'
+  }
+
+  return plans[subscriptionStore.plan] || 'Free Plan'
+})
+
+const subscriptionStatus = computed(() => {
+  const statuses = {
+    free: 'Free',
+    trial: 'Trial',
+    active: 'Active',
+    expired: 'Expired'
+  }
+
+  return statuses[subscriptionStore.status] || 'Free'
+})
+
+const subscriptionDaysLeft = computed(() => {
+  return subscriptionStore.daysLeft
+})
+
+const subscriptionExpiresAt = computed(() => {
+  if (!subscriptionStore.expiresAt) {
+    return null
+  }
+
+  return new Date(subscriptionStore.expiresAt).toLocaleDateString(
+    'en-US',
+    {
+      month: 'long',
+      day: 'numeric',
+      year: 'numeric'
+    }
+  )
 })
 
 const languages = [
@@ -55,11 +93,11 @@ function changeEmail() {
 }
 
 function changePassword() {
-  router.push({name: 'forgotPassword'})
+  router.push({ name: 'forgotPassword' })
 }
 
 function manageSubscription() {
-  console.log('Subscription')
+  showSubscriptionModal.value = true
 }
 
 async function confirmDeleteAccount() {
@@ -104,6 +142,12 @@ async function saveNewEmail(newEmail) {
     showError(err.message)
   }
 }
+
+onMounted(async () => {
+  if (auth.user?.id) {
+    await subscriptionStore.loadSubscription(auth.user.id)
+  }
+})
 </script>
 
 <template>
@@ -247,12 +291,13 @@ async function saveNewEmail(newEmail) {
 
             <span class="badge">
 
-            {{ subscription.plan }}
+            {{ subscriptionPlan }}
 
             </span>
 
-            <span class="status">
-            {{ subscription.status }}
+            <span class="status"
+                  :class="`status-${subscriptionStore.status}`">
+            {{ subscriptionStatus }}
           </span>
 
           </div>
@@ -275,18 +320,41 @@ async function saveNewEmail(newEmail) {
             </div>
             <div>
               <h3 class="subscription-title">
-                Your subscription is active
+                <template v-if="subscriptionStore.status === 'trial'">
+                  Your free trial is active
+                </template>
+
+                <template v-else-if="subscriptionStore.status === 'active'">
+                  Your subscription is active
+                </template>
+
+                <template v-else-if="subscriptionStore.status === 'expired'">
+                  Your subscription has expired
+                </template>
+
+                <template v-else>
+                  You are on the Free Plan
+                </template>
               </h3>
-              <p>
+              <p v-if="subscriptionStore.isPremium">
                 You have
                 <strong>
-                  {{ subscription.daysLeft }}
-                  days left
+                  {{ subscriptionDaysLeft }}
+                  {{ subscriptionDaysLeft === 1 ? 'day' : 'days' }}
+                  left
                 </strong>
               </p>
 
-              <span>
-                Renews on {{ subscription.renewDate }}
+              <p v-else-if="subscriptionStore.status === 'expired'">
+                Your premium access has ended.
+              </p>
+
+              <p v-else>
+                You are currently using the free plan.
+              </p>
+
+              <span v-if="subscriptionExpiresAt">
+                Expires on {{ subscriptionExpiresAt }}
               </span>
 
             </div>
@@ -403,8 +471,11 @@ async function saveNewEmail(newEmail) {
             </div>
 
             <div>
-              <svg class="theme-icon theme-light-icon" width="60px" height="60px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path fill-rule="evenodd" clip-rule="evenodd" d="M12 1.25C12.4142 1.25 12.75 1.58579 12.75 2V4C12.75 4.41421 12.4142 4.75 12 4.75C11.5858 4.75 11.25 4.41421 11.25 4V2C11.25 1.58579 11.5858 1.25 12 1.25ZM3.66865 3.71609C3.94815 3.41039 4.42255 3.38915 4.72825 3.66865L6.95026 5.70024C7.25596 5.97974 7.2772 6.45413 6.9977 6.75983C6.7182 7.06553 6.2438 7.08677 5.9381 6.80727L3.71609 4.77569C3.41039 4.49619 3.38915 4.02179 3.66865 3.71609ZM20.3314 3.71609C20.6109 4.02179 20.5896 4.49619 20.2839 4.77569L18.0619 6.80727C17.7562 7.08677 17.2818 7.06553 17.0023 6.75983C16.7228 6.45413 16.744 5.97974 17.0497 5.70024L19.2718 3.66865C19.5775 3.38915 20.0518 3.41039 20.3314 3.71609ZM12 7.75C9.65279 7.75 7.75 9.65279 7.75 12C7.75 14.3472 9.65279 16.25 12 16.25C14.3472 16.25 16.25 14.3472 16.25 12C16.25 9.65279 14.3472 7.75 12 7.75ZM6.25 12C6.25 8.82436 8.82436 6.25 12 6.25C15.1756 6.25 17.75 8.82436 17.75 12C17.75 15.1756 15.1756 17.75 12 17.75C8.82436 17.75 6.25 15.1756 6.25 12ZM1.25 12C1.25 11.5858 1.58579 11.25 2 11.25H4C4.41421 11.25 4.75 11.5858 4.75 12C4.75 12.4142 4.41421 12.75 4 12.75H2C1.58579 12.75 1.25 12.4142 1.25 12ZM19.25 12C19.25 11.5858 19.5858 11.25 20 11.25H22C22.4142 11.25 22.75 11.5858 22.75 12C22.75 12.4142 22.4142 12.75 22 12.75H20C19.5858 12.75 19.25 12.4142 19.25 12ZM17.0255 17.0252C17.3184 16.7323 17.7933 16.7323 18.0862 17.0252L20.3082 19.2475C20.6011 19.5404 20.601 20.0153 20.3081 20.3082C20.0152 20.6011 19.5403 20.601 19.2475 20.3081L17.0255 18.0858C16.7326 17.7929 16.7326 17.3181 17.0255 17.0252ZM6.97467 17.0253C7.26756 17.3182 7.26756 17.7931 6.97467 18.086L4.75244 20.3082C4.45955 20.6011 3.98468 20.6011 3.69178 20.3082C3.39889 20.0153 3.39889 19.5404 3.69178 19.2476L5.91401 17.0253C6.2069 16.7324 6.68177 16.7324 6.97467 17.0253ZM12 19.25C12.4142 19.25 12.75 19.5858 12.75 20V22C12.75 22.4142 12.4142 22.75 12 22.75C11.5858 22.75 11.25 22.4142 11.25 22V20C11.25 19.5858 11.5858 19.25 12 19.25Z" fill="#fff"/>
+              <svg class="theme-icon theme-light-icon" width="60px" height="60px"
+                   viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd"
+                      d="M12 1.25C12.4142 1.25 12.75 1.58579 12.75 2V4C12.75 4.41421 12.4142 4.75 12 4.75C11.5858 4.75 11.25 4.41421 11.25 4V2C11.25 1.58579 11.5858 1.25 12 1.25ZM3.66865 3.71609C3.94815 3.41039 4.42255 3.38915 4.72825 3.66865L6.95026 5.70024C7.25596 5.97974 7.2772 6.45413 6.9977 6.75983C6.7182 7.06553 6.2438 7.08677 5.9381 6.80727L3.71609 4.77569C3.41039 4.49619 3.38915 4.02179 3.66865 3.71609ZM20.3314 3.71609C20.6109 4.02179 20.5896 4.49619 20.2839 4.77569L18.0619 6.80727C17.7562 7.08677 17.2818 7.06553 17.0023 6.75983C16.7228 6.45413 16.744 5.97974 17.0497 5.70024L19.2718 3.66865C19.5775 3.38915 20.0518 3.41039 20.3314 3.71609ZM12 7.75C9.65279 7.75 7.75 9.65279 7.75 12C7.75 14.3472 9.65279 16.25 12 16.25C14.3472 16.25 16.25 14.3472 16.25 12C16.25 9.65279 14.3472 7.75 12 7.75ZM6.25 12C6.25 8.82436 8.82436 6.25 12 6.25C15.1756 6.25 17.75 8.82436 17.75 12C17.75 15.1756 15.1756 17.75 12 17.75C8.82436 17.75 6.25 15.1756 6.25 12ZM1.25 12C1.25 11.5858 1.58579 11.25 2 11.25H4C4.41421 11.25 4.75 11.5858 4.75 12C4.75 12.4142 4.41421 12.75 4 12.75H2C1.58579 12.75 1.25 12.4142 1.25 12ZM19.25 12C19.25 11.5858 19.5858 11.25 20 11.25H22C22.4142 11.25 22.75 11.5858 22.75 12C22.75 12.4142 22.4142 12.75 22 12.75H20C19.5858 12.75 19.25 12.4142 19.25 12ZM17.0255 17.0252C17.3184 16.7323 17.7933 16.7323 18.0862 17.0252L20.3082 19.2475C20.6011 19.5404 20.601 20.0153 20.3081 20.3082C20.0152 20.6011 19.5403 20.601 19.2475 20.3081L17.0255 18.0858C16.7326 17.7929 16.7326 17.3181 17.0255 17.0252ZM6.97467 17.0253C7.26756 17.3182 7.26756 17.7931 6.97467 18.086L4.75244 20.3082C4.45955 20.6011 3.98468 20.6011 3.69178 20.3082C3.39889 20.0153 3.39889 19.5404 3.69178 19.2476L5.91401 17.0253C6.2069 16.7324 6.68177 16.7324 6.97467 17.0253ZM12 19.25C12.4142 19.25 12.75 19.5858 12.75 20V22C12.75 22.4142 12.4142 22.75 12 22.75C11.5858 22.75 11.25 22.4142 11.25 22V20C11.25 19.5858 11.5858 19.25 12 19.25Z"
+                      fill="#fff" />
               </svg>
             </div>
             <span>
@@ -423,8 +494,12 @@ async function saveNewEmail(newEmail) {
             </div>
 
             <div>
-              <svg class="theme-icon" width="60px" height="60px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M21 12.79C20.8427 14.4922 20.2039 16.1144 19.1583 17.4668C18.1127 18.8192 16.7035 19.8458 15.0957 20.4265C13.4879 21.0073 11.748 21.1181 10.0795 20.7461C8.41104 20.3741 6.88299 19.5345 5.67423 18.3258C4.46548 17.117 3.62592 15.589 3.2539 13.9205C2.88188 12.252 2.99268 10.5121 3.57346 8.9043C4.15424 7.29651 5.18082 5.88733 6.53323 4.84171C7.88563 3.79609 9.50779 3.15732 11.21 3C10.2134 4.34827 9.73384 6.00945 9.85853 7.68141C9.98323 9.35338 10.7039 10.9251 11.8894 12.1106C13.0749 13.2961 14.6466 14.0168 16.3186 14.1415C17.9906 14.2662 19.6517 13.7866 21 12.79Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+              <svg class="theme-icon" width="60px" height="60px" viewBox="0 0 24 24" fill="none"
+                   xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M21 12.79C20.8427 14.4922 20.2039 16.1144 19.1583 17.4668C18.1127 18.8192 16.7035 19.8458 15.0957 20.4265C13.4879 21.0073 11.748 21.1181 10.0795 20.7461C8.41104 20.3741 6.88299 19.5345 5.67423 18.3258C4.46548 17.117 3.62592 15.589 3.2539 13.9205C2.88188 12.252 2.99268 10.5121 3.57346 8.9043C4.15424 7.29651 5.18082 5.88733 6.53323 4.84171C7.88563 3.79609 9.50779 3.15732 11.21 3C10.2134 4.34827 9.73384 6.00945 9.85853 7.68141C9.98323 9.35338 10.7039 10.9251 11.8894 12.1106C13.0749 13.2961 14.6466 14.0168 16.3186 14.1415C17.9906 14.2662 19.6517 13.7866 21 12.79Z"
+                  stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                  stroke-linejoin="round" fill="none" />
               </svg>
             </div>
 
@@ -449,12 +524,16 @@ async function saveNewEmail(newEmail) {
         <div class="danger-left">
 
           <div class="icon red">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M3 6H21" stroke="#EF4444" stroke-width="1.5" stroke-linecap="round"/>
-              <path d="M8 6V4C8 3.44772 8.44772 3 9 3H15C15.5523 3 16 3.44772 16 4V6" stroke="#EF4444" stroke-width="1.5" stroke-linecap="round"/>
-              <path d="M19 6L18 19C17.9 20.1 17 21 15.9 21H8.1C7 21 6.1 20.1 6 19L5 6" stroke="#EF4444" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M10 10V17" stroke="#EF4444" stroke-width="1.5" stroke-linecap="round"/>
-              <path d="M14 10V17" stroke="#EF4444" stroke-width="1.5" stroke-linecap="round"/>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                 xmlns="http://www.w3.org/2000/svg">
+              <path d="M3 6H21" stroke="#EF4444" stroke-width="1.5" stroke-linecap="round" />
+              <path d="M8 6V4C8 3.44772 8.44772 3 9 3H15C15.5523 3 16 3.44772 16 4V6"
+                    stroke="#EF4444" stroke-width="1.5" stroke-linecap="round" />
+              <path d="M19 6L18 19C17.9 20.1 17 21 15.9 21H8.1C7 21 6.1 20.1 6 19L5 6"
+                    stroke="#EF4444" stroke-width="1.5" stroke-linecap="round"
+                    stroke-linejoin="round" />
+              <path d="M10 10V17" stroke="#EF4444" stroke-width="1.5" stroke-linecap="round" />
+              <path d="M14 10V17" stroke="#EF4444" stroke-width="1.5" stroke-linecap="round" />
             </svg>
           </div>
 
@@ -487,13 +566,18 @@ async function saveNewEmail(newEmail) {
     :open="showModalEmail"
     :currentEmail="email"
     @close="showModalEmail = false"
-    @save="saveNewEmail"/>
+    @save="saveNewEmail" />
 
   <DeleteAccountModal
-  :open="showDeleteModal"
-  :loading="deletingAccount"
-  @cancel="showDeleteModal = false"
-  @confirm="confirmDeleteAccount"
+    :open="showDeleteModal"
+    :loading="deletingAccount"
+    @cancel="showDeleteModal = false"
+    @confirm="confirmDeleteAccount"
+  />
+
+  <SubscriptionModal
+    :open="showSubscriptionModal"
+    @close="showSubscriptionModal = false"
   />
 </template>
 <style scoped>
@@ -898,16 +982,16 @@ select:focus {
   box-shadow: 0 10px 24px rgba(220, 38, 38, .25);
 }
 
-.eye{
-  cursor:pointer;
-  user-select:none;
-  font-size:18px;
-  color:#6B7280;
-  transition:.2s;
+.eye {
+  cursor: pointer;
+  user-select: none;
+  font-size: 18px;
+  color: #6B7280;
+  transition: .2s;
 }
 
-.eye:hover{
-  color:var(--premium-bg);
+.eye:hover {
+  color: var(--premium-bg);
 }
 
 @media (max-width: 1200px) {

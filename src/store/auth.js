@@ -73,11 +73,14 @@ export const useAuthStore = defineStore('auth', {
 
     async signOut() {
       const taskStore = useTasksStore()
+      const subscriptionStore = useSubscriptionStore()
 
       const { error } = await supabase.auth.signOut()
       this.user = null
       this.profile = null
+
       taskStore.reset()
+      subscriptionStore.reset()
 
       return error
     },
