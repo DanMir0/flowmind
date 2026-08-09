@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useSubscriptionStore } from '@/store/subscription.js'
 import { showSuccess, showError } from '@/utils/toast.js'
 
@@ -66,16 +66,34 @@ function closeModal() {
   }
 }
 
-async function startTrial() {
+async function handleSubscriptionAction() {
   try {
-    await subscriptionStore.startTrial()
+    if (subscriptionStore.trialUsed) {
+      const data = await subscriptionStore.testPayment(
+        selectedPlan.value
+      )
 
-    showSuccess('Your 7-day free trial has started!')
+      showSuccess('Premium subscription activated.')
 
-    emit('close')
+      closeModal()
+
+      return
+    }
+
+    await subscriptionStore.startTrial(
+      selectedPlan.value
+    )
+
+    showSuccess('Your 7-day free trial has started.')
+
+    closeModal()
 
   } catch (error) {
-    showError(error.message)
+    console.error('Subscription action error:', error)
+
+    showError(
+      error?.message || 'Something went wrong'
+    )
   }
 }
 </script>
@@ -275,7 +293,7 @@ async function startTrial() {
             class="trial-btn"
             type="button"
             :disabled="subscriptionStore.loading"
-            @click="startTrial">
+            @click="handleSubscriptionAction">
 
             <svg
               width="19"
@@ -293,8 +311,10 @@ async function startTrial() {
             <span>
               {{
                 subscriptionStore.loading
-                  ? 'Starting trial...'
-                  : 'Start 7-Day Free Trial'
+                  ? 'Please wait...'
+                  : subscriptionStore.trialUsed
+                    ? 'Choose Premium Plan'
+                    : 'Start 7-Day Free Trial'
               }}
             </span>
 
@@ -361,9 +381,8 @@ async function startTrial() {
   background: var(--bg);
   border-radius: 24px;
   padding: 40px 48px 32px;
-  box-shadow:
-    0 30px 80px rgba(15, 23, 42, .25),
-    0 10px 30px rgba(15, 23, 42, .12);
+  box-shadow: 0 30px 80px rgba(15, 23, 42, .25),
+  0 10px 30px rgba(15, 23, 42, .12);
 }
 
 /* CLOSE */
@@ -479,15 +498,13 @@ async function startTrial() {
 .plan-card:hover {
   transform: translateY(-2px);
   border-color: #C4B5FD;
-  box-shadow:
-    0 8px 22px rgba(124, 58, 237, .08);
+  box-shadow: 0 8px 22px rgba(124, 58, 237, .08);
 }
 
 .plan-card.selected {
   border-color: var(--premium-bg);
-  box-shadow:
-    0 0 0 1px var(--premium-bg),
-    0 10px 26px rgba(124, 58, 237, .10);
+  box-shadow: 0 0 0 1px var(--premium-bg),
+  0 10px 26px rgba(124, 58, 237, .10);
 }
 
 .plan-card h3 {
@@ -642,8 +659,7 @@ async function startTrial() {
 .trial-btn:hover:not(:disabled) {
   transform: translateY(-1px);
 
-  box-shadow:
-    0 8px 20px rgba(124, 58, 237, .25);
+  box-shadow: 0 8px 20px rgba(124, 58, 237, .25);
 }
 
 .trial-btn:disabled {

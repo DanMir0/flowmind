@@ -45,6 +45,22 @@ const subscriptionStatus = computed(() => {
   return statuses[subscriptionStore.status] || 'Free'
 })
 
+const subscriptionTitle = computed(() => {
+  if (subscriptionStore.status === 'trial') {
+    return 'Your free trial is active'
+  }
+
+  if (subscriptionStore.status === 'active') {
+    return 'Your subscription is active'
+  }
+
+  if (subscriptionStore.status === 'expired') {
+    return 'Your subscription has expired'
+  }
+
+  return 'You are on the Free plan'
+})
+
 const subscriptionDaysLeft = computed(() => {
   return subscriptionStore.daysLeft
 })
@@ -320,21 +336,7 @@ onMounted(async () => {
             </div>
             <div>
               <h3 class="subscription-title">
-                <template v-if="subscriptionStore.status === 'trial'">
-                  Your free trial is active
-                </template>
-
-                <template v-else-if="subscriptionStore.status === 'active'">
-                  Your subscription is active
-                </template>
-
-                <template v-else-if="subscriptionStore.status === 'expired'">
-                  Your subscription has expired
-                </template>
-
-                <template v-else>
-                  You are on the Free Plan
-                </template>
+                {{ subscriptionTitle }}
               </h3>
               <p v-if="subscriptionStore.isPremium">
                 You have
