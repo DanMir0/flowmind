@@ -24,24 +24,28 @@ const taskToEdit = ref(null)
 const route = useRoute()
 const sortKey = ref('manual')
 const priorityFilter = ref('all')
-const statusFilter = ref('active')
+const statusFilter = ref('all')
 const draggedTask = ref(null)
 const draggingId = ref(null)
 const visibleCount = ref(15)
 
-
-const FREE_TASK_LIMIT = 5
-
-const canCreateTask = computed(() => {
-  if (
-    subscriptionStore.status === 'trial' ||
-    subscriptionStore.status === 'active'
-  ) {
-    return true
-  }
-
-  return tasksStore.tasks.length < FREE_TASK_LIMIT
+const isPremium = computed(() => {
+  return subscriptionStore.status === 'active'
 })
+
+const canDrag = computed(() => {
+  return (
+    isPremium.value &&
+    sortKey.value === 'manual' &&
+    priorityFilter.value === 'all' &&
+    statusFilter.value === 'all' &&
+    !searchQuery.value.trim()
+  )
+})
+
+const isReordering = ref(false)
+const dropTargetId = ref(null)
+
 const priorityFilters = [
     { label: 'All', value: 'all' },
     { label: 'High', value: 1 },
@@ -133,33 +137,117 @@ function loadMore() {
 }
 
 function onDragStart(task, event) {
-  if (sortKey.value !== 'manual') return
 
-  draggingId.value = task.id
+  if (sortKey.value !== 'manual') {
+    event.preventDefault()
+
+    showError('Switch to Manual sorting to reorder tasks.')
+
+    return
+  } else if (statusFilter.value !== 'all') {
+    event.preventDefault()
+
+    showError('Switch to All status to reorder tasks.')
+    return
+  } else if (priorityFilter.value !== 'all') {
+    event.preventDefault()
+
+    showError('Switch to All priority to reorder tasks.')
+    return
+  }
+
+  if (!canDrag.value) {
+    event.preventDefault()
+    showError('Drag & Drop is a Premium feature. Upgrade to Premium to reorder your tasks.')
+    return
+  }
+
+  if (isReordering.value) {
+    event.preventDefault()
+    return
+  }
+
   draggedTask.value = task
+  draggingId.value = task.id
+  dropTargetId.value = null
+
+  event.dataTransfer.effectAllowed = 'move'
+
+  // Не показываем стандартную полупрозрачную копию браузера.
   const img = new Image()
   img.src =
     'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciLz4='
 
   event.dataTransfer.setDragImage(img, 0, 0)
-  event.dataTransfer.effectAllowed = 'move'
+}
+
+function onDragOver(task) {
+  if (!canDrag.value) return
+  if (!draggedTask.value) return
+  if (isReordering.value) return
+
+  if (draggedTask.value.id === task.id) {
+    dropTargetId.value = null
+    return
+  }
+
+  dropTargetId.value = task.id
+}
+
+function onDragLeave(task) {
+  if (dropTargetId.value === task.id) {
+    dropTargetId.value = null
+  }
 }
 
 function onDragEnd() {
   draggingId.value = null
   draggedTask.value = null
+  dropTargetId.value = null
 }
 
 async function onDrop(targetTask) {
-  if (sortKey.value !== 'manual') return
-  if (!draggedTask.value || draggedTask.value.id === targetTask.id) return
+  if (!canDrag.value) {
+    onDragEnd()
 
-  await tasksStore.reorderTasks(
-    draggedTask.value.id,
-    targetTask.id
-  )
+    return
+  }
 
-  draggedTask.value = null
+  if (!draggedTask.value) {
+    onDragEnd()
+    return
+  }
+
+  if (draggedTask.value.id === targetTask.id) {
+    onDragEnd()
+    return
+  }
+
+  if (isReordering.value) return
+
+  const draggedId = draggedTask.value.id
+
+  try {
+    isReordering.value = true
+
+    await tasksStore.reorderTasks(
+      draggedId,
+      targetTask.id
+    )
+  } catch (error) {
+    console.error('Reorder task error:', error)
+
+    if (error.message === 'PREMIUM_REQUIRED') {
+      showError(
+        'Drag & Drop is a Premium feature. Upgrade to Premium to reorder your tasks.'
+      )
+    } else {
+      showError('Failed to reorder tasks.')
+    }
+  } finally {
+    isReordering.value = false
+    onDragEnd()
+  }
 }
 
 function requestDelete(task) {
@@ -476,12 +564,17 @@ function openAddTaskModal() {
           v-for="task in displayedTasks"
           :key="task._key || task.id"
           :task="task"
-          :class="{ dragging: draggingId === task.id }"
-          draggable="true"
+          :class="{
+            dragging: draggingId === task.id,
+            'drop-target': dropTargetId === task.id,
+            'drag-disabled': !canDrag
+          }"
+          :draggable="canDrag"
           @dragstart="onDragStart(task, $event)"
           @dragend="onDragEnd"
-          @dragover.prevent
-          @drop="onDrop(task)"
+          @dragover.prevent="onDragOver(task)"
+          @dragleave="onDragLeave(task)"
+          @drop.prevent="onDrop(task)"
           @delete="requestDelete"
           @edit="requestEdit"
           @toggle-complete="toggleComplete"
@@ -610,6 +703,28 @@ function openAddTaskModal() {
 
 .sort-select {
   width: 220px;
+}
+
+.dragging {
+  opacity: 0.45;
+  transform: scale(0.98);
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease;
+}
+
+.drop-target {
+  transform: translateY(-4px);
+  box-shadow:
+    0 0 0 2px var(--menu-link),
+    0 12px 30px rgba(124, 58, 237, 0.15);
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.drag-disabled {
+  cursor: default;
 }
 
 .error-wrapper {
@@ -800,17 +915,19 @@ function openAddTaskModal() {
 </style>
 <style>
 .list-move {
-  transition: none !important;
+  transition: transform 0.25s ease;
 }
 
 .list-enter-active,
 .list-leave-active {
-  transition: all 0.2s ease;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
 }
 
 .list-enter-from,
 .list-leave-to {
   opacity: 0;
+  transform: scale(0.97);
 }
-
 </style>

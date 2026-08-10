@@ -142,7 +142,7 @@ export const useTasksStore = defineStore('tasks', {
 
       const tempId = 'temp-' + crypto.randomUUID()
 
-      const position = Date.now()
+      const position = this.tasks.length
 
       const tempTask = {
         id: tempId,
@@ -414,29 +414,56 @@ export const useTasksStore = defineStore('tasks', {
     },
 
     async reorderTasks(draggedId, targetId) {
-      const updated = [...this.tasks]
+      const previousTasks = this.tasks.map(task => ({
+        ...task
+      }))
 
-      const fromIndex = updated.findIndex(t => t.id === draggedId)
-      const toIndex = updated.findIndex(t => t.id === targetId)
+      const current = [...this.tasks]
 
-      const moved = updated.splice(fromIndex, 1)[0]
-      updated.splice(toIndex, 0, moved)
+      const fromIndex = current.findIndex(
+        task => task.id === draggedId
+      )
 
-      // пересчитываем position
+      const toIndex = current.findIndex(
+        task => task.id === targetId
+      )
+
+      if (fromIndex === -1 || toIndex === -1) {
+        return
+      }
+
+      if (fromIndex === toIndex) {
+        return
+      }
+
+      // Optimistic UI
+      const updated = [...current]
+
+      const [movedTask] = updated.splice(fromIndex, 1)
+
+      updated.splice(toIndex, 0, movedTask)
+
       updated.forEach((task, index) => {
         task.position = index
       })
 
-      // обновляем store реактивно
       this.tasks = updated
 
-      // сохраняем в БД
-      await this.updatePositions(
-        updated.map(t => ({
-          id: t.id,
-          position: t.position
-        }))
-      )
+      try {
+        const { error } = await supabase.rpc('reorder_tasks', {
+          p_dragged_id: draggedId,
+          p_target_id: targetId
+        })
+
+        if (error) {
+          throw error
+        }
+      } catch (error) {
+        // rollback
+        this.tasks = previousTasks
+
+        throw error
+      }
     },
 
     async autoArchiveOldCompleted() {
