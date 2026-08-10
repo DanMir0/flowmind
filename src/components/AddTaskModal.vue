@@ -102,6 +102,12 @@ async function submit() {
     showSuccess('Task added!')
     emit('close')
 
+    category.value = ''
+    title.value = ''
+    description.value = ''
+    deadline.value = ''
+    priority.value = 3
+
   } catch (e) {
     showError('Failed to add task', e)
   } finally {
