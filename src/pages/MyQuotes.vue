@@ -11,6 +11,7 @@ import PremiumRequired from '@/pages/PremiumRequired.vue'
 import router from '@/router/router.js'
 import ProgressIcon from '@/assets/progress1.svg'
 import QuotePremiumIcon from '@/assets/premium.svg'
+import SubscriptionModal from '@/components/SubsriptionModal.vue'
 
 const authStore = useAuthStore()
 const subscriptionStore = useSubscriptionStore()
@@ -29,7 +30,6 @@ const {
   loadMore
 } = useUserQuotes()
 
-/* DELETE MODAL */
 const showDeleteModal = ref(false)
 const quoteToDelete = ref(null)
 const search = ref('')
@@ -39,6 +39,7 @@ const showEditQuote = ref(false)
 const editingQuote = ref(null)
 const randomQuotesEnabled = ref(false)
 const initialized = ref(false)
+const showSubscriptionModal = ref(false)
 
 const isPremium = computed(() =>
   authStore.profile?.subscription_plan !== 'free'
@@ -100,6 +101,10 @@ const updateQuote = async (payload) => {
 
   showEditQuote.value = false
   editingQuote.value = null
+}
+
+function openSubscriptionModal() {
+  showSubscriptionModal.value = true
 }
 
 const handlePin = async (quoteId) => {
@@ -255,7 +260,7 @@ watch(
           Upgrade to Pro to create and manage your own quotes.
         </p>
 
-        <button class="upgrade-btn">
+        <button class="upgrade-btn" @click="openSubscriptionModal">
           Upgrade to Pro
         </button>
 
@@ -357,7 +362,10 @@ watch(
         @save="updateQuote"
       />
     </div>
-
+    <SubscriptionModal
+      :open="showSubscriptionModal"
+      @close="showSubscriptionModal = false"
+    />
   </div>
 
 </template>
@@ -500,6 +508,7 @@ watch(
 .pro-lock {
   text-align: center;
   padding: 60px 20px;
+  color: var(--text);
 }
 
 .upgrade-btn {
