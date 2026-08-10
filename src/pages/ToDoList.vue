@@ -7,11 +7,13 @@ import AddTaskModal from '@/components/AddTaskModal.vue'
 import ConfirmDeleteModal from '@/components/ConfirmDeleteModal.vue'
 import EditTaskModal from '@/components/EditTaskModal.vue'
 import EmptyState from '@/components/EmptyState.vue'
-import { showSuccess } from '@/utils/toast.js'
+import { showError, showSuccess } from '@/utils/toast.js'
 import { useRoute } from 'vue-router'
 import BaseSelect from '@/components/BaseSelect.vue'
+import { useSubscriptionStore } from '@/store/subscription.js'
 
 const tasksStore = useTasksStore()
+const subscriptionStore = useSubscriptionStore()
 const { tasks, loading, error, isInitialized, searchQuery } = storeToRefs(tasksStore)
 
 const showAddModal = ref(false)
@@ -27,6 +29,19 @@ const draggedTask = ref(null)
 const draggingId = ref(null)
 const visibleCount = ref(15)
 
+
+const FREE_TASK_LIMIT = 5
+
+const canCreateTask = computed(() => {
+  if (
+    subscriptionStore.status === 'trial' ||
+    subscriptionStore.status === 'active'
+  ) {
+    return true
+  }
+
+  return tasksStore.tasks.length < FREE_TASK_LIMIT
+})
 const priorityFilters = [
     { label: 'All', value: 'all' },
     { label: 'High', value: 1 },
@@ -302,7 +317,7 @@ onMounted(() => {
   }
 
   if (addTask === 'true') {
-    showAddModal.value = true
+    openAddTaskModal()
   }
 
   if (status === 'completed') {
@@ -317,6 +332,21 @@ onMounted(() => {
     statusFilter.value = 'all'
   }
 })
+function openAddTaskModal() {
+  if (
+    subscriptionStore.status !== 'trial' &&
+    subscriptionStore.status !== 'active' &&
+    tasksStore.tasks.length >= 5
+  ) {
+    showError(
+      "You've reached the 5-task limit. Upgrade to Premium for unlimited tasks."
+    )
+
+    return
+  }
+
+  showAddModal.value = true
+}
 </script>
 
 <template>
@@ -375,7 +405,7 @@ onMounted(() => {
           placeholder="Select sort"
           class="sort-select"/>
 
-        <button class="add-btn" @click="showAddModal = true">
+        <button class="add-btn" @click="openAddTaskModal">
           Add Task
         </button>
       </div>
@@ -432,7 +462,7 @@ onMounted(() => {
     <EmptyState
       v-else-if="emptyType"
       :type="emptyType"
-      @add="showAddModal = true"
+      @add="openAddTaskModal"
       @resetFilters="() => {
         priorityFilter = 'all'
         statusFilter = 'all'

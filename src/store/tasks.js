@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { supabase } from '@/services/supabase'
 import { useAuthStore } from './auth'
 import { handleSupabaseError } from '@/utils/appError.js'
+import { useSubscriptionStore } from '@/store/subscription.js'
 
 const MAX_ACTIVE_TASKS = 500;
 export const useTasksStore = defineStore('tasks', {
@@ -14,6 +15,23 @@ export const useTasksStore = defineStore('tasks', {
     creatingTaskIds: new Set(),
     searchQuery: '',
   }),
+
+  getters: {
+    activeTasksCount: (state) => state.tasks.length,
+
+    canCreateTask: () => {
+      const subscription = useSubscriptionStore()
+
+      if (
+        subscription.status === 'trial' ||
+        subscription.status === 'active'
+      ) {
+        return true
+      }
+
+      return true
+    }
+  },
 
   actions: {
     /* =========================
@@ -99,9 +117,29 @@ export const useTasksStore = defineStore('tasks', {
     ========================= */
     async addTask(payload) {
       const auth = useAuthStore()
-      if (!auth.user) throw new Error('Not authenticated')
 
-      // 1. создаём временную skeleton-карточку
+      if (!auth.user) {
+        throw new Error('Not authenticated')
+      }
+
+      const subscription = useSubscriptionStore()
+
+      const FREE_TASK_LIMIT = 5
+
+      const isPremium =
+        subscription.status === 'trial' ||
+        subscription.status === 'active'
+
+      if (!isPremium && this.tasks.length >= FREE_TASK_LIMIT) {
+        const error = new Error(
+          "You've reached the 5-task limit. Upgrade to Premium for unlimited tasks."
+        )
+
+        error.code = 'TASK_LIMIT_REACHED'
+
+        throw error
+      }
+
       const tempId = 'temp-' + crypto.randomUUID()
 
       const position = Date.now()
@@ -115,7 +153,7 @@ export const useTasksStore = defineStore('tasks', {
         priority: payload.priority,
         category: payload.category,
         created_at: new Date().toISOString(),
-        position: position,
+        position,
         task_files: [],
         _skeleton: true
       }
@@ -123,58 +161,70 @@ export const useTasksStore = defineStore('tasks', {
       this.tasks.unshift(tempTask)
 
       try {
-        // 2. создаём реальную задачу
+            // 2. создаём реальную задачу
         const { data: task, error } = await supabase
-          .from('tasks')
-          .insert({
-            title: payload.title,
-            description: payload.description,
-            deadline: payload.deadline,
-            priority: payload.priority,
-            user_id: auth.user.id,
-            position: position,
-            category: payload.category,
+          .rpc('create_task', {
+            p_title: payload.title,
+            p_description: payload.description || null,
+            p_deadline: payload.deadline || null,
+            p_priority: payload.priority,
+            p_category: payload.category || null,
+            p_position: position
           })
-          .select('*')
-          .single()
 
-        if (error) throw error
+        if (error) {
+          if (
+            error.code === 'P0001' &&
+            error.message === 'TASK_LIMIT_REACHED'
+          ) {
+            const limitError = new Error(
+              "You've reached the 5-task limit. Upgrade to Premium for unlimited tasks."
+            )
 
-        this.creatingTaskIds.add(task.id)
+            limitError.code = 'TASK_LIMIT_REACHED'
 
-        // 3. загружаем файлы (если есть)
-        if (payload.newFiles?.length) {
-          await this.uploadMultipleFiles(task, payload.newFiles)
+            throw limitError
+          }
+
+          throw error
         }
 
+            this.creatingTaskIds.add(task.id)
 
-        // 4. получаем файлы (один раз, без realtime гонок)
-        const { data: files } = await supabase
-          .from('task_files')
-          .select('*')
-          .eq('task_id', task.id)
+            // 3. загружаем файлы (если есть)
+            if (payload.newFiles?.length) {
+              await this.uploadMultipleFiles(task, payload.newFiles)
+            }
 
-        // 5. заменяем skeleton на реальную задачу
-        const idx = this.tasks.findIndex(t => t.id === tempId)
-        const tempPosition = tempTask.position
-        Object.assign(this.tasks[idx], {
-          ...task,
-          _key: tempId,
-          position: tempPosition,
-          task_files: files || [],
-          _skeleton: false
-        })
 
-        await this.syncTaskFiles(task.id)
-        this.creatingTaskIds.delete(task.id)
-      } catch (e) {
+            // 4. получаем файлы (один раз, без realtime гонок)
+            const { data: files } = await supabase
+              .from('task_files')
+              .select('*')
+              .eq('task_id', task.id)
 
-        // удаляем skeleton если ошибка
-        this.tasks = this.tasks.filter(t => t.id !== tempId)
+            // 5. заменяем skeleton на реальную задачу
+            const idx = this.tasks.findIndex(t => t.id === tempId)
+            const tempPosition = tempTask.position
+            Object.assign(this.tasks[idx], {
+              ...task,
+              _key: tempId,
+              position: tempPosition,
+              task_files: files || [],
+              _skeleton: false
+            })
 
-        throw e
-      }
-    },
+            await this.syncTaskFiles(task.id)
+            this.creatingTaskIds.delete(task.id)
+          } catch (e) {
+
+            // удаляем skeleton если ошибка
+            this.tasks = this.tasks.filter(t => t.id !== tempId)
+
+            throw e
+          }
+      },
+
     async updateTask(taskId, payload) {
       const auth = useAuthStore()
       if (!auth.user) throw new Error('Not authenticated')
