@@ -30,7 +30,7 @@ const draggingId = ref(null)
 const visibleCount = ref(15)
 
 const isPremium = computed(() => {
-  return subscriptionStore.status === 'active'
+  return subscriptionStore.status === 'active' ||  subscriptionStore.status === 'trial'
 })
 
 const canDrag = computed(() => {
