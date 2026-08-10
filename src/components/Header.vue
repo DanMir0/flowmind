@@ -88,7 +88,7 @@ onBeforeUnmount(() => {
                 stroke-linejoin="round" fill="none" />
         </svg>
         <span class="logo-text">
-          TaskMaster 2026
+          FlowMind
         </span>
       </div>
 

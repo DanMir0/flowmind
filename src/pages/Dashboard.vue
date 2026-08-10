@@ -10,7 +10,9 @@ const tasksStore = useTasksStore()
 const focusStore = useFocusStore()
 
 const totalTasks = computed(() => tasksStore.tasks.length)
-
+const username = computed(() => {
+  return auth.profile?.username || 'User'
+})
 const completedTasks = computed(() =>
   tasksStore.tasks.filter(task => task.completed).length
 )
@@ -180,7 +182,7 @@ onMounted(async () => {
   <div class="dashboard">
 
     <div class="welcome">
-      <h1>Good morning, {{ auth.user?.user_metadata?.username || auth.user?.email?.split('@')[0] }}
+      <h1>Good morning, {{ username }}
         <svg class="welcome-icon" width="42px" height="42px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M8.7838 21.9999C7.0986 21.2478 5.70665 20.0758 4.79175 18.5068" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
           <path d="M14.8252 2.18595C16.5021 1.70882 18.2333 2.16305 19.4417 3.39724" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
@@ -442,7 +444,7 @@ onMounted(async () => {
     <!-- FOOTER -->
     <footer class="footer">
       <div class="footer-content">
-        <span>© 2026 TaskMaster. All rights reserved.</span>
+        <span>© 2026 FlowMind. All rights reserved.</span>
 
         <span class="divider"></span>
 
