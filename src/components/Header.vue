@@ -24,11 +24,6 @@ async function isGoogleUser()  {
   return result === 'google'
 }
 const username = computed(() => {
-
-  if (auth.checkUserProviderSync) {
-    return auth.user?.user_metadata?.full_name || 'User'
-  }
-
   return auth.profile?.username || 'User'
 })
 const email = computed(() => {

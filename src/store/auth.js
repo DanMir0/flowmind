@@ -358,22 +358,6 @@ export const useAuthStore = defineStore('auth', {
       return user
     },
 
-    checkUserProviderSync() {
-      if (!this.user) return null
-
-      // Проверяем провайдер синхронно
-      if (this.user.raw_user_meta_data?.provider === 'google') {
-        return 'google'
-      }
-
-      // Если есть avatar_url, это Google
-      if (this.user.raw_user_meta_data?.avatar_url) {
-        return 'google'
-      }
-
-      return 'email'
-    },
-
     // Если пользователь не авторизирован и нажимает на любую кнопку в dashboard, то перекидыват на страницу логина
     goToLoginIfGuest(router) {
       if (!this.user) {

@@ -11,10 +11,6 @@ const focusStore = useFocusStore()
 
 const totalTasks = computed(() => tasksStore.tasks.length)
 const username = computed(() => {
-  if (auth.checkUserProviderSync) {
-    return auth.user?.user_metadata?.full_name || 'User'
-  }
-
   return auth.profile?.username || 'User'
 })
 const completedTasks = computed(() =>
