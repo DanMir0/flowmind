@@ -251,7 +251,7 @@ onMounted(async () => {
 
           <div class="icon purple">
 
-            <svg width="18px" height="18px" viewBox="0 0 20 20" version="1.1"
+            <svg width="28px" height="28px" viewBox="0 0 20 20" version="1.1"
                  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
               <defs>
 
@@ -336,12 +336,118 @@ onMounted(async () => {
 
       </section>
 
+      <!-- SUBSCRIPTION -->
+
       <section class="card">
 
         <div class="card-header">
 
           <div class="icon purple">
-            🔐
+
+            <svg width="28px" height="28px" viewBox="0 0 24 24" fill="none"
+                 xmlns="http://www.w3.org/2000/svg">
+              <path fill-rule="evenodd" clip-rule="evenodd"
+                    d="M12.0001 3C12.3334 3 12.6449 3.16613 12.8306 3.443L16.6106 9.07917L21.2523 3.85213C21.5515 3.51525 22.039 3.42002 22.4429 3.61953C22.8469 3.81904 23.0675 4.26404 22.9818 4.70634L20.2956 18.5706C20.0223 19.9812 18.7872 21 17.3504 21H6.64977C5.21293 21 3.97784 19.9812 3.70454 18.5706L1.01833 4.70634C0.932635 4.26404 1.15329 3.81904 1.55723 3.61953C1.96117 3.42002 2.44865 3.51525 2.74781 3.85213L7.38953 9.07917L11.1696 3.443C11.3553 3.16613 11.6667 3 12.0001 3ZM12.0001 5.79533L8.33059 11.2667C8.1582 11.5237 7.8765 11.6865 7.56772 11.7074C7.25893 11.7283 6.95785 11.6051 6.75234 11.3737L3.67615 7.90958L5.66802 18.1902C5.75913 18.6604 6.17082 19 6.64977 19H17.3504C17.8293 19 18.241 18.6604 18.3321 18.1902L20.324 7.90958L17.2478 11.3737C17.0423 11.6051 16.7412 11.7283 16.4324 11.7074C16.1236 11.6865 15.842 11.5237 15.6696 11.2667L12.0001 5.79533Z"
+                    fill="var(--premium-bg)" />
+            </svg>
+
+          </div>
+
+          <div>
+            <h2>Subscription</h2>
+            <span>
+             Manage your premium subscription.
+            </span>
+          </div>
+
+        </div>
+
+        <div class="subscription">
+
+          <div class="subscription-top">
+
+            <span class="badge">
+
+            {{ subscriptionPlan }}
+
+            </span>
+
+            <span class="status"
+                  :class="`status-${subscriptionStore.status}`">
+            {{ subscriptionStatus }}
+          </span>
+
+          </div>
+          <div class="subscription-body">
+            <div class="calendar-icon">
+              <svg width="28px" height="28px" viewBox="0 0 24 24" fill="none"
+                   xmlns="http://www.w3.org/2000/svg">
+                <rect x="3" y="4" width="18" height="18" rx="2" stroke="#16A34A" stroke-width="1.5"
+                      fill="none" />
+                <path d="M8 2V6M16 2V6" stroke="#16A34A" stroke-width="1.5"
+                      stroke-linecap="round" />
+                <path d="M3 10H21" stroke="#16A34A" stroke-width="1.5" stroke-linecap="round" />
+                <circle cx="12" cy="15" r="1" fill="#16A34A" />
+                <circle cx="16" cy="15" r="1" fill="#16A34A" />
+                <circle cx="8" cy="15" r="1" fill="#16A34A" />
+                <circle cx="12" cy="19" r="1" fill="#16A34A" />
+                <circle cx="8" cy="19" r="1" fill="#16A34A" />
+                <circle cx="16" cy="19" r="1" fill="#16A34A" />
+              </svg>
+            </div>
+            <div>
+              <h3 class="subscription-title">
+                {{ subscriptionTitle }}
+              </h3>
+              <p v-if="subscriptionStore.isPremium">
+                You have
+                <strong>
+                  {{ subscriptionDaysLeft }}
+                  {{ subscriptionDaysLeft === 1 ? 'day' : 'days' }}
+                  left
+                </strong>
+              </p>
+
+              <p v-else-if="subscriptionStore.status === 'expired'">
+                Your premium access has ended.
+              </p>
+
+              <p v-else>
+                You are currently using the free plan.
+              </p>
+
+              <span v-if="subscriptionExpiresAt">
+                Expires on {{ subscriptionExpiresAt }}
+              </span>
+
+            </div>
+
+          </div>
+
+          <button
+            class="manage-btn"
+            @click="manageSubscription">
+            Manage Subscription
+            <span>
+            ›
+            </span>
+          </button>
+
+        </div>
+
+      </section>
+
+      <section class="card">
+
+        <div class="card-header">
+
+          <div class="icon purple">
+            <svg width="28px" height="28px" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+              <title>user-secure</title>
+              <rect width="48" height="48" fill="none"/>
+              <path d="M24,2S6,7.1,6,8V26.2c0,9.2,13.3,17.3,17,19.5a1.8,1.8,0,0,0,2,0c3.8-2.1,17-10.3,17-19.5V8C42,7.1,24,2,24,2Zm0,39.6a54,54,0,0,1-8.4-6.1A25.3,25.3,0,0,1,24,34a24.8,24.8,0,0,1,8.4,1.5A44.7,44.7,0,0,1,24,41.6ZM38,26.2c0,1.6-.8,3.7-2.6,6.1A30.9,30.9,0,0,0,24,30a30,30,0,0,0-11.3,2.3c-1.9-2.4-2.7-4.5-2.7-6.1V10.5c2.9-1.1,8.7-2.8,14-4.3,5.3,1.5,11.1,3.3,14,4.3Z" fill="currentColor"/>
+              <path d="M24,14a4,4,0,1,1-4,4,4,4,0,0,1,4-4m0-4a8,8,0,1,0,8,8,8,8,0,0,0-8-8Z" fill="currentColor"/>
+            </svg>
           </div>
 
           <div>
@@ -354,43 +460,6 @@ onMounted(async () => {
 
         </div>
 
-        <!-- GOOGLE -->
-
-        <div class="auth-method">
-
-          <div class="auth-method-left">
-
-            <div class="auth-method-icon google-icon">
-              G
-            </div>
-
-            <div>
-              <h3>Google</h3>
-
-              <p>
-                Sign in using your Google account.
-              </p>
-            </div>
-
-          </div>
-
-          <div class="auth-status">
-
-            <span class="auth-badge muted">
-              Not connected
-            </span>
-
-            <button
-              type="button"
-              class="outline-btn">
-              Connect
-            </button>
-
-          </div>
-
-        </div>
-
-
         <!-- 2FA -->
 
         <div class="auth-method">
@@ -398,7 +467,11 @@ onMounted(async () => {
           <div class="auth-method-left">
 
             <div class="auth-method-icon">
-              🔒
+              <svg width="28px" height="28px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+                <polygon points="11 23.18 9 21.179 7.589 22.589 11 26 17 20 15.59 18.59 11 23.18" fill="#000000"/>
+                 <path d="M28,30H24V28h4V16H24V8a4.0045,4.0045,0,0,0-4-4V2a6.0067,6.0067,0,0,1,6,6v6h2a2.0021,2.0021,0,0,1,2,2V28A2.0021,2.0021,0,0,1,28,30Z" fill="#000000"/>
+               <path d="M20,14H18V8A6,6,0,0,0,6,8v6H4a2,2,0,0,0-2,2V28a2,2,0,0,0,2,2H20a2,2,0,0,0,2-2V16A2,2,0,0,0,20,14ZM8,8a4,4,0,0,1,8,0v6H8ZM20,28H4V16H20Z" fill="#000000"/>
+              </svg>
             </div>
 
             <div>
@@ -455,106 +528,6 @@ onMounted(async () => {
 
       </section>
 
-      <!-- SUBSCRIPTION -->
-
-      <section class="card">
-
-        <div class="card-header">
-
-          <div class="icon purple">
-
-            <svg width="18px" height="18px" viewBox="0 0 24 24" fill="none"
-                 xmlns="http://www.w3.org/2000/svg">
-              <path fill-rule="evenodd" clip-rule="evenodd"
-                    d="M12.0001 3C12.3334 3 12.6449 3.16613 12.8306 3.443L16.6106 9.07917L21.2523 3.85213C21.5515 3.51525 22.039 3.42002 22.4429 3.61953C22.8469 3.81904 23.0675 4.26404 22.9818 4.70634L20.2956 18.5706C20.0223 19.9812 18.7872 21 17.3504 21H6.64977C5.21293 21 3.97784 19.9812 3.70454 18.5706L1.01833 4.70634C0.932635 4.26404 1.15329 3.81904 1.55723 3.61953C1.96117 3.42002 2.44865 3.51525 2.74781 3.85213L7.38953 9.07917L11.1696 3.443C11.3553 3.16613 11.6667 3 12.0001 3ZM12.0001 5.79533L8.33059 11.2667C8.1582 11.5237 7.8765 11.6865 7.56772 11.7074C7.25893 11.7283 6.95785 11.6051 6.75234 11.3737L3.67615 7.90958L5.66802 18.1902C5.75913 18.6604 6.17082 19 6.64977 19H17.3504C17.8293 19 18.241 18.6604 18.3321 18.1902L20.324 7.90958L17.2478 11.3737C17.0423 11.6051 16.7412 11.7283 16.4324 11.7074C16.1236 11.6865 15.842 11.5237 15.6696 11.2667L12.0001 5.79533Z"
-                    fill="var(--premium-bg)" />
-            </svg>
-
-          </div>
-
-          <div>
-            <h2>Subscription</h2>
-            <span>
-             Manage your premium subscription.
-            </span>
-          </div>
-
-        </div>
-
-        <div class="subscription">
-
-          <div class="subscription-top">
-
-            <span class="badge">
-
-            {{ subscriptionPlan }}
-
-            </span>
-
-            <span class="status"
-                  :class="`status-${subscriptionStore.status}`">
-            {{ subscriptionStatus }}
-          </span>
-
-          </div>
-          <div class="subscription-body">
-            <div class="calendar-icon">
-              <svg width="18px" height="18px" viewBox="0 0 24 24" fill="none"
-                   xmlns="http://www.w3.org/2000/svg">
-                <rect x="3" y="4" width="18" height="18" rx="2" stroke="#16A34A" stroke-width="1.5"
-                      fill="none" />
-                <path d="M8 2V6M16 2V6" stroke="#16A34A" stroke-width="1.5"
-                      stroke-linecap="round" />
-                <path d="M3 10H21" stroke="#16A34A" stroke-width="1.5" stroke-linecap="round" />
-                <circle cx="12" cy="15" r="1" fill="#16A34A" />
-                <circle cx="16" cy="15" r="1" fill="#16A34A" />
-                <circle cx="8" cy="15" r="1" fill="#16A34A" />
-                <circle cx="12" cy="19" r="1" fill="#16A34A" />
-                <circle cx="8" cy="19" r="1" fill="#16A34A" />
-                <circle cx="16" cy="19" r="1" fill="#16A34A" />
-              </svg>
-            </div>
-            <div>
-              <h3 class="subscription-title">
-                {{ subscriptionTitle }}
-              </h3>
-              <p v-if="subscriptionStore.isPremium">
-                You have
-                <strong>
-                  {{ subscriptionDaysLeft }}
-                  {{ subscriptionDaysLeft === 1 ? 'day' : 'days' }}
-                  left
-                </strong>
-              </p>
-
-              <p v-else-if="subscriptionStore.status === 'expired'">
-                Your premium access has ended.
-              </p>
-
-              <p v-else>
-                You are currently using the free plan.
-              </p>
-
-              <span v-if="subscriptionExpiresAt">
-                Expires on {{ subscriptionExpiresAt }}
-              </span>
-
-            </div>
-
-          </div>
-
-          <button
-            class="manage-btn"
-            @click="manageSubscription">
-            Manage Subscription
-            <span>
-            ›
-            </span>
-          </button>
-
-        </div>
-
-      </section>
       <!-- QUOTES -->
 
       <section class="card">
@@ -614,12 +587,12 @@ onMounted(async () => {
 
       <!-- APPEARANCE -->
 
-      <section class="card">
+      <section class="card card-full">
 
         <div class="card-header">
 
           <div class="icon purple">
-            <svg width="18px" height="18px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+            <svg width="28px" height="28px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
               <path fill="var(--premium-bg)"
                     d="M8,0 C12.4183,0 16,3.58172 16,8 C16,8.15958 15.9953,8.31807 15.9861,8.47533 C15.9328,9.38596 15.1095,10.0039 14.1974,10.0039 L11.0106,10.0039 C9.22875,10.0039 8.33642,12.1582 9.59635,13.4181 C10.4823,14.304 10.198,15.7959 8.95388,15.9437 C8.6411,15.9809 8.32278,16 8,16 C3.58172,16 0,12.4183 0,8 C0,3.58172 3.58172,0 8,0 Z M8,2 C4.68629,2 2,4.68629 2,8 C2,11.1538 4.4333,13.7393 7.52492,13.9815 C6.059,11.4506 7.82321,8.00391 11.0106,8.00391 L14,8.00391 C14,4.68629 11.3137,2 8,2 Z M5,8 C5.55228,8 6,8.44771 6,9 C6,9.55228 5.55228,10 5,10 C4.44772,10 4,9.55228 4,9 C4,8.44771 4.44772,8 5,8 Z M6,5 C6.55228,5 7,5.44772 7,6 C7,6.55228 6.55228,7 6,7 C5.44772,7 5,6.55228 5,6 C5,5.44772 5.44772,5 6,5 Z M9,4 C9.55228,4 10,4.44772 10,5 C10,5.55228 9.55228,6 9,6 C8.44771,6 8,5.55228 8,5 C8,4.44772 8.44771,4 9,4 Z" />
             </svg>
@@ -706,7 +679,7 @@ onMounted(async () => {
         <div class="danger-left">
 
           <div class="icon red">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+            <svg width="28px" height="28px" viewBox="0 0 24 24" fill="none"
                  xmlns="http://www.w3.org/2000/svg">
               <path d="M3 6H21" stroke="#EF4444" stroke-width="1.5" stroke-linecap="round" />
               <path d="M8 6V4C8 3.44772 8.44772 3 9 3H15C15.5523 3 16 3.44772 16 4V6"
@@ -816,6 +789,10 @@ onMounted(async () => {
   box-shadow: 0 8px 24px rgba(15, 23, 42, .05),
   0 2px 6px rgba(15, 23, 42, .04);
   transition: .25s;
+}
+
+.card-full {
+  grid-column: span 2;
 }
 
 .card small {
@@ -1304,6 +1281,10 @@ select:focus {
   }
 
   .danger-card {
+    grid-column: span 1;
+  }
+
+  .card-full {
     grid-column: span 1;
   }
 
