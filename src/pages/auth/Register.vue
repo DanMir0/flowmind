@@ -71,7 +71,7 @@
 
       <p class="switch">
         Already have an account?
-        <router-link to="/login">Login</router-link>
+        <router-link :to="{name: 'login'}">Login</router-link>
       </p>
     </div>
   </div>

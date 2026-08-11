@@ -15,7 +15,7 @@
 
       <p class="switch">
         Already confirmed?
-        <router-link to="/login">Login</router-link>
+        <router-link :to="{name: 'login'}">Login</router-link>
       </p>
     </div>
   </div>

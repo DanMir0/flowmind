@@ -19,7 +19,7 @@
       </form>
 
       <p v-if="!auth.user" class="switch">
-        <router-link to="/login">Back to login</router-link>
+        <router-link :to="{name: 'login'}">Back to login</router-link>
       </p>
       <p v-else class="switch">
         <router-link to="/settings">Back</router-link>
@@ -42,7 +42,7 @@ async function submit() {
   loading.value = true
 
   await supabase.auth.resetPasswordForEmail(email.value, {
-    redirectTo: `${window.location.origin}/reset-password`
+    redirectTo: `${window.location.origin}/auth/reset-password`
   })
 
   message.value = 'Check your email for reset link'

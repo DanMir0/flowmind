@@ -3,48 +3,123 @@
     <div class="auth-card">
       <h2>Login</h2>
 
-      <form @submit.prevent="submit">
-        <!-- Email -->
-        <input
-          v-model="email"
-          type="email"
-          placeholder="Email"
-          required
-        />
-
-        <!-- Password -->
-        <div class="password-field">
+      <div v-if="!showMfa">
+        <form @submit.prevent="submit">
+          <!-- Email -->
           <input
-            :type="showPassword ? 'text' : 'password'"
-            v-model="password"
-            placeholder="Password"
+            v-model="email"
+            type="email"
+            placeholder="Email"
             required
           />
-          <span class="eye" @click="showPassword = !showPassword">
+
+          <!-- Password -->
+          <div class="password-field">
+            <input
+              :type="showPassword ? 'text' : 'password'"
+              v-model="password"
+              placeholder="Password"
+              required
+            />
+            <span class="eye" @click="showPassword = !showPassword">
             {{ showPassword ? '🙈' : '👁️' }}
           </span>
+          </div>
+
+          <!-- Error -->
+          <p v-if="error" class="error">
+            {{ error }}
+          </p>
+
+          <button class="btn" type="submit" :disabled="loading">
+            {{ loading ? 'Signing in...' : 'Login' }}
+          </button>
+        </form>
+
+        <div class="actions">
+          <router-link class="link" :to="{name: 'forgotPassword'}">
+            Forgot password?
+          </router-link>
         </div>
 
-        <!-- Error -->
-        <p v-if="error" class="error">
-          {{ error }}
+        <p class="switch">
+          Don't have an account?
+          <router-link :to="{name: 'register'}">Register</router-link>
         </p>
 
-        <button class="btn" type="submit" :disabled="loading">
-          {{ loading ? 'Signing in...' : 'Login' }}
-        </button>
-      </form>
+        <div class="divider">
+          <span>or</span>
+        </div>
 
-      <div class="actions">
-        <router-link class="link" to="/forgot-password">
-          Forgot password?
-        </router-link>
+        <button
+          type="button"
+          class="btn google-btn"
+          @click="loginWithGoogle">
+          <svg width="18px" height="18px" viewBox="-0.5 0 48 48" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+            <title>Google-color</title>
+            <desc>Created with Sketch.</desc>
+            <defs>
+
+            </defs>
+            <g id="Icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+              <g id="Color-" transform="translate(-401.000000, -860.000000)">
+                <g id="Google" transform="translate(401.000000, 860.000000)">
+                  <path d="M9.82727273,24 C9.82727273,22.4757333 10.0804318,21.0144 10.5322727,19.6437333 L2.62345455,13.6042667 C1.08206818,16.7338667 0.213636364,20.2602667 0.213636364,24 C0.213636364,27.7365333 1.081,31.2608 2.62025,34.3882667 L10.5247955,28.3370667 C10.0772273,26.9728 9.82727273,25.5168 9.82727273,24" id="Fill-1" fill="#FBBC05">
+
+                  </path>
+                  <path d="M23.7136364,10.1333333 C27.025,10.1333333 30.0159091,11.3066667 32.3659091,13.2266667 L39.2022727,6.4 C35.0363636,2.77333333 29.6954545,0.533333333 23.7136364,0.533333333 C14.4268636,0.533333333 6.44540909,5.84426667 2.62345455,13.6042667 L10.5322727,19.6437333 C12.3545909,14.112 17.5491591,10.1333333 23.7136364,10.1333333" id="Fill-2" fill="#EB4335">
+
+                  </path>
+                  <path d="M23.7136364,37.8666667 C17.5491591,37.8666667 12.3545909,33.888 10.5322727,28.3562667 L2.62345455,34.3946667 C6.44540909,42.1557333 14.4268636,47.4666667 23.7136364,47.4666667 C29.4455,47.4666667 34.9177955,45.4314667 39.0249545,41.6181333 L31.5177727,35.8144 C29.3995682,37.1488 26.7323182,37.8666667 23.7136364,37.8666667" id="Fill-3" fill="#34A853">
+
+                  </path>
+                  <path d="M46.1454545,24 C46.1454545,22.6133333 45.9318182,21.12 45.6113636,19.7333333 L23.7136364,19.7333333 L23.7136364,28.8 L36.3181818,28.8 C35.6879545,31.8912 33.9724545,34.2677333 31.5177727,35.8144 L39.0249545,41.6181333 C43.3393409,37.6138667 46.1454545,31.6490667 46.1454545,24" id="Fill-4" fill="#4285F4">
+
+                  </path>
+                </g>
+              </g>
+            </g>
+          </svg>
+          {{ googleLoading ? 'Connecting...' : 'Continue with Google' }}
+        </button>
       </div>
 
-      <p class="switch">
-        Don't have an account?
-        <router-link to="/register">Register</router-link>
-      </p>
+      <!-- MFA -->
+
+      <div v-else class="mfa-login">
+
+        <h2>Two-factor authentication</h2>
+
+        <p>
+          Open your authenticator app and enter
+          the 6-digit verification code.
+        </p>
+
+        <form @submit.prevent="verifyMfa">
+
+          <input
+            v-model="mfaCode"
+            type="text"
+            inputmode="numeric"
+            autocomplete="one-time-code"
+            maxlength="6"
+            placeholder="000000"
+            autofocus />
+
+          <p v-if="error" class="error">
+            {{ error }}
+          </p>
+
+          <button
+            class="btn"
+            type="submit"
+            :disabled="loading">
+            {{ loading ? 'Verifying...' : 'Verify' }}
+          </button>
+        </form>
+      </div>
+
     </div>
   </div>
 </template>
@@ -64,15 +139,27 @@ const showPassword = ref(false)
 const loading = ref(false)
 const error = ref('')
 
+const googleLoading = ref(false)
+const showMfa = ref(false)
+const mfaCode = ref('')
+
 async function submit() {
   error.value = ''
   loading.value = true
 
   try {
-    await auth.signIn(email.value, password.value)
+    const result = await auth.signIn(email.value, password.value)
 
-    router.push('/dashboard')
+    if (result.mfaRequired) {
+      showMfa.value = true
+      return
+    }
+
+    await router.push({
+      name: 'dashboard'
+    })
   } catch (err) {
+    console.error('LOGIN ERROR:', err)
     if (err.message.includes('Email not confirmed')) {
       error.value = 'Please confirm your email'
     } else {
@@ -82,6 +169,60 @@ async function submit() {
     loading.value = false
   }
 
+}
+
+async function loginWithGoogle() {
+  try {
+    googleLoading.value = true
+
+    await auth.signInWithGoogle()
+  } catch (err) {
+    console.error('Google login error:', err)
+    error.value = err.message
+  } finally {
+    googleLoading.value = false
+  }
+}
+
+async function verifyMfa() {
+  error.value = ''
+
+  if (!/^\d{6}$/.test(mfaCode.value)) {
+    error.value = 'Enter the 6-digit authentication code.'
+
+    return
+  }
+
+  loading.value = true
+
+  try {
+    await auth.verifyMFA(
+      auth.mfaFactorId,
+      mfaCode.value
+    )
+
+    showMfa.value = false
+    mfaCode.value = ''
+
+    /*
+     * Теперь сессия AAL2.
+     * Загружаем остальные данные.
+     */
+    await auth.fetchProfile()
+
+    await router.push({
+      name: 'dashboard'
+    })
+
+  } catch (err) {
+    console.error('MFA ERROR:', err)
+
+    error.value =
+      'Invalid authentication code.'
+
+  } finally {
+    loading.value = false
+  }
 }
 </script>
 
@@ -130,6 +271,14 @@ input:focus {
   outline: none;
   border-color: #7C3AED;
   box-shadow: 0 0 0 3px rgba(124,58,237,.12);
+}
+
+.google-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: center;
 }
 
 .password-field {

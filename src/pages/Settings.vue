@@ -9,6 +9,7 @@ import router from '@/router/router.js'
 import DeleteAccountModal from '@/components/DeleteAccountModal.vue'
 import { useSubscriptionStore } from '@/store/subscription.js'
 import SubscriptionModal from '@/components/SubsriptionModal.vue'
+import EnableMfaModal from '@/components/EnableMfaModal.vue'
 
 const auth = useAuthStore()
 const settingsStore = useSettingsStore()
@@ -18,6 +19,10 @@ const showModalEmail = ref(false)
 const showDeleteModal = ref(false)
 const deletingAccount = ref(false)
 const showSubscriptionModal = ref(false)
+const showMfaModal = ref(false)
+const mfaEnabled = ref(false)
+const mfaLoading = ref(false)
+
 async function deleteAccount() {
   showDeleteModal.value = true
 }
@@ -100,6 +105,60 @@ const theme = computed({
 const email = computed(() => auth.user?.email || '')
 const password = computed(() => showPassword.value ? 'Password is hidden' : '••••••••••••••')
 
+async function loadMfaStatus() {
+  try {
+    const factors = await auth.getMFAFactors()
+
+    mfaEnabled.value =
+      factors.totp?.some(
+        factor => factor.status === 'verified'
+      ) || false
+
+  } catch (error) {
+    console.error('Failed to load MFA status:', error)
+  }
+}
+
+async function disableMfa() {
+  try {
+    mfaLoading.value = true
+
+    const factors = await auth.getMFAFactors()
+
+    const factor = factors.totp?.find(
+      factor => factor.status === 'verified'
+    )
+
+    if (!factor) {
+      mfaEnabled.value = false
+      return
+    }
+
+    await auth.disableMFA(factor.id)
+
+    mfaEnabled.value = false
+
+    showSuccess(
+      'Two-factor authentication has been disabled.'
+    )
+
+  } catch (error) {
+    console.error('Disable MFA error:', error)
+
+    showError(
+      error?.message ||
+      'Failed to disable two-factor authentication.'
+    )
+
+  } finally {
+    mfaLoading.value = false
+  }
+}
+
+function onMfaEnabled() {
+  mfaEnabled.value = true
+}
+
 function togglePassword() {
   showPassword.value = !showPassword.value
 }
@@ -163,6 +222,8 @@ onMounted(async () => {
   if (auth.user?.id) {
     await subscriptionStore.loadSubscription(auth.user.id)
   }
+
+  await loadMfaStatus()
 })
 </script>
 
@@ -267,6 +328,125 @@ onMounted(async () => {
               class="outline-btn"
               @click="changePassword">
               Change
+            </button>
+
+          </div>
+
+        </div>
+
+      </section>
+
+      <section class="card">
+
+        <div class="card-header">
+
+          <div class="icon purple">
+            🔐
+          </div>
+
+          <div>
+            <h2>Authentication</h2>
+
+            <span>
+              Manage how you sign in to TaskMaster.
+            </span>
+          </div>
+
+        </div>
+
+        <!-- GOOGLE -->
+
+        <div class="auth-method">
+
+          <div class="auth-method-left">
+
+            <div class="auth-method-icon google-icon">
+              G
+            </div>
+
+            <div>
+              <h3>Google</h3>
+
+              <p>
+                Sign in using your Google account.
+              </p>
+            </div>
+
+          </div>
+
+          <div class="auth-status">
+
+            <span class="auth-badge muted">
+              Not connected
+            </span>
+
+            <button
+              type="button"
+              class="outline-btn">
+              Connect
+            </button>
+
+          </div>
+
+        </div>
+
+
+        <!-- 2FA -->
+
+        <div class="auth-method">
+
+          <div class="auth-method-left">
+
+            <div class="auth-method-icon">
+              🔒
+            </div>
+
+            <div>
+
+              <h3>
+                Two-factor authentication
+              </h3>
+
+              <p>
+                Add an extra layer of security
+                to your account.
+              </p>
+
+            </div>
+
+          </div>
+
+          <div class="auth-status">
+
+            <span
+              v-if="mfaEnabled"
+              class="auth-badge success">
+              Enabled
+            </span>
+
+            <span
+              v-else
+              class="auth-badge muted">
+              Not enabled
+            </span>
+
+            <button
+              v-if="!mfaEnabled"
+              type="button"
+              class="outline-btn"
+              @click="showMfaModal = true">
+              Enable 2FA
+            </button>
+
+            <button
+              v-else
+              type="button"
+              class="danger-outline-btn"
+              :disabled="mfaLoading"
+              @click="disableMfa">
+
+              {{ mfaLoading ? 'Disabling...' : 'Disable' }}
+
             </button>
 
           </div>
@@ -581,6 +761,12 @@ onMounted(async () => {
     :open="showSubscriptionModal"
     @close="showSubscriptionModal = false"
   />
+
+  <EnableMfaModal
+    :open="showMfaModal"
+    @close="showMfaModal = false"
+    @enabled="onMfaEnabled"
+  />
 </template>
 <style scoped>
 .select input {
@@ -765,6 +951,121 @@ select:focus {
 .outline-btn:hover {
   background: var(--premium-bg);
   color: white;
+}
+
+.auth-method {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 18px 0;
+  border-top: 1px solid var(--border-card);
+}
+
+.auth-method:first-of-type {
+  border-top: none;
+}
+
+.auth-method-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.auth-method-left h3 {
+  margin: 0;
+  color: var(--text);
+  font-size: 16px;
+  font-weight: 650;
+}
+
+.auth-method-left p {
+  margin: 5px 0 0;
+  color: var(--text-grey);
+  font-size: 13px;
+}
+
+.auth-method-icon {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  border-radius: 12px;
+  background: #F3E8FF;
+  color: var(--premium-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 19px;
+  font-weight: 700;
+}
+
+.google-icon {
+  background: #F8FAFC;
+  border: 1px solid var(--border-card);
+  color: #4285F4;
+}
+
+.auth-status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.auth-badge {
+  padding: 7px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.auth-badge.success {
+  background: #DCFCE7;
+  color: #16A34A;
+}
+
+.auth-badge.muted {
+  background: var(--quick-input-bg);
+  color: var(--text-grey);
+}
+
+.danger-outline-btn {
+  height: 52px;
+  padding: 0 24px;
+  border-radius: 14px;
+  border: 1px solid #EF4444;
+  background: transparent;
+  color: #EF4444;
+  font-weight: 600;
+  cursor: pointer;
+  transition: .2s;
+}
+
+.danger-outline-btn:hover {
+  background: #FEF2F2;
+}
+
+.danger-outline-btn:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+}
+
+@media (max-width: 600px) {
+  .auth-method {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .auth-status {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .auth-status .outline-btn,
+  .auth-status .danger-outline-btn {
+    flex: 1;
+  }
 }
 
 .subscription {

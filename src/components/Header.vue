@@ -43,7 +43,7 @@ function toggleDropdown() {
 
 async function logout() {
   await auth.signOut()
-  router.push('/login')
+  router.push({name: 'login'})
 }
 
 function handleClickOutside(event) {
@@ -251,13 +251,13 @@ onBeforeUnmount(() => {
       <template v-else>
 
         <router-link
-          to="/login"
+          :to="{name: 'login'}"
           class="auth-btn secondary">
           Sign in
         </router-link>
 
         <router-link
-          to="/register"
+          :to="{name: 'register'}"
           class="auth-btn primary">
           Sign up
         </router-link>

@@ -1,45 +1,59 @@
 <script setup>
 import { onMounted } from 'vue'
-import { supabase } from '@/lib/supabase'
 import { useRouter } from 'vue-router'
-import { useAuthStore } from '@/store/auth'
+import { supabase } from '@/services/supabase.js'
+import { useAuthStore } from '@/store/auth.js'
 
 const router = useRouter()
 const auth = useAuthStore()
 
 onMounted(async () => {
-  const { data } = await supabase.auth.getSession()
+  try {
+    console.log('=== GOOGLE CALLBACK START ===')
+    console.log('URL:', window.location.href)
+    console.log('SEARCH:', window.location.search)
+    console.log('HASH:', window.location.hash)
 
-  if (data.session) {
-    await auth.fetchUser()
-    localStorage.removeItem('pending_email')
-    router.replace('/dashboard')
-  } else {
-    router.replace('/login')
+    const {
+      data: { session },
+      error
+    } = await supabase.auth.getSession()
+
+    console.log('GET SESSION:', session)
+    console.log('GET SESSION ERROR:', error)
+
+    if (session?.user) {
+      auth.user = session.user
+
+      console.log('GOOGLE USER:', session.user)
+
+      await auth.fetchProfile()
+
+      await router.replace({
+        name: 'dashboard'
+      })
+
+      return
+    }
+
+    console.error('GOOGLE CALLBACK: session not found')
+
+    await router.replace({
+      name: 'login'
+    })
+
+  } catch (error) {
+    console.error('Google callback error:', error)
+
+    await router.replace({
+      name: 'login'
+    })
   }
 })
 </script>
 
 <template>
-  <div class="auth-page">
-    <p>Confirming your email…</p>
+  <div class="auth-callback">
+    <p>Signing you in...</p>
   </div>
 </template>
-<style scoped>
-.auth-page {
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: white;
-}
-
-input {
-  width: 100%;
-  padding: 14px 16px;
-  border-radius: 12px;
-  border: 1px solid #ddd;
-  font-size: 15px;
-}
-
-</style>
