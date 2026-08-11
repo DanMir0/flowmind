@@ -53,11 +53,10 @@ const plans = [
 ]
 
 const premiumFeatures = [
-  'Unlimited quotes',
-  'Pin your favorite quotes',
-  'Advanced search',
-  'Access anywhere',
-  'And more...'
+  'Create unlimited tasks',
+  'Create your own quotes',
+  'Add your favorite quotes to your favorites ',
+  'Drag and drop',
 ]
 
 function closeModal() {
