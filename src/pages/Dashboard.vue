@@ -452,11 +452,11 @@ onMounted(async () => {
 
         <span class="divider"></span>
 
-        <a href="/privacy">Privacy Policy</a>
+        <router-link :to="{name: 'privacyPolicy'}">Privacy Policy</router-link>
 
         <span class="divider"></span>
 
-        <a href="/terms">Terms of Service</a>
+        <router-link :to="{name: 'termsOfService'}">Terms of Service</router-link>
       </div>
     </footer>
 

@@ -14,6 +14,8 @@ import MyQuotes from '@/pages/MyQuotes.vue'
 import Settings from '@/pages/Settings.vue'
 import NotFound from '@/pages/NotFound.vue'
 import AuthCallback from '@/pages/auth/AuthCallback.vue'
+import PrivacyPolicy from '@/components/PrivacyPolicy.vue'
+import TermsOfService from '@/components/TermsOfService.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -32,7 +34,8 @@ const router = createRouter({
     { path: '/my-quotes', name: 'myQuotes', component: MyQuotes, meta: {requiresAuth: true}},
     { path: '/settings', name: 'settings', component: Settings, meta: {requiresAuth: true}},
     { path: '/:pathMatch(.*)', name: 'NotFound', component: NotFound, },
-    { path: '/auth/callback', name: 'authCallback', component: AuthCallback, },
+    { path: '/privacy-policy', name: 'privacyPolicy', component: PrivacyPolicy, },
+    { path: '/terms-of-service', name: 'termsOfService', component: TermsOfService, },
   ]
 })
 
