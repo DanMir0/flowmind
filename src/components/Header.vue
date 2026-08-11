@@ -13,7 +13,22 @@ const route = useRoute()
 
 const isOpen = ref(false)
 
+// const isGoogleUser = computed(() => {
+//   if (!auth.user) return false
+//   let a = auth.checkUserProvider()
+//   console.log('a', a)
+// })
+// console.log('isGoogleUser', isGoogleUser)
+async function isGoogleUser()  {
+  let result = await auth.checkUserProvider()
+  return result === 'google'
+}
 const username = computed(() => {
+
+  if (auth.checkUserProviderSync) {
+    return auth.user?.user_metadata?.full_name || 'User'
+  }
+
   return auth.profile?.username || 'User'
 })
 const email = computed(() => {
@@ -54,6 +69,9 @@ function handleClickOutside(event) {
   }
 }
 
+onMounted(async () => {
+ await isGoogleUser
+})
 watch(searchInput, (value) => {
   clearTimeout(timeout)
 

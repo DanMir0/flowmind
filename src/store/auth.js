@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
-import {useTasksStore} from '@/store/tasks.js'
-import {supabase} from '@/services/supabase.js'
+import { useTasksStore } from '@/store/tasks.js'
+import { supabase } from '@/services/supabase.js'
 import { useSubscriptionStore } from '@/store/subscription.js'
 import { useSettingsStore } from '@/store/settings.js'
 
@@ -13,7 +13,7 @@ export const useAuthStore = defineStore('auth', {
 
     // MFA
     mfaRequired: false,
-    mfaFactorId: null,
+    mfaFactorId: null
   }),
 
   actions: {
@@ -47,7 +47,7 @@ export const useAuthStore = defineStore('auth', {
     },
 
     async signUp(email, password, username) {
-      const {data, error } = await
+      const { data, error } = await
         supabase.auth.signUp({
           email,
           password,
@@ -270,7 +270,9 @@ export const useAuthStore = defineStore('auth', {
         .eq('user_id', this.user.id)
         .maybeSingle()
 
-      if (error) {throw error}
+      if (error) {
+        throw error
+      }
       this.profile = data
 
       return data
@@ -354,6 +356,22 @@ export const useAuthStore = defineStore('auth', {
       }
 
       return user
+    },
+
+    checkUserProviderSync() {
+      if (!this.user) return null
+
+      // Проверяем провайдер синхронно
+      if (this.user.raw_user_meta_data?.provider === 'google') {
+        return 'google'
+      }
+
+      // Если есть avatar_url, это Google
+      if (this.user.raw_user_meta_data?.avatar_url) {
+        return 'google'
+      }
+
+      return 'email'
     },
 
     // Если пользователь не авторизирован и нажимает на любую кнопку в dashboard, то перекидыват на страницу логина
