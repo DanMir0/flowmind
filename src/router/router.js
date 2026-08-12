@@ -33,6 +33,7 @@ const router = createRouter({
     // { path: '/archive', name: 'archive', component: Arhive, meta: {requiresAuth: true}},
     { path: '/my-quotes', name: 'myQuotes', component: MyQuotes, meta: {requiresAuth: true}},
     { path: '/settings', name: 'settings', component: Settings, meta: {requiresAuth: true}},
+    { path: '/auth/callback', name: 'callback', component: AuthCallback, },
     { path: '/:pathMatch(.*)', name: 'NotFound', component: NotFound, },
     { path: '/privacy-policy', name: 'privacyPolicy', component: PrivacyPolicy, },
     { path: '/terms-of-service', name: 'termsOfService', component: TermsOfService, },
