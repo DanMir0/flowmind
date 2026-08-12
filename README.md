@@ -42,3 +42,44 @@ npm run build
 ```sh
 npm run lint
 ```
+
+
+
+
+
+
+Project Overview: FlowMind – Intelligent Task Management System
+
+FlowMind is a comprehensive, feature-rich task management application designed to enhance user productivity and focus. Built with a modern technology stack, the platform combines an intuitive interface with a wide range of functionalities that support both standard and premium users in effectively organizing their daily workflows.
+
+Key Features:
+
+Adaptive User Interface: Seamless theme switching (light/dark mode) and multilingual support for motivational quotes to personalize the user experience.
+
+Advanced Task Management: Full CRUD operations with flexible filtering, sorting, and search capabilities, enabling users to quickly structure and locate tasks.
+
+Integrated Calendar: Schedule and assign tasks to specific dates using an interactive calendar module for clear deadline tracking.
+
+Focus Timer: Built-in timer designed to promote concentration and deep work sessions on selected tasks.
+
+Premium Tier: Unlocks unlimited task creation, custom quote uploads, and the ability to pin favorite quotes for quick access.
+
+Drag-and-Drop: Intuitive drag-and-drop functionality for effortless task prioritization and reordering.
+
+Account & Security: Comprehensive authentication system supporting email/password login, Google OAuth integration, and two-factor authentication (2FA) for enhanced security. Users can update profile settings, including email, password, and interface language.
+
+Notification System: Built-in push notifications that inform users about upcoming deadlines, task reminders, and important events, ensuring they stay on top of their commitments.
+
+Progress Tracking: "Today's Focus" panel for real-time monitoring of daily task completion, along with a statistics dashboard on the main screen that visualizes overall productivity metrics.
+
+Registration & Login: Fully functional registration and authentication system with role-based access control for premium and standard users.
+
+Technology Stack:
+
+Frontend: Vue 3 (Composition API) for reactive component-based architecture
+
+State Management: Pinia for efficient, scalable application state handling
+
+Backend & Database: Supabase for real-time data synchronization, authentication, and secure cloud storage
+
+This project demonstrates end-to-end development capabilities — from UI/UX design to secure backend integration — with a strong focus on user experience and performance optimization.
