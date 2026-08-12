@@ -80,20 +80,6 @@ onBeforeUnmount(() => {
   window.removeEventListener('click', handleClickOutside)
 })
 
-onMounted(async () => {
-  // Загружаем уведомления
-  if (auth.user) {
-    await notificationsStore.loadNotifications()
-
-    // Проверяем задачи для напоминаний
-    await notificationsStore.checkTasksForReminders()
-    await notificationsStore.debugSubscriptionReminder()
-    // Настраиваем интервал для проверки уведомлений (каждые 4 часа)
-    setInterval(async () => {
-      await notificationsStore.checkTasksForReminders()
-    }, 4 * 60 * 60 * 1000) // 4 часа
-  }
-})
 </script>
 
 <template>
