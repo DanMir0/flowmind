@@ -225,8 +225,6 @@ export const useTasksStore = defineStore('tasks', {
 
             throw e
           }
-      const notificationsStore = useNotificationsStore()
-      await notificationsStore.checkTasksForReminders()
       },
 
     async updateTask(taskId, payload) {
