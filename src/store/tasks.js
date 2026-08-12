@@ -3,6 +3,7 @@ import { supabase } from '@/services/supabase'
 import { useAuthStore } from './auth'
 import { handleSupabaseError } from '@/utils/appError.js'
 import { useSubscriptionStore } from '@/store/subscription.js'
+import { useNotificationsStore } from '@/store/notifications.js'
 
 const MAX_ACTIVE_TASKS = 500;
 export const useTasksStore = defineStore('tasks', {
@@ -223,6 +224,8 @@ export const useTasksStore = defineStore('tasks', {
 
             throw e
           }
+      const notificationsStore = useNotificationsStore()
+      await notificationsStore.checkTasksForReminders()
       },
 
     async updateTask(taskId, payload) {

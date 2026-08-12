@@ -3,6 +3,7 @@ import { useTasksStore } from '@/store/tasks.js'
 import { supabase } from '@/services/supabase.js'
 import { useSubscriptionStore } from '@/store/subscription.js'
 import { useSettingsStore } from '@/store/settings.js'
+import { useNotificationsStore } from '@/store/notifications.js'
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
@@ -248,6 +249,7 @@ export const useAuthStore = defineStore('auth', {
     async signOut() {
       const taskStore = useTasksStore()
       const subscriptionStore = useSubscriptionStore()
+      const notificationsStore = useNotificationsStore()
 
       const { error } = await supabase.auth.signOut()
       this.user = null
@@ -257,6 +259,7 @@ export const useAuthStore = defineStore('auth', {
 
       taskStore.reset()
       subscriptionStore.reset()
+      notificationsStore.reset()
 
       return error
     },
