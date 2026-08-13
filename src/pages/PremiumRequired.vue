@@ -292,4 +292,203 @@ h1{
   }
 
 }
+
+/* ===== ПЛАНШЕТ (768px - 1024px) ===== */
+@media (max-width: 1024px) {
+  .premium {
+    padding: 24px 28px;
+  }
+
+  .premium-card {
+    grid-template-columns: 1fr;
+    column-gap: 0;
+    padding: 50px 40px;
+    min-height: auto;
+    gap: 40px;
+  }
+
+  .premium-left {
+    max-width: 100%;
+    order: 1;
+  }
+
+  .premium-right {
+    order: 0;
+    justify-content: center;
+  }
+
+  .preview-image {
+    width: 100%;
+    max-width: 400px;
+  }
+
+  .premium-card::before,
+  .premium-card::after {
+    display: none;
+  }
+
+  .star {
+    display: none;
+  }
+
+  .premium-btn {
+    width: 100%;
+    max-width: 320px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .description {
+    max-width: 100%;
+  }
+
+  h1 {
+    font-size: 24px;
+  }
+
+  .feature-list li {
+    font-size: 16px;
+  }
+}
+
+/* ===== МОБИЛЬНЫЕ ТЕЛЕФОНЫ (320px - 767px) ===== */
+@media (max-width: 767px) {
+  .premium {
+    padding: 16px 12px;
+    min-height: 100dvh;
+  }
+
+  .premium-card {
+    padding: 32px 20px 40px;
+    border-radius: 20px;
+    gap: 30px;
+    min-height: auto;
+    border: none;
+    box-shadow: 0 20px 55px rgba(124, 58, 237, 0.06);
+  }
+
+  .premium-left {
+    order: 1;
+  }
+
+  .premium-right {
+    order: 0;
+  }
+
+  .premium-icon {
+    width: 80px;
+    margin: 0 auto 18px;
+  }
+
+  h1 {
+    font-size: 20px;
+  }
+
+  .description {
+    font-size: 15px;
+    margin-top: 10px;
+    line-height: 1.6;
+  }
+
+  .feature-list {
+    margin-top: 24px;
+    gap: 14px;
+  }
+
+  .feature-list li {
+    font-size: 14px;
+    gap: 10px;
+  }
+
+  .check {
+    width: 20px;
+    height: 20px;
+    font-size: 11px;
+  }
+
+  .premium-btn {
+    width: 100%;
+    height: 46px;
+    font-size: 15px;
+    margin-top: 30px;
+    border-radius: 10px;
+    max-width: 100%;
+  }
+
+  .premium-btn svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .preview-image {
+    max-width: 280px;
+  }
+
+  .premium-card::before,
+  .premium-card::after {
+    display: none;
+  }
+
+  .star {
+    display: none;
+  }
+}
+
+/* ===== ОЧЕНЬ МАЛЕНЬКИЕ ТЕЛЕФОНЫ (до 380px) ===== */
+@media (max-width: 380px) {
+  .premium {
+    padding: 12px 8px;
+  }
+
+  .premium-card {
+    padding: 24px 14px 32px;
+    border-radius: 16px;
+    gap: 20px;
+  }
+
+  .premium-icon {
+    width: 64px;
+    margin: 0 auto 14px;
+  }
+
+  h1 {
+    font-size: 18px;
+  }
+
+  .description {
+    font-size: 14px;
+  }
+
+  .feature-list {
+    margin-top: 18px;
+    gap: 10px;
+  }
+
+  .feature-list li {
+    font-size: 13px;
+    gap: 8px;
+  }
+
+  .check {
+    width: 18px;
+    height: 18px;
+    font-size: 10px;
+  }
+
+  .premium-btn {
+    height: 42px;
+    font-size: 14px;
+    margin-top: 24px;
+    gap: 8px;
+  }
+
+  .premium-btn svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .preview-image {
+    max-width: 200px;
+  }
+}
 </style>

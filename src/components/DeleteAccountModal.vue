@@ -180,10 +180,9 @@ const emit = defineEmits(['confirm','cancel'])
 }
 
 /* CANCEL */
-
 .btn-cancel {
   background: var(--bg-btn-cancel);
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--border-card);
   color: var(--text);
 }
 
@@ -194,7 +193,6 @@ const emit = defineEmits(['confirm','cancel'])
 }
 
 /* DELETE */
-
 .btn-danger {
   background: #dc2626;
   border: 1px solid #dc2626;
@@ -263,20 +261,199 @@ const emit = defineEmits(['confirm','cancel'])
   }
 }
 
-/* MOBILE */
+/* ========================================
+   МОБИЛЬНАЯ И ПЛАНШЕТНАЯ ВЕРСТКА
+   ======================================== */
 
-@media (max-width: 480px) {
+/* ===== ПЛАНШЕТ (768px - 1024px) ===== */
+@media (max-width: 1024px) {
+  .modal-wrapper {
+    padding: 16px;
+  }
+
   .modal {
-    padding: 24px;
-    border-radius: 18px;
+    max-width: 420px;
+    padding: 26px;
+    border-radius: 20px;
+  }
+
+  .modal h3 {
+    font-size: 20px;
+  }
+
+  .modal p {
+    font-size: 14px;
+  }
+
+  .modal-icon {
+    width: 50px;
+    height: 50px;
+  }
+
+  .modal-icon svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  .btn {
+    min-width: 110px;
+    height: 42px;
+    font-size: 13px;
+  }
+}
+
+/* ===== МОБИЛЬНЫЕ ТЕЛЕФОНЫ (320px - 767px) ===== */
+@media (max-width: 767px) {
+  .modal-wrapper {
+    align-items: flex-end;
+    padding: 16px;
+    background: rgba(0, 0, 0, 0.5);
+  }
+
+  .modal {
+    max-width: 100%;
+    padding: 24px 20px 28px;
+    border-radius: 24px 24px 0 0;
+    text-align: center;
+    animation: slideUp 0.3s ease;
+    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.15);
+    border-bottom: none;
+    border-left: none;
+    border-right: none;
+  }
+
+  /* Полоска сверху для закрытия */
+  .modal::before {
+    content: '';
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 4px;
+    background: #e2e8f0;
+    border-radius: 2px;
+  }
+
+  @keyframes slideUp {
+    from {
+      transform: translateY(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  .modal-icon {
+    width: 48px;
+    height: 48px;
+    margin: 4px auto 14px;
+  }
+
+  .modal-icon svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .modal h3 {
+    font-size: 18px;
+    margin: 0 0 8px;
+  }
+
+  .modal p {
+    font-size: 14px;
+    line-height: 1.5;
   }
 
   .actions {
     flex-direction: column-reverse;
+    gap: 10px;
+    margin-top: 24px;
   }
 
   .btn {
     width: 100%;
+    min-width: unset;
+    height: 48px;
+    font-size: 15px;
+    border-radius: 14px;
+  }
+
+  .btn-cancel {
+    order: 2;
+  }
+
+  .btn-danger {
+    order: 1;
+  }
+
+  .btn::after {
+    display: none;
+  }
+}
+
+/* ===== ОЧЕНЬ МАЛЕНЬКИЕ ТЕЛЕФОНЫ (до 380px) ===== */
+@media (max-width: 380px) {
+  .modal-wrapper {
+    padding: 12px;
+  }
+
+  .modal {
+    padding: 20px 16px 24px;
+    border-radius: 20px 20px 0 0;
+  }
+
+  .modal::before {
+    width: 32px;
+    height: 3px;
+    top: 8px;
+  }
+
+  .modal-icon {
+    width: 42px;
+    height: 42px;
+    margin: 0 auto 12px;
+  }
+
+  .modal-icon svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .modal h3 {
+    font-size: 16px;
+  }
+
+  .modal p {
+    font-size: 13px;
+  }
+
+  .btn {
+    height: 44px;
+    font-size: 14px;
+    border-radius: 12px;
+  }
+
+  .actions {
+    gap: 8px;
+    margin-top: 20px;
+  }
+}
+
+/* ===== ПЛАНШЕТЫ В ПОРТРЕТНОЙ ОРИЕНТАЦИИ ===== */
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
+  .modal {
+    max-width: 380px;
+    padding: 24px;
+  }
+}
+
+/* ===== ПЛАНШЕТЫ В АЛЬБОМНОЙ ОРИЕНТАЦИИ ===== */
+@media (min-width: 1025px) and (max-width: 1366px) {
+  .modal {
+    max-width: 420px;
   }
 }
 </style>
@@ -304,5 +481,22 @@ const emit = defineEmits(['confirm','cancel'])
 .modal-leave-to .modal {
   opacity: 0;
   transform: scale(0.96) translateY(8px);
+}
+
+@media (max-width: 767px) {
+  .modal-enter-from .modal {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+
+  .modal-leave-to .modal {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+
+  .modal-enter-from,
+  .modal-leave-to {
+    opacity: 1;
+  }
 }
 </style>

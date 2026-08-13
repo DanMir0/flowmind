@@ -120,7 +120,11 @@ function reset() {
           </button>
 
           <div class="modal-icon">
-            🔐
+            <svg width="28px" height="28px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+              <polygon points="11 23.18 9 21.179 7.589 22.589 11 26 17 20 15.59 18.59 11 23.18" fill="#000000"/>
+              <path d="M28,30H24V28h4V16H24V8a4.0045,4.0045,0,0,0-4-4V2a6.0067,6.0067,0,0,1,6,6v6h2a2.0021,2.0021,0,0,1,2,2V28A2.0021,2.0021,0,0,1,28,30Z" fill="#000000"/>
+              <path d="M20,14H18V8A6,6,0,0,0,6,8v6H4a2,2,0,0,0-2,2V28a2,2,0,0,0,2,2H20a2,2,0,0,0,2-2V16A2,2,0,0,0,20,14ZM8,8a4,4,0,0,1,8,0v6H8ZM20,28H4V16H20Z" fill="#000000"/>
+            </svg>
           </div>
 
           <h2>
@@ -399,6 +403,226 @@ function reset() {
   color: var(--text-grey);
 }
 
+/* ===== ПЛАНШЕТ (768px - 1024px) ===== */
+@media (max-width: 1024px) {
+  .modal-overlay {
+    padding: 0;
+  }
+
+  .modal {
+    max-width: 440px;
+    padding: 28px;
+    border-radius: 20px;
+    max-height: calc(100vh - 32px);
+  }
+
+  .modal h2 {
+    font-size: 22px;
+  }
+
+  .subtitle {
+    font-size: 13px;
+  }
+
+  .qr-wrapper {
+    width: 200px;
+    height: 200px;
+  }
+
+  .code-field input {
+    height: 50px;
+    font-size: 20px;
+  }
+
+  .cancel-btn,
+  .primary-btn {
+    height: 46px;
+    font-size: 13px;
+  }
+}
+
+/* ===== МОБИЛЬНЫЕ ТЕЛЕФОНЫ (320px - 767px) ===== */
+@media (max-width: 767px) {
+  .modal-overlay {
+    padding: 0;
+    align-items: flex-end;
+    background: rgba(0, 0, 0, 0.5);
+  }
+
+  .modal {
+    max-width: 100%;
+    padding: 20px 16px 24px;
+    border-radius: 24px 24px 0 0;
+    animation: slideUp 0.3s ease;
+    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.15);
+    border: none;
+    border-top: 1px solid var(--border-card, #e2e8f0);
+    max-height: 92vh;
+  }
+
+  /* Полоска сверху для закрытия */
+  .modal::before {
+    content: '';
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 4px;
+    background: var(--border-card, #e2e8f0);
+    border-radius: 2px;
+  }
+
+  @keyframes slideUp {
+    from {
+      transform: translateY(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  .close-btn {
+    top: 12px;
+    right: 14px;
+    width: 32px;
+    height: 32px;
+    font-size: 24px;
+  }
+
+  .modal-icon {
+    width: 48px;
+    height: 48px;
+    font-size: 22px;
+    margin-bottom: 14px;
+  }
+
+  .modal h2 {
+    font-size: 19px;
+  }
+
+  .subtitle {
+    font-size: 13px;
+    margin: 6px 0 16px;
+  }
+
+  .qr-wrapper {
+    width: 180px;
+    height: 180px;
+    padding: 8px;
+  }
+
+  .scan-text {
+    font-size: 12px;
+  }
+
+  .secret-wrapper {
+    margin: 12px 0;
+    padding: 12px;
+  }
+
+  .secret-wrapper code {
+    font-size: 11px;
+  }
+
+  .code-field {
+    margin-top: 14px;
+  }
+
+  .code-field label {
+    font-size: 13px;
+    margin-bottom: 6px;
+  }
+
+  .code-field input {
+    height: 48px;
+    font-size: 20px;
+    letter-spacing: 6px;
+    border-radius: 12px;
+  }
+
+  .actions {
+    flex-direction: row;
+    gap: 10px;
+    margin-top: 18px;
+  }
+
+  .cancel-btn,
+  .primary-btn {
+    flex: 1;
+    height: 46px;
+    font-size: 14px;
+    border-radius: 12px;
+  }
+
+  .loading {
+    padding: 30px 0;
+    font-size: 14px;
+  }
+}
+
+/* ===== ОЧЕНЬ МАЛЕНЬКИЕ ТЕЛЕФОНЫ (до 380px) ===== */
+@media (max-width: 380px) {
+  .modal-overlay {
+    padding: 8px;
+  }
+
+  .modal {
+    padding: 16px 12px 20px;
+    border-radius: 20px 20px 0 0;
+    max-height: 94vh;
+  }
+
+  .modal::before {
+    width: 32px;
+    height: 3px;
+    top: 8px;
+  }
+
+  .close-btn {
+    top: 8px;
+    right: 10px;
+    width: 28px;
+    height: 28px;
+    font-size: 20px;
+  }
+
+  .modal-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+    margin-bottom: 10px;
+  }
+
+  .modal h2 {
+    font-size: 17px;
+  }
+
+  .subtitle {
+    font-size: 12px;
+  }
+
+  .qr-wrapper {
+    width: 150px;
+    height: 150px;
+  }
+
+  .code-field input {
+    height: 42px;
+    font-size: 18px;
+    letter-spacing: 4px;
+  }
+
+  .cancel-btn,
+  .primary-btn {
+    height: 40px;
+    font-size: 13px;
+  }
+}
+</style>
+<style>
 .modal-enter-active,
 .modal-leave-active {
   transition: opacity .2s ease;
@@ -409,13 +633,20 @@ function reset() {
   opacity: 0;
 }
 
-@media (max-width: 520px) {
-  .modal {
-    padding: 24px;
+@media (max-width: 767px) {
+  .modal-enter-from .modal {
+    transform: translateY(100%);
+    opacity: 0;
   }
 
-  .actions {
-    flex-direction: column;
+  .modal-leave-to .modal {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+
+  .modal-enter-from,
+  .modal-leave-to {
+    opacity: 1;
   }
 }
 </style>

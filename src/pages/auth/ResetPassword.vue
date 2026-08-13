@@ -1,3 +1,17 @@
+<script setup>
+import { ref } from 'vue'
+import { supabase } from '@/services/supabase'
+import { useRouter } from 'vue-router'
+
+const password = ref('')
+const show = ref(false)
+const router = useRouter()
+
+async function submit() {
+  await supabase.auth.updateUser({ password: password.value })
+  router.push('/dashboard')
+}
+</script>
 <template>
   <div class="auth-page">
     <div class="auth-card">
@@ -18,21 +32,6 @@
     </div>
   </div>
 </template>
-
-<script setup>
-import { ref } from 'vue'
-import { supabase } from '@/services/supabase'
-import { useRouter } from 'vue-router'
-
-const password = ref('')
-const show = ref(false)
-const router = useRouter()
-
-async function submit() {
-  await supabase.auth.updateUser({ password: password.value })
-  router.push('/dashboard')
-}
-</script>
 <style scoped>
 .auth-page {
   height: 100vh;
@@ -113,4 +112,129 @@ input:focus {
 .switch a:hover {
   color: #5e2fd1;
 }
+
+
+/* ===== ПЛАНШЕТ (768px - 1024px) ===== */
+@media (max-width: 1024px) {
+  .auth-card {
+    max-width: 380px;
+    padding: 30px 32px 36px;
+    border-radius: 18px;
+  }
+
+  .auth-card h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+
+  input {
+    padding: 12px 14px;
+    font-size: 14px;
+  }
+
+  .btn {
+    padding: 11px;
+    font-size: 14px;
+  }
+}
+
+/* ===== МОБИЛЬНЫЕ ТЕЛЕФОНЫ (320px - 767px) ===== */
+@media (max-width: 767px) {
+  .auth-page {
+    padding: 16px;
+    min-height: 100dvh;
+  }
+
+  .auth-card {
+    max-width: 100%;
+    padding: 24px 20px 28px;
+    border-radius: 16px;
+    border: none;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  }
+
+  .auth-card h2 {
+    font-size: 22px;
+    margin-bottom: 18px;
+  }
+
+  form {
+    gap: 14px;
+  }
+
+  input {
+    padding: 12px 14px;
+    font-size: 14px;
+    border-radius: 10px;
+    padding-right: 40px;
+  }
+
+  .eye {
+    font-size: 16px;
+    right: 12px;
+  }
+
+  .btn {
+    padding: 12px;
+    font-size: 14px;
+    border-radius: 24px;
+  }
+
+  .strength {
+    font-size: 12px;
+    gap: 8px;
+  }
+
+  .strength-label {
+    min-width: 60px;
+    font-size: 12px;
+  }
+
+  .strength-bar {
+    height: 6px;
+  }
+
+  .error {
+    font-size: 13px;
+  }
+}
+
+/* ===== ОЧЕНЬ МАЛЕНЬКИЕ ТЕЛЕФОНЫ (до 380px) ===== */
+@media (max-width: 380px) {
+  .auth-page {
+    padding: 12px;
+  }
+
+  .auth-card {
+    padding: 20px 16px 24px;
+    border-radius: 14px;
+  }
+
+  .auth-card h2 {
+    font-size: 20px;
+    margin-bottom: 14px;
+  }
+
+  input {
+    padding: 10px 12px;
+    font-size: 13px;
+    border-radius: 8px;
+  }
+
+  .btn {
+    padding: 10px;
+    font-size: 13px;
+    border-radius: 20px;
+  }
+
+  .strength {
+    font-size: 11px;
+  }
+
+  .strength-label {
+    min-width: 50px;
+    font-size: 11px;
+  }
+}
+
 </style>

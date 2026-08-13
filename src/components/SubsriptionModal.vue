@@ -748,4 +748,376 @@ async function handleSubscriptionAction() {
 
 }
 
+/* ===== ПЛАНШЕТ (768px - 1024px) ===== */
+@media (max-width: 1024px) {
+  .modal-overlay {
+    padding: 20px;
+  }
+
+  .subscription-modal {
+    padding: 32px 28px 28px;
+    border-radius: 20px;
+    max-height: calc(100vh - 40px);
+  }
+
+  .plans-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .plan-card {
+    min-height: 260px;
+    padding: 28px 14px 16px;
+  }
+
+  .features-list {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 10px;
+  }
+
+  .feature {
+    white-space: normal;
+    font-size: 13px;
+  }
+
+  .modal-header h2 {
+    font-size: 24px;
+  }
+
+  .trial-banner {
+    width: 100%;
+    margin: 20px auto 28px;
+  }
+
+  .trial-btn {
+    width: 100%;
+  }
+}
+
+/* ===== МОБИЛЬНЫЕ ТЕЛЕФОНЫ (320px - 767px) ===== */
+@media (max-width: 767px) {
+  .modal-overlay {
+    padding: 12px;
+    align-items: flex-end;
+    background: rgba(0, 0, 0, 0.5);
+  }
+
+  .subscription-modal {
+    width: 100%;
+    max-height: calc(100vh - 24px);
+    padding: 24px 16px 20px;
+    border-radius: 24px 24px 0 0;
+    animation: slideUp 0.3s ease;
+    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.15);
+    border: none;
+    border-top: 1px solid var(--border, #e2e8f0);
+  }
+
+  /* Полоска сверху для закрытия */
+  .subscription-modal::before {
+    content: '';
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 4px;
+    background: var(--border, #e2e8f0);
+    border-radius: 2px;
+  }
+
+  @keyframes slideUp {
+    from {
+      transform: translateY(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  .close-btn {
+    top: 16px;
+    right: 16px;
+    width: 32px;
+    height: 32px;
+  }
+
+  .close-btn svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .modal-header h2 {
+    font-size: 20px;
+  }
+
+  .modal-header p {
+    font-size: 14px;
+    margin-top: 6px;
+  }
+
+  .crown-icon {
+    width: 48px;
+    height: 48px;
+    margin: 0 auto 14px;
+  }
+
+  .crown-icon svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  .trial-banner {
+    width: 100%;
+    margin: 16px auto 20px;
+    padding: 10px 14px;
+    gap: 10px;
+    border-radius: 12px;
+  }
+
+  .trial-icon {
+    font-size: 18px;
+  }
+
+  .trial-banner strong {
+    font-size: 13px;
+  }
+
+  .trial-banner span {
+    font-size: 12px;
+  }
+
+  .plans-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .plan-card {
+    min-height: 180px;
+    padding: 20px 12px 14px;
+    border-radius: 14px;
+  }
+
+  .plan-card h3 {
+    font-size: 14px;
+    margin: 2px 0 14px;
+  }
+
+  .plan-badge {
+    font-size: 9px;
+    padding: 3px 8px;
+    top: 6px;
+    right: 6px;
+  }
+
+  .price {
+    font-size: 22px;
+  }
+
+  .price span {
+    font-size: 16px;
+  }
+
+  .price-period {
+    font-size: 11px;
+  }
+
+  .discount {
+    font-size: 10px;
+    padding: 3px 8px;
+    margin-top: 10px;
+  }
+
+  .plan-divider {
+    margin-top: 12px;
+  }
+
+  .billing {
+    font-size: 11px;
+    min-height: 28px;
+    margin: 10px 0 8px;
+  }
+
+  .radio {
+    width: 18px;
+    height: 18px;
+  }
+
+  .radio-dot {
+    width: 6px;
+    height: 6px;
+  }
+
+  .features {
+    margin-top: 18px;
+    padding: 14px 16px;
+    border-radius: 12px;
+  }
+
+  .features h3 {
+    font-size: 13px;
+    margin-bottom: 10px;
+  }
+
+  .features-list {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .feature {
+    font-size: 12px;
+    white-space: normal;
+  }
+
+  .feature-check {
+    width: 18px;
+    height: 18px;
+    font-size: 10px;
+  }
+
+  .trial-btn {
+    width: 100%;
+    height: 46px;
+    font-size: 14px;
+    margin-top: 18px;
+    border-radius: 10px;
+  }
+
+  .trial-btn svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .secure-note {
+    font-size: 11px;
+    margin-top: 10px;
+  }
+
+  .secure-note svg {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+/* ===== ОЧЕНЬ МАЛЕНЬКИЕ ТЕЛЕФОНЫ (до 380px) ===== */
+@media (max-width: 380px) {
+  .modal-overlay {
+    padding: 8px;
+  }
+
+  .subscription-modal {
+    padding: 20px 12px 16px;
+    max-height: calc(100vh - 16px);
+  }
+
+  .subscription-modal::before {
+    width: 32px;
+    height: 3px;
+    top: 8px;
+  }
+
+  .close-btn {
+    top: 12px;
+    right: 12px;
+    width: 28px;
+    height: 28px;
+  }
+
+  .close-btn svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .modal-header h2 {
+    font-size: 17px;
+  }
+
+  .modal-header p {
+    font-size: 13px;
+  }
+
+  .crown-icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .crown-icon svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .plans-grid {
+    gap: 6px;
+  }
+
+  .plan-card {
+    min-height: 160px;
+    padding: 16px 10px 12px;
+    border-radius: 12px;
+  }
+
+  .plan-card h3 {
+    font-size: 12px;
+    margin: 0 0 10px;
+  }
+
+  .price {
+    font-size: 18px;
+  }
+
+  .price span {
+    font-size: 14px;
+  }
+
+  .price-period {
+    font-size: 10px;
+  }
+
+  .discount {
+    font-size: 9px;
+    padding: 2px 6px;
+  }
+
+  .billing {
+    font-size: 10px;
+    min-height: 24px;
+  }
+
+  .radio {
+    width: 16px;
+    height: 16px;
+  }
+
+  .radio-dot {
+    width: 5px;
+    height: 5px;
+  }
+
+  .features h3 {
+    font-size: 12px;
+  }
+
+  .feature {
+    font-size: 11px;
+  }
+
+  .feature-check {
+    width: 16px;
+    height: 16px;
+    font-size: 9px;
+  }
+
+  .trial-btn {
+    height: 42px;
+    font-size: 13px;
+  }
+
+  .secure-note {
+    font-size: 10px;
+  }
+}
+
 </style>

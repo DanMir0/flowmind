@@ -223,21 +223,176 @@ const contactEmail = ref('support@yourapp.com')
   text-decoration: underline;
 }
 
-@media (max-width: 640px) {
+/* ===== ПЛАНШЕТ (768px - 1024px) ===== */
+@media (max-width: 1024px) {
   .terms-of-service {
-    padding: 20px 16px;
+    padding: 30px 20px;
   }
 
   .container {
-    padding: 24px 20px;
+    padding: 36px 32px;
+    border-radius: 14px;
+  }
+
+  .title {
+    font-size: 28px;
+  }
+
+  .section h2 {
+    font-size: 17px;
+  }
+
+  .section p,
+  .list li {
+    font-size: 14px;
+  }
+
+  .plan-info {
+    gap: 16px;
+  }
+
+  .plan-item {
+    padding: 16px;
+  }
+
+  .plan-item h4 {
+    font-size: 15px;
+  }
+}
+
+/* ===== МОБИЛЬНЫЕ ТЕЛЕФОНЫ (320px - 767px) ===== */
+@media (max-width: 767px) {
+  .terms-of-service {
+    padding: 16px 12px;
+    min-height: 100dvh;
+  }
+
+  .container {
+    padding: 24px 16px;
+    border-radius: 12px;
+    border: none;
+    box-shadow: none;
+    background: var(--bg, #ffffff);
   }
 
   .title {
     font-size: 24px;
   }
 
+  .subtitle {
+    font-size: 13px;
+    margin-bottom: 20px;
+  }
+
+  .section {
+    margin-bottom: 24px;
+  }
+
+  .section h2 {
+    font-size: 16px;
+    margin-bottom: 8px;
+  }
+
+  .section p {
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .list li {
+    font-size: 14px;
+    padding: 4px 0 4px 24px;
+    line-height: 1.5;
+  }
+
+  .list li::before {
+    top: 12px;
+    width: 5px;
+    height: 5px;
+  }
+
   .plan-info {
     grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .plan-item {
+    padding: 14px 16px;
+  }
+
+  .plan-item h4 {
+    font-size: 14px;
+    margin-bottom: 8px;
+  }
+
+  .plan-item .list li {
+    font-size: 13px;
+    padding: 3px 0 3px 20px;
+  }
+
+  .plan-item .list li::before {
+    top: 10px;
+    width: 4px;
+    height: 4px;
+  }
+
+  .link {
+    font-size: 14px;
+    word-break: break-all;
+  }
+}
+
+/* ===== ОЧЕНЬ МАЛЕНЬКИЕ ТЕЛЕФОНЫ (до 380px) ===== */
+@media (max-width: 380px) {
+  .terms-of-service {
+    padding: 12px 8px;
+  }
+
+  .container {
+    padding: 18px 12px;
+  }
+
+  .title {
+    font-size: 20px;
+  }
+
+  .subtitle {
+    font-size: 12px;
+    margin-bottom: 14px;
+  }
+
+  .section {
+    margin-bottom: 18px;
+  }
+
+  .section h2 {
+    font-size: 15px;
+  }
+
+  .section p,
+  .list li {
+    font-size: 13px;
+  }
+
+  .list li {
+    padding: 3px 0 3px 20px;
+  }
+
+  .list li::before {
+    top: 10px;
+    width: 4px;
+    height: 4px;
+  }
+
+  .plan-item {
+    padding: 12px 14px;
+  }
+
+  .plan-item h4 {
+    font-size: 13px;
+  }
+
+  .link {
+    font-size: 13px;
   }
 }
 </style>

@@ -282,4 +282,129 @@ onUnmounted(() => document.removeEventListener('click', onClickOutside))
   color: var(--text);
 }
 
+/* ===== ПЛАНШЕТ (768px - 1024px) ===== */
+@media (max-width: 1024px) {
+  .select-trigger input {
+    height: 44px;
+    font-size: 13px;
+    padding: 10px 36px 10px 12px;
+    border-radius: 10px;
+  }
+
+  .select-trigger svg {
+    left: 10px;
+    width: 16px;
+    height: 16px;
+  }
+
+  .select-item {
+    font-size: 13px;
+    padding: 8px 12px;
+  }
+
+  .select-menu {
+    max-height: 180px;
+    border-radius: 10px;
+  }
+
+  .clear {
+    right: 34px;
+    font-size: 11px;
+  }
+
+  .arrow {
+    right: 12px;
+    font-size: 11px;
+  }
+}
+
+/* ===== МОБИЛЬНЫЕ ТЕЛЕФОНЫ (320px - 767px) ===== */
+@media (max-width: 767px) {
+  .select-trigger input {
+    height: 40px;
+    font-size: 14px;
+    padding: 8px 32px 8px 10px;
+    border-radius: 8px;
+  }
+
+  .select-trigger svg {
+    left: 8px;
+    width: 14px;
+    height: 14px;
+  }
+
+  .select-trigger input {
+    padding-left: 28px !important;
+  }
+
+  .select-item {
+    font-size: 14px;
+    padding: 10px 12px;
+  }
+
+  .select-menu {
+    max-height: 160px;
+    border-radius: 8px;
+    top: calc(100% + 2px);
+  }
+
+  .clear {
+    right: 30px;
+    font-size: 11px;
+  }
+
+  .arrow {
+    right: 10px;
+    font-size: 10px;
+  }
+
+  .empty {
+    font-size: 12px;
+    padding: 10px;
+  }
+}
+
+/* ===== ОЧЕНЬ МАЛЕНЬКИЕ ТЕЛЕФОНЫ (до 380px) ===== */
+@media (max-width: 380px) {
+  .select-trigger input {
+    height: 36px;
+    font-size: 13px;
+    padding: 6px 28px 6px 8px;
+    border-radius: 6px;
+  }
+
+  .select-trigger svg {
+    left: 6px;
+    width: 12px;
+    height: 12px;
+  }
+
+  .select-trigger input {
+    padding-left: 24px !important;
+  }
+
+  .select-item {
+    font-size: 13px;
+    padding: 8px 10px;
+  }
+
+  .select-menu {
+    max-height: 140px;
+  }
+
+  .clear {
+    right: 26px;
+    font-size: 10px;
+  }
+
+  .arrow {
+    right: 8px;
+    font-size: 9px;
+  }
+
+  .empty {
+    font-size: 11px;
+    padding: 8px;
+  }
+}
 </style>

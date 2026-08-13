@@ -744,4 +744,278 @@ watch(
     transform: translateY(0) scale(1);
   }
 }
+
+/* ========================================
+   МОБИЛЬНАЯ И ПЛАНШЕТНАЯ ВЕРСТКА
+   ======================================== */
+
+/* ===== ПЛАНШЕТ (768px - 1024px) ===== */
+@media (max-width: 1024px) {
+  .container {
+    padding: 24px 32px 40px;
+  }
+
+  .page-title {
+    font-size: 30px;
+  }
+
+  .search-wrapper {
+    width: 300px;
+    height: 44px;
+  }
+
+  .search-wrapper input {
+    font-size: 14px;
+  }
+
+  .tabs button {
+    height: 36px;
+    padding: 0 16px;
+    font-size: 13px;
+  }
+
+  .add-btn {
+    height: 44px;
+    padding: 0 20px;
+    font-size: 14px;
+  }
+
+  .page-header {
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .header-left {
+    gap: 16px;
+  }
+
+  .toggle-text {
+    font-size: 13px;
+  }
+
+  .toggle-slider {
+    width: 44px;
+    height: 26px;
+  }
+
+  .toggle-slider::before {
+    width: 20px;
+    height: 20px;
+    top: 3px;
+    left: 3px;
+  }
+
+  .random-toggle input:checked + .toggle-slider::before {
+    transform: translateX(18px);
+  }
+}
+
+/* ===== МОБИЛЬНЫЕ ТЕЛЕФОНЫ (320px - 767px) ===== */
+@media (max-width: 767px) {
+  .page {
+    padding-bottom: 80px;
+  }
+
+  .container {
+    padding: 16px 16px 40px;
+  }
+
+  .page-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .header-left {
+    gap: 12px;
+  }
+
+  .page-title {
+    font-size: 24px;
+    letter-spacing: -1px;
+  }
+
+  .search-wrapper {
+    width: 100%;
+    height: 40px;
+    padding: 0 14px;
+    border-radius: 20px;
+  }
+
+  .search-wrapper input {
+    font-size: 13px;
+  }
+
+  .search-icon {
+    width: 16px;
+    height: 16px;
+  }
+
+  .tabs {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .tabs button {
+    height: 32px;
+    padding: 0 14px;
+    font-size: 12px;
+    border-radius: 20px;
+  }
+
+  .tabs-spacer {
+    width: 8px;
+  }
+
+  .random-toggle {
+    margin-left: 0;
+    gap: 8px;
+  }
+
+  .toggle-text {
+    font-size: 12px;
+  }
+
+  .toggle-slider {
+    width: 38px;
+    height: 22px;
+  }
+
+  .toggle-slider::before {
+    width: 16px;
+    height: 16px;
+    top: 3px;
+    left: 3px;
+  }
+
+  .random-toggle input:checked + .toggle-slider::before {
+    transform: translateX(16px);
+  }
+
+  .add-btn {
+    height: 40px;
+    padding: 0 16px;
+    font-size: 13px;
+    border-radius: 20px;
+    justify-content: center;
+  }
+
+  .quotes-divider {
+    margin-bottom: 12px;
+  }
+
+  .quote-skeleton {
+    height: 60px;
+    margin-top: 12px;
+  }
+
+  .pro-lock {
+    padding: 40px 16px;
+  }
+
+  .pro-lock h2 {
+    font-size: 18px;
+  }
+
+  .pro-lock p {
+    font-size: 14px;
+  }
+
+  .upgrade-btn {
+    padding: 10px 16px;
+    font-size: 14px;
+  }
+
+  .error-wrapper {
+    margin-top: 30px;
+  }
+
+  .error-card {
+    padding: 24px 16px;
+  }
+
+  .error-title {
+    font-size: 18px;
+  }
+
+  .error-illustration {
+    height: 150px;
+  }
+
+  .error-text {
+    font-size: 14px;
+  }
+
+  .load-more-btn {
+    height: 40px;
+    padding: 0 20px;
+    font-size: 14px;
+  }
+
+  .end-list {
+    font-size: 13px;
+    margin-top: 20px;
+  }
+
+  .empty {
+    font-size: 14px;
+    margin-top: 30px;
+  }
+}
+
+/* ===== ОЧЕНЬ МАЛЕНЬКИЕ ТЕЛЕФОНЫ (до 380px) ===== */
+@media (max-width: 380px) {
+  .container {
+    padding: 12px 12px 32px;
+  }
+
+  .page-title {
+    font-size: 20px;
+  }
+
+  .search-wrapper {
+    height: 36px;
+    padding: 0 10px;
+  }
+
+  .search-wrapper input {
+    font-size: 12px;
+  }
+
+  .tabs button {
+    height: 28px;
+    padding: 0 10px;
+    font-size: 11px;
+  }
+
+  .add-btn {
+    height: 36px;
+    font-size: 12px;
+    padding: 0 12px;
+  }
+
+  .toggle-slider {
+    width: 34px;
+    height: 20px;
+  }
+
+  .toggle-slider::before {
+    width: 14px;
+    height: 14px;
+    top: 3px;
+    left: 3px;
+  }
+
+  .random-toggle input:checked + .toggle-slider::before {
+    transform: translateX(14px);
+  }
+
+  .toggle-text {
+    font-size: 11px;
+  }
+
+  .quote-skeleton {
+    height: 50px;
+  }
+}
 </style>

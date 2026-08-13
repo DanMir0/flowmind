@@ -740,4 +740,328 @@ function hasOverflowTasks(day) {
   text-decoration: underline;
 }
 
+
+/* ========================================
+   МОБИЛЬНАЯ И ПЛАНШЕТНАЯ ВЕРСТКА
+   ======================================== */
+
+/* ===== ПЛАНШЕТ (768px - 1024px) ===== */
+@media (max-width: 1024px) {
+  .calendar-layout {
+    grid-template-columns: 260px 1fr;
+    gap: 16px;
+    padding: 16px;
+  }
+
+  .sidebar {
+    gap: 12px;
+    grid-row: 2;
+  }
+
+  .calendar {
+    height: auto;
+    min-height: 600px;
+    padding: 16px;
+  }
+
+  .grid {
+    height: auto;
+    min-height: 400px;
+    flex: 1;
+  }
+
+  .day {
+    min-height: 50px;
+    padding: 4px 3px;
+  }
+
+  .date {
+    font-size: 16px;
+  }
+
+  .task {
+    height: 20px;
+    font-size: 10px;
+    padding: 0 6px;
+  }
+
+  .month-title {
+    font-size: 22px;
+  }
+
+  .card,
+  .day-panel {
+    padding: 18px;
+  }
+
+  .big {
+    font-size: 28px;
+  }
+
+  .today-btn,
+  .nav-btn {
+    height: 38px;
+  }
+
+  .today-btn {
+    padding: 0 16px;
+    font-size: 13px;
+  }
+
+  .nav-btn {
+    width: 38px;
+    font-size: 16px;
+  }
+
+  .sidebar-task {
+    padding: 10px 12px;
+  }
+
+  .day-task {
+    padding: 10px;
+    font-size: 13px;
+  }
+
+  .add-task-btn {
+    height: 40px;
+    font-size: 14px;
+  }
+}
+
+/* ===== МОБИЛЬНЫЕ ТЕЛЕФОНЫ (320px - 767px) ===== */
+@media (max-width: 767px) {
+  .calendar-layout {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    padding: 12px;
+    min-height: calc(100vh - 64px);
+  }
+
+  .calendar {
+    height: auto;
+    min-height: 500px;
+    padding: 12px;
+    border-radius: 14px;
+  }
+
+  .calendar-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .calendar-actions {
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .today-btn {
+    flex: 1;
+    text-align: center;
+    padding: 0 12px;
+    height: 36px;
+    font-size: 13px;
+    border-radius: 10px;
+  }
+
+  .nav-btn {
+    width: 36px;
+    height: 36px;
+    font-size: 14px;
+    border-radius: 10px;
+  }
+
+  .month-title {
+    font-size: 20px;
+    text-align: center;
+    margin: 0;
+  }
+
+  .weekdays {
+    font-size: 10px;
+    margin-bottom: 2px;
+  }
+
+  .weekdays div {
+    padding: 4px 0;
+  }
+
+  .grid {
+    min-height: 360px;
+    flex: 1;
+  }
+
+  .day {
+    min-height: 44px;
+    padding: 3px 2px;
+    gap: 1px;
+    border-width: 0.5px;
+  }
+
+  .date {
+    font-size: 13px;
+    font-weight: 600;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+  }
+
+  .task {
+    height: 16px;
+    font-size: 8px;
+    padding: 0 4px;
+    border-radius: 4px;
+    line-height: 16px;
+  }
+
+  .task-more {
+    font-size: 8px;
+    margin-left: 3px;
+  }
+
+  .today .date {
+    width: 24px;
+    height: 24px;
+    font-size: 13px;
+  }
+
+  .selected .date {
+    width: 24px;
+    height: 24px;
+    font-size: 13px;
+  }
+
+  .today.selected .date {
+    width: 24px;
+    height: 24px;
+    font-size: 13px;
+  }
+
+  /* Мобильная панель для выбранного дня (внизу) */
+  .mobile-day-panel {
+    display: block;
+    margin-top: 12px;
+    padding: 16px;
+    background: var(--bg, #ffffff);
+    border: 1px solid var(--border-pink, #e2e8f0);
+    border-radius: 14px;
+  }
+
+  .mobile-day-panel h4 {
+    font-size: 14px;
+    font-weight: 600;
+    margin: 0 0 8px;
+    color: var(--text, #0f172a);
+  }
+
+  .mobile-day-panel .selected-date-mobile {
+    font-size: 13px;
+    color: var(--premium-bg, #7c3aed);
+    font-weight: 500;
+    margin-bottom: 12px;
+  }
+
+  .mobile-day-panel .day-task-mobile {
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    background: var(--bg-task, #f8fafc);
+    border: 1px solid var(--border-card, #e2e8f0);
+    border-radius: 10px;
+    font-size: 13px;
+  }
+
+  .mobile-day-panel .empty-day-mobile {
+    padding: 16px 0;
+    color: #9CA3AF;
+    text-align: center;
+    font-size: 13px;
+  }
+
+  .mobile-day-panel .add-task-btn-mobile {
+    width: 100%;
+    height: 40px;
+    border: none;
+    border-radius: 10px;
+    background: var(--premium-bg, #7c3aed);
+    color: var(--bg, #ffffff);
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: .2s;
+  }
+
+  .mobile-day-panel .add-task-btn-mobile:hover {
+    background: var(--dark-purple, #6d28d9);
+  }
+}
+
+/* ===== ПЛАНШЕТЫ В ПОРТРЕТНОЙ ОРИЕНТАЦИИ ===== */
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
+  .calendar-layout {
+    grid-template-columns: 220px 1fr;
+    gap: 14px;
+    padding: 14px;
+  }
+
+  .calendar {
+    min-height: 500px;
+  }
+
+  .grid {
+    min-height: 340px;
+  }
+
+  .day {
+    min-height: 44px;
+    padding: 3px 2px;
+  }
+
+  .date {
+    font-size: 14px;
+  }
+
+  .task {
+    height: 18px;
+    font-size: 9px;
+    padding: 0 4px;
+  }
+
+  .month-title {
+    font-size: 20px;
+  }
+}
+
+/* ===== ПЛАНШЕТЫ В АЛЬБОМНОЙ ОРИЕНТАЦИИ ===== */
+@media (min-width: 1025px) and (max-width: 1366px) {
+  .calendar-layout {
+    grid-template-columns: 280px 1fr;
+    padding: 20px;
+  }
+
+  .calendar {
+    height: 700px;
+  }
+
+  .grid {
+    height: 580px;
+  }
+}
+
+
+/* ===== МОБИЛЬНАЯ ПАНЕЛЬ (добавляем в шаблон) ===== */
+@media (max-width: 767px) {
+  .mobile-day-panel {
+    display: block !important;
+  }
+}
+
+@media (min-width: 768px) {
+  .mobile-day-panel {
+    display: none !important;
+  }
+}
 </style>

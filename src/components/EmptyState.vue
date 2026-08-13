@@ -190,15 +190,20 @@ const content = computed(() => contentMap[props.type])
   }
 }
 
-/* Responsive */
-@media (max-width: 480px) {
+
+/* ========================================
+   МОБИЛЬНАЯ И ПЛАНШЕТНАЯ ВЕРСТКА
+   ======================================== */
+
+/* ===== ПЛАНШЕТ (768px - 1024px) ===== */
+@media (max-width: 1024px) {
   .empty-state {
-    margin: 40px auto;
-    padding: 0 20px;
+    margin: 60px auto;
+    max-width: 380px;
   }
 
   .illustration img {
-    width: 140px;
+    width: 160px;
   }
 
   .title {
@@ -207,11 +212,82 @@ const content = computed(() => contentMap[props.type])
 
   .subtitle {
     font-size: 14px;
+    margin-bottom: 24px;
   }
 
   .empty-state-btn {
     padding: 10px 24px;
     font-size: 13px;
+  }
+}
+
+/* ===== МОБИЛЬНЫЕ ТЕЛЕФОНЫ (320px - 767px) ===== */
+@media (max-width: 767px) {
+  .empty-state {
+    margin: 40px auto;
+    max-width: 100%;
+    padding: 0 16px;
+  }
+
+  .illustration {
+    margin-bottom: 18px;
+  }
+
+  .illustration img {
+    width: 120px;
+  }
+
+  .title {
+    font-size: 18px;
+    margin-bottom: 8px;
+  }
+
+  .subtitle {
+    font-size: 14px;
+    margin-bottom: 20px;
+    max-width: 100%;
+    padding: 0 4px;
+  }
+
+  .empty-state-btn {
+    padding: 10px 20px;
+    font-size: 13px;
+    border-radius: 30px;
+  }
+
+  .empty-state-btn:hover {
+    transform: translateY(-1px);
+  }
+
+  /* Отключаем ripple на мобильных */
+  .empty-state-btn::after {
+    display: none;
+  }
+}
+
+/* ===== ОЧЕНЬ МАЛЕНЬКИЕ ТЕЛЕФОНЫ (до 380px) ===== */
+@media (max-width: 380px) {
+  .empty-state {
+    margin: 30px auto;
+    padding: 0 12px;
+  }
+
+  .illustration img {
+    width: 100px;
+  }
+
+  .title {
+    font-size: 16px;
+  }
+
+  .subtitle {
+    font-size: 13px;
+    margin-bottom: 16px;
+  }
+
+  .empty-state-btn {
+    padding: 8px 16px;
+    font-size: 12px;
   }
 }
 </style>

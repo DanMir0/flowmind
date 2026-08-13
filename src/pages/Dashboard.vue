@@ -812,27 +812,335 @@ onMounted(async () => {
   transform: translateY(-1px);
 }
 
-@media (max-width: 1200px) {
+/* ===== ПЛАНШЕТ (768px - 1024px) ===== */
+@media (max-width: 1024px) {
+  .dashboard {
+    padding: 16px 20px;
+  }
+
   .stats-grid {
     grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
+  .stat-card {
+    padding: 18px;
+    gap: 14px;
+    border-radius: 16px;
+  }
+
+  .stat-icon {
+    width: 60px;
+    height: 60px;
+  }
+
+  .stat-icon svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .stat-value {
+    font-size: 26px;
   }
 
   .main-grid {
     grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .panel {
+    padding: 20px;
+    border-radius: 16px;
+  }
+
+  .panel-title {
+    font-size: 18px;
+  }
+
+  .timer-image {
+    width: 140px;
+  }
+
+  .welcome h1 {
+    font-size: 30px;
+  }
+
+  .task-item {
+    padding: 12px 16px;
+  }
+
+  .date-box {
+    width: 48px;
+    height: 56px;
+  }
+
+  .date-box strong {
+    font-size: 22px;
   }
 }
 
-@media (max-width: 768px) {
+/* ===== МОБИЛЬНЫЕ ТЕЛЕФОНЫ (320px - 767px) ===== */
+@media (max-width: 767px) {
+  .dashboard {
+    padding: 12px 12px 20px;
+    min-height: calc(100vh - 56px);
+  }
+
+  .welcome {
+    margin-bottom: 20px;
+  }
+
+  .welcome h1 {
+    font-size: 24px;
+  }
+
+  .welcome-icon {
+    width: 28px;
+    height: 28px;
+  }
+
+  .welcome p {
+    font-size: 14px;
+  }
+
   .stats-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .stat-card {
+    padding: 14px;
+    gap: 10px;
+    border-radius: 14px;
+  }
+
+  .stat-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+  }
+
+  .stat-icon svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .stat-value {
+    font-size: 20px;
+  }
+
+  .stat-label {
+    font-size: 12px;
+  }
+
+  .stat-subtitle {
+    font-size: 11px;
+  }
+
+  .main-grid {
+    gap: 12px;
+  }
+
+  .panel {
+    padding: 16px;
+    border-radius: 14px;
+  }
+
+  .panel-header {
+    margin-bottom: 14px;
+  }
+
+  .panel-title {
+    font-size: 16px;
+  }
+
+  .panel-view {
+    font-size: 13px;
+  }
+
+  .task-item {
+    padding: 10px 12px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    border-radius: 8px;
+  }
+
+  .task-left {
+    width: 100%;
+  }
+
+  .priority {
+    font-size: 12px;
+    padding-left: 36px;
+  }
+
+  .task-checkbox {
+    width: 20px;
+    height: 20px;
+    font-size: 10px;
+  }
+
+  .task-title {
+    font-size: 14px;
+  }
+
+  .task-category {
+    font-size: 12px;
+  }
+
+  .upcoming-item {
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .date-box {
+    width: 40px;
+    height: 48px;
+    border-radius: 10px;
+  }
+
+  .date-box span {
+    font-size: 9px;
+  }
+
+  .date-box strong {
+    font-size: 18px;
+    margin-top: 2px;
+  }
+
+  .upcoming-title {
+    font-size: 13px;
+  }
+
+  .upcoming-category {
+    font-size: 11px;
+  }
+
+  .timer-image {
+    width: 100px;
+    margin: 12px auto;
+  }
+
+  .timer-panel h3 {
+    font-size: 16px;
+  }
+
+  .timer-panel p {
+    font-size: 13px;
+    margin-bottom: 14px;
+  }
+
+  .start-btn {
+    padding: 10px 16px;
+    font-size: 13px;
+    border-radius: 10px;
+  }
+
+  .add-task-link {
+    font-size: 14px;
+    margin-top: 14px;
+  }
+
+  .footer {
+    margin-top: 24px;
+    padding: 16px 0;
   }
 
   .footer-content {
-    flex-wrap: wrap;
+    flex-direction: column;
+    gap: 10px;
+    font-size: 12px;
+    text-align: center;
   }
 
   .divider {
     display: none;
   }
+
+  .empty {
+    font-size: 14px;
+    padding: 12px 0;
+  }
+
+  .clickable:hover {
+    transform: none;
+    box-shadow: none;
+  }
+
+  .stat-card.clickable:active {
+    transform: scale(0.97);
+  }
 }
+
+/* ===== ОЧЕНЬ МАЛЕНЬКИЕ ТЕЛЕФОНЫ (до 380px) ===== */
+@media (max-width: 380px) {
+  .dashboard {
+    padding: 8px 8px 16px;
+  }
+
+  .stats-grid {
+    gap: 6px;
+  }
+
+  .stat-card {
+    padding: 10px;
+    gap: 8px;
+    border-radius: 10px;
+  }
+
+  .stat-icon {
+    width: 36px;
+    height: 36px;
+  }
+
+  .stat-icon svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .stat-value {
+    font-size: 17px;
+  }
+
+  .stat-label {
+    font-size: 10px;
+  }
+
+  .stat-subtitle {
+    font-size: 9px;
+  }
+
+  .panel {
+    padding: 12px;
+    border-radius: 12px;
+  }
+
+  .panel-title {
+    font-size: 14px;
+  }
+
+  .task-item {
+    padding: 8px 10px;
+  }
+
+  .task-title {
+    font-size: 13px;
+  }
+
+  .date-box {
+    width: 34px;
+    height: 40px;
+  }
+
+  .date-box strong {
+    font-size: 15px;
+  }
+
+  .upcoming-title {
+    font-size: 12px;
+  }
+}
+
 </style>

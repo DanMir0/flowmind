@@ -1329,4 +1329,414 @@ select:focus {
 
 }
 
+/* ===== ПЛАНШЕТ (768px - 1024px) ===== */
+@media (max-width: 1024px) {
+  .settings-page {
+    padding: 24px 20px 40px;
+  }
+
+  .page-header h1 {
+    font-size: 30px;
+  }
+
+  .settings-grid {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .card {
+    padding: 22px;
+    border-radius: 20px;
+  }
+
+  .card-full {
+    grid-column: span 1;
+  }
+
+  .danger-card {
+    grid-column: span 1;
+  }
+
+  .card-header h2 {
+    font-size: 20px;
+  }
+
+  .subscription-body {
+    padding: 18px;
+  }
+
+  .theme-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .theme-card {
+    height: 140px;
+  }
+
+  .danger-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 18px;
+  }
+
+  .danger-btn {
+    width: 100%;
+  }
+}
+
+/* ===== МОБИЛЬНЫЕ ТЕЛЕФОНЫ (320px - 767px) ===== */
+@media (max-width: 767px) {
+  .settings-page {
+    padding: 16px 12px 32px;
+  }
+
+  .page-header {
+    margin-bottom: 20px;
+  }
+
+  .page-header h1 {
+    font-size: 24px;
+    margin-bottom: 4px;
+  }
+
+  .page-header p {
+    font-size: 14px;
+  }
+
+  .settings-grid {
+    gap: 14px;
+  }
+
+  .card {
+    padding: 16px;
+    border-radius: 16px;
+  }
+
+  .card:hover {
+    transform: none;
+  }
+
+  .card-header {
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+
+  .card-header h2 {
+    font-size: 17px;
+  }
+
+  .card-header span {
+    font-size: 13px;
+  }
+
+  .icon {
+    width: 42px;
+    height: 42px;
+  }
+
+  .icon svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .field {
+    gap: 6px;
+    margin-bottom: 14px;
+  }
+
+  .field label {
+    font-size: 13px;
+  }
+
+  .field small {
+    font-size: 12px;
+  }
+
+  input,
+  select {
+    height: 44px;
+    font-size: 13px;
+    padding: 0 12px;
+    border-radius: 10px;
+  }
+
+  .input-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .outline-btn {
+    height: 44px;
+    font-size: 13px;
+    padding: 0 16px;
+    border-radius: 10px;
+    width: 100%;
+  }
+
+  .password-input input {
+    padding-right: 44px;
+  }
+
+  .eye {
+    right: 12px;
+    font-size: 16px;
+  }
+
+  /* Subscription */
+  .subscription-top {
+    padding: 12px 14px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .badge,
+  .status {
+    font-size: 12px;
+    padding: 5px 10px;
+  }
+
+  .subscription-body {
+    flex-direction: column;
+    text-align: center;
+    padding: 16px 14px;
+    gap: 12px;
+  }
+
+  .calendar-icon {
+    width: 48px;
+    height: 48px;
+  }
+
+  .calendar-icon svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  .subscription-body h3 {
+    font-size: 17px;
+  }
+
+  .subscription-body p {
+    font-size: 14px;
+  }
+
+  .subscription-body span {
+    font-size: 13px;
+  }
+
+  .manage-btn {
+    height: 52px;
+    font-size: 14px;
+    padding: 0 16px;
+  }
+
+  .manage-btn span {
+    font-size: 22px;
+  }
+
+  /* Auth method */
+  .auth-method {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 14px 0;
+  }
+
+  .auth-method-left {
+    gap: 12px;
+  }
+
+  .auth-method-left h3 {
+    font-size: 14px;
+  }
+
+  .auth-method-left p {
+    font-size: 12px;
+  }
+
+  .auth-method-icon {
+    width: 36px;
+    height: 36px;
+  }
+
+  .auth-method-icon svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .auth-status {
+    width: 100%;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .auth-status .outline-btn,
+  .auth-status .danger-outline-btn {
+    flex: 1;
+    min-width: 100px;
+    height: 40px;
+    font-size: 12px;
+  }
+
+  .auth-badge {
+    font-size: 11px;
+    padding: 4px 10px;
+  }
+
+  .danger-outline-btn {
+    height: 44px;
+    font-size: 13px;
+    padding: 0 16px;
+    border-radius: 10px;
+  }
+
+  /* Theme */
+  .theme-title {
+    font-size: 13px;
+  }
+
+  .theme-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 8px;
+    margin-bottom: 12px;
+  }
+
+  .theme-card {
+    height: 110px;
+    border-radius: 14px;
+    gap: 10px;
+  }
+
+  .theme-card span {
+    font-size: 14px;
+  }
+
+  .theme-icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .theme-check {
+    width: 20px;
+    height: 20px;
+    font-size: 11px;
+    top: 8px;
+    right: 8px;
+  }
+
+  /* Danger */
+  .danger-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .danger-left {
+    gap: 14px;
+  }
+
+  .danger-left h2 {
+    font-size: 17px;
+  }
+
+  .danger-left span {
+    font-size: 13px;
+  }
+
+  .danger-btn {
+    width: 100%;
+    height: 44px;
+    font-size: 14px;
+    padding: 0 16px;
+    border-radius: 10px;
+  }
+
+  .danger-btn:hover {
+    transform: none;
+  }
+}
+
+/* ===== ОЧЕНЬ МАЛЕНЬКИЕ ТЕЛЕФОНЫ (до 380px) ===== */
+@media (max-width: 380px) {
+  .settings-page {
+    padding: 12px 8px 24px;
+  }
+
+  .card {
+    padding: 12px;
+    border-radius: 12px;
+  }
+
+  .page-header h1 {
+    font-size: 20px;
+  }
+
+  .card-header h2 {
+    font-size: 15px;
+  }
+
+  .card-header span {
+    font-size: 12px;
+  }
+
+  .icon {
+    width: 34px;
+    height: 34px;
+  }
+
+  .icon svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  input,
+  select {
+    height: 38px;
+    font-size: 12px;
+    padding: 0 10px;
+  }
+
+  .outline-btn {
+    height: 38px;
+    font-size: 12px;
+    padding: 0 12px;
+  }
+
+  .theme-grid {
+    gap: 8px;
+  }
+
+  .theme-card {
+    height: 90px;
+  }
+
+  .theme-card span {
+    font-size: 12px;
+  }
+
+  .theme-icon {
+    width: 32px;
+    height: 32px;
+  }
+
+  .theme-check {
+    width: 18px;
+    height: 18px;
+    font-size: 9px;
+  }
+
+  .danger-btn {
+    height: 38px;
+    font-size: 13px;
+  }
+
+  .auth-status .outline-btn,
+  .auth-status .danger-outline-btn {
+    height: 34px;
+    font-size: 11px;
+    min-width: 80px;
+  }
+}
 </style>

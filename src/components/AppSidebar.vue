@@ -1,12 +1,12 @@
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useTasksStore } from '@/store/tasks'
 
 const tasksStore = useTasksStore()
 const quickTask = ref('')
 const quickTaskError = ref(false)
 const quickTaskInput = ref(null)
-
+const isMobileOpen = ref(false)
 function isToday(dateStr) {
   if (!dateStr) return false
 
@@ -68,12 +68,42 @@ async function addQuickTask() {
   quickTask.value = ''
   quickTaskError.value = false
 }
+
+function toggleMobileSidebar() {
+  isMobileOpen.value = !isMobileOpen.value
+}
+
+function closeMobileSidebar() {
+  isMobileOpen.value = false
+}
+
+function handleMobileSidebarToggle() {
+  toggleMobileSidebar()
+}
+onMounted(() => {
+  window.addEventListener(
+    'toggle-mobile-sidebar',
+    handleMobileSidebarToggle
+  )
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener(
+    'toggle-mobile-sidebar',
+    handleMobileSidebarToggle
+  )
+})
 </script>
 
 <template>
-  <aside class="sidebar">
+  <div
+    v-if="isMobileOpen"
+    class="mobile-sidebar-overlay"
+    @click="closeMobileSidebar">
+  </div>
+  <aside class="sidebar" :class="{ 'mobile-open': isMobileOpen }">
 
-    <router-link to="/dashboard" class="menu-item">
+    <router-link to="/dashboard" class="menu-item" @click="closeMobileSidebar">
       <svg width="18px" height="18px" viewBox="0 0 24 24" fill="none"
            xmlns="http://www.w3.org/2000/svg">
         <path
@@ -84,7 +114,7 @@ async function addQuickTask() {
       <span>Home</span>
     </router-link>
 
-    <router-link to="/to-do-list" class="menu-item">
+    <router-link to="/to-do-list" class="menu-item" @click="closeMobileSidebar">
       <svg width="18px" height="18px" viewBox="0 0 1024 1024" class="icon" version="1.1"
            xmlns="http://www.w3.org/2000/svg">
         <path
@@ -100,7 +130,7 @@ async function addQuickTask() {
       <span>To-Do List</span>
     </router-link>
 
-    <router-link to="/calendar" class="menu-item">
+    <router-link to="/calendar" class="menu-item" @click="closeMobileSidebar">
       <svg width="18px" height="18px" viewBox="0 0 24 24" fill="none"
            xmlns="http://www.w3.org/2000/svg">
         <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.5"
@@ -117,7 +147,7 @@ async function addQuickTask() {
       <span>Calendar</span>
     </router-link>
 
-    <router-link to="/timer" class="menu-item">
+    <router-link to="/timer" class="menu-item" @click="closeMobileSidebar">
       <svg width="18px" height="18px" viewBox="0 0 24 24" fill="none"
            xmlns="http://www.w3.org/2000/svg">
         <circle cx="12" cy="13" r="9" stroke="currentColor" stroke-width="1.5" fill="none" />
@@ -128,7 +158,7 @@ async function addQuickTask() {
       <span>Timer</span>
     </router-link>
 
-    <router-link to="/settings" class="menu-item">
+    <router-link to="/settings" class="menu-item" @click="closeMobileSidebar">
       <svg width="18px" height="18px" viewBox="0 0 24 24" fill="none"
            xmlns="http://www.w3.org/2000/svg">
         <path
@@ -141,7 +171,7 @@ async function addQuickTask() {
       <span>Settings</span>
     </router-link>
 
-    <router-link to="/my-quotes" class="menu-item">
+    <router-link to="/my-quotes" class="menu-item" @click="closeMobileSidebar">
       <svg fill="currentColor" width="18px" height="18px" viewBox="0 0 56 56"
            xmlns="http://www.w3.org/2000/svg">
         <path
@@ -454,5 +484,162 @@ async function addQuickTask() {
 
 .quick-add-btn:active {
   transform: scale(0.96);
+}
+
+/* =========================================================
+   MOBILE SIDEBAR
+   ========================================================= */
+
+@media (max-width: 767px) {
+
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 280px;
+    height: 100vh;
+    z-index: 1000;
+    transform: translateX(-100%);
+    transition: transform 0.25s ease;
+    overflow-y: auto;
+  }
+
+  .sidebar.mobile-open {
+    transform: translateX(0);
+  }
+
+  .mobile-sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.35);
+    z-index: 999;
+  }
+
+  /* Menu item */
+
+  .menu-item {
+    flex: 1;
+    min-width: 0;
+    height: 56px;
+    padding: 5px 4px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    border-radius: 10px;
+    background: transparent;
+    color: var(--menu-item-color);
+    font-size: 10px;
+    font-weight: 500;
+  }
+
+  .menu-item svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .menu-item span {
+    display: block;
+    font-size: 9px;
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+
+  .menu-item:hover {
+    background: transparent;
+  }
+
+  .router-link-active {
+    background: transparent;
+    color: var(--premium-bg);
+  }
+
+  .router-link-active::after {
+    display: none;
+  }
+
+  .focus-card,
+  .quick-add-card {
+    display: none !important;
+  }
+}
+
+/* ===== ПЛАНШЕТЫ ===== */
+/* =========================================================
+   MOBILE SIDEBAR
+   ========================================================= */
+@media (max-width: 767px) {
+
+  .sidebar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: auto;
+    width: 100%;
+    height: 68px;
+    min-height: 68px;
+    padding: 6px 8px;
+    background: var(--bg);
+    border: none;
+    border-top: 1px solid var(--border);
+    border-radius: 0;
+    z-index: 1000;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+    gap: 2px;
+    box-shadow:
+      0 -4px 20px rgba(0, 0, 0, .06);
+  }
+
+  .menu-item {
+    flex: 1;
+    min-width: 0;
+    height: 56px;
+    padding: 5px 4px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    border-radius: 10px;
+    background: transparent;
+    color: var(--menu-item-color);
+    font-size: 10px;
+    font-weight: 500;
+  }
+
+  .menu-item svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .menu-item span {
+    display: block;
+    font-size: 9px;
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+
+  .menu-item:hover {
+    background: transparent;
+  }
+
+  .router-link-active {
+    background: transparent;
+    color: var(--premium-bg);
+  }
+
+  .router-link-active::after {
+    display: none;
+  }
+
+  .focus-card,
+  .quick-add-card {
+    display: none !important;
+  }
 }
 </style>

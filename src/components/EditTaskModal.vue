@@ -501,6 +501,302 @@ textarea {
   inset: 0;
   z-index: 999;
 }
+
+/* ========================================
+   МОБИЛЬНАЯ И ПЛАНШЕТНАЯ ВЕРСТКА
+   ======================================== */
+
+/* ===== ПЛАНШЕТ (768px - 1024px) ===== */
+@media (max-width: 1024px) {
+  .modal {
+    width: 480px;
+    padding: 24px;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .modal h2 {
+    font-size: 20px;
+  }
+
+  input,
+  textarea,
+  select {
+    padding: 11px 14px;
+    font-size: 14px;
+  }
+
+  .btn {
+    padding: 10px 16px;
+    font-size: 13px;
+    max-width: 140px;
+  }
+
+  .files-scroll {
+    max-height: 150px;
+  }
+}
+
+/* ===== МОБИЛЬНЫЕ ТЕЛЕФОНЫ (320px - 767px) ===== */
+@media (max-width: 767px) {
+  .modal-wrapper {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+  }
+
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  .modal {
+    width: 100%;
+    max-width: 100%;
+    max-height: 92vh;
+    padding: 20px 20px 24px;
+    border-radius: 24px 24px 0 0;
+    gap: 12px;
+    margin: 0;
+    overflow-y: auto;
+    animation: slideUp 0.3s ease;
+    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.15);
+  }
+
+  .modal::before {
+    content: '';
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 4px;
+    background: var(--border, #e2e8f0);
+    border-radius: 2px;
+  }
+
+  @keyframes slideUp {
+    from {
+      transform: translateY(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  .modal h2 {
+    font-size: 18px;
+    margin: 0;
+    padding-right: 10px;
+  }
+
+  input,
+  textarea,
+  select {
+    padding: 10px 14px;
+    font-size: 14px;
+    border-radius: 10px;
+  }
+
+  textarea {
+    min-height: 80px;
+    resize: vertical;
+  }
+
+  .file-btn {
+    padding: 10px 14px;
+    font-size: 13px;
+  }
+
+  .file-preview {
+    padding: 6px 10px;
+    font-size: 13px;
+  }
+
+  .file-name {
+    max-width: 180px;
+  }
+
+  .file-icon {
+    width: 16px;
+    height: 16px;
+  }
+
+  .actions {
+    flex-direction: row;
+    gap: 10px;
+    margin-top: 4px;
+  }
+
+  .btn {
+    flex: 1;
+    max-width: none;
+    padding: 12px 16px;
+    font-size: 14px;
+    border-radius: 20px;
+  }
+
+  .btn-cancel {
+    flex: 0.5;
+  }
+
+  .btn-primary {
+    flex: 1;
+  }
+
+  .error {
+    font-size: 13px;
+    margin: -6px 0 4px;
+  }
+
+  .modal::-webkit-scrollbar {
+    width: 0;
+  }
+
+  .files-scroll {
+    max-height: 120px;
+  }
+
+  .files-wrapper {
+    margin-bottom: 8px;
+  }
+
+  .file-skeleton {
+    height: 30px;
+  }
+}
+
+/* ===== ОЧЕНЬ МАЛЕНЬКИЕ ТЕЛЕФОНЫ (до 380px) ===== */
+@media (max-width: 380px) {
+  .modal {
+    padding: 16px 16px 20px;
+    max-height: 94vh;
+  }
+
+  .modal h2 {
+    font-size: 16px;
+  }
+
+  input,
+  textarea,
+  select {
+    padding: 8px 12px;
+    font-size: 13px;
+    border-radius: 8px;
+  }
+
+  textarea {
+    min-height: 60px;
+  }
+
+  .file-btn {
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+
+  .file-btn svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .btn {
+    padding: 10px 14px;
+    font-size: 13px;
+    border-radius: 18px;
+  }
+
+  .file-name {
+    max-width: 120px;
+    font-size: 12px;
+  }
+
+  .remove-file {
+    font-size: 14px;
+  }
+
+  .files-scroll {
+    max-height: 100px;
+  }
+}
+
+/* ===== ПЛАНШЕТЫ В ПОРТРЕТНОЙ ОРИЕНТАЦИИ ===== */
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
+  .modal {
+    width: 420px;
+    padding: 24px;
+    max-height: 85vh;
+  }
+}
+
+/* ===== ПЛАНШЕТЫ В АЛЬБОМНОЙ ОРИЕНТАЦИИ ===== */
+@media (min-width: 1025px) and (max-width: 1366px) {
+  .modal {
+    width: 460px;
+  }
+}
+
+/* ===== ТЕМНАЯ ТЕМА ===== */
+@media (prefers-color-scheme: dark) {
+  .modal::before {
+    background: #334155;
+  }
+}
+
+[data-theme="dark"] .modal::before {
+  background: #334155;
+}
+
+[data-theme="dark"] .modal {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+[data-theme="dark"] .modal-backdrop {
+  background: rgba(0, 0, 0, 0.6);
+}
+
+[data-theme="dark"] .file-skeleton {
+  background: linear-gradient(
+    90deg,
+    #2d3748 25%,
+    #3a4458 37%,
+    #2d3748 63%
+  );
+}
+
+[data-theme="dark"] .btn-cancel {
+  background: #2d3748;
+  border-color: #4a5568;
+  color: #cbd5e1;
+}
+
+[data-theme="dark"] .btn-cancel:hover {
+  background: #3a4458;
+}
+
+/* ===== МОДАЛЬНАЯ АНИМАЦИЯ ===== */
+.modal-enter-active,
+.modal-leave-active {
+  transition: all 0.3s ease;
+}
+
+.modal-enter-from {
+  opacity: 0;
+  transform: scale(0.95);
+}
+
+.modal-leave-to {
+  opacity: 0;
+  transform: scale(0.95);
+}
+
 </style>
 
 <style>
@@ -546,5 +842,18 @@ textarea {
 .modal-leave-to .modal {
   transform: translateY(20px) scale(.98);
   opacity: 0;
+}
+
+/* Для мобильных - анимация снизу */
+@media (max-width: 767px) {
+  .modal-enter-from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+
+  .modal-leave-to {
+    transform: translateY(100%);
+    opacity: 0;
+  }
 }
 </style>

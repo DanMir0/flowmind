@@ -1,3 +1,104 @@
+<script setup>
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { supabase } from '@/services/supabase.js'
+import { useAuthStore } from '@/store/auth'
+import router from '@/router/router.js'
+
+const auth = useAuthStore()
+
+const email = ref('')
+const password = ref('')
+const showPassword = ref(false)
+const loading = ref(false)
+const error = ref('')
+
+const googleLoading = ref(false)
+const showMfa = ref(false)
+const mfaCode = ref('')
+
+async function submit() {
+  error.value = ''
+  loading.value = true
+
+  try {
+    const result = await auth.signIn(email.value, password.value)
+
+    if (result.mfaRequired) {
+      showMfa.value = true
+      return
+    }
+
+    await router.push({
+      name: 'dashboard'
+    })
+  } catch (err) {
+    console.error('LOGIN ERROR:', err)
+    if (err.message.includes('Email not confirmed')) {
+      error.value = 'Please confirm your email'
+    } else {
+      error.value = err.message
+    }
+  } finally {
+    loading.value = false
+  }
+
+}
+
+async function loginWithGoogle() {
+  try {
+    googleLoading.value = true
+
+    await auth.signInWithGoogle()
+  } catch (err) {
+    console.error('Google login error:', err)
+    error.value = err.message
+  } finally {
+    googleLoading.value = false
+  }
+}
+
+async function verifyMfa() {
+  error.value = ''
+
+  if (!/^\d{6}$/.test(mfaCode.value)) {
+    error.value = 'Enter the 6-digit authentication code.'
+
+    return
+  }
+
+  loading.value = true
+
+  try {
+    await auth.verifyMFA(
+      auth.mfaFactorId,
+      mfaCode.value
+    )
+
+    showMfa.value = false
+    mfaCode.value = ''
+
+    /*
+     * Теперь сессия AAL2.
+     * Загружаем остальные данные.
+     */
+    await auth.fetchProfile()
+
+    await router.push({
+      name: 'dashboard'
+    })
+
+  } catch (err) {
+    console.error('MFA ERROR:', err)
+
+    error.value =
+      'Invalid authentication code.'
+
+  } finally {
+    loading.value = false
+  }
+}
+</script>
 <template>
   <div class="auth-page">
     <div class="auth-card">
@@ -123,108 +224,6 @@
     </div>
   </div>
 </template>
-
-<script setup>
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { supabase } from '@/services/supabase.js'
-import { useAuthStore } from '@/store/auth'
-import router from '@/router/router.js'
-
-const auth = useAuthStore()
-
-const email = ref('')
-const password = ref('')
-const showPassword = ref(false)
-const loading = ref(false)
-const error = ref('')
-
-const googleLoading = ref(false)
-const showMfa = ref(false)
-const mfaCode = ref('')
-
-async function submit() {
-  error.value = ''
-  loading.value = true
-
-  try {
-    const result = await auth.signIn(email.value, password.value)
-
-    if (result.mfaRequired) {
-      showMfa.value = true
-      return
-    }
-
-    await router.push({
-      name: 'dashboard'
-    })
-  } catch (err) {
-    console.error('LOGIN ERROR:', err)
-    if (err.message.includes('Email not confirmed')) {
-      error.value = 'Please confirm your email'
-    } else {
-      error.value = err.message
-    }
-  } finally {
-    loading.value = false
-  }
-
-}
-
-async function loginWithGoogle() {
-  try {
-    googleLoading.value = true
-
-    await auth.signInWithGoogle()
-  } catch (err) {
-    console.error('Google login error:', err)
-    error.value = err.message
-  } finally {
-    googleLoading.value = false
-  }
-}
-
-async function verifyMfa() {
-  error.value = ''
-
-  if (!/^\d{6}$/.test(mfaCode.value)) {
-    error.value = 'Enter the 6-digit authentication code.'
-
-    return
-  }
-
-  loading.value = true
-
-  try {
-    await auth.verifyMFA(
-      auth.mfaFactorId,
-      mfaCode.value
-    )
-
-    showMfa.value = false
-    mfaCode.value = ''
-
-    /*
-     * Теперь сессия AAL2.
-     * Загружаем остальные данные.
-     */
-    await auth.fetchProfile()
-
-    await router.push({
-      name: 'dashboard'
-    })
-
-  } catch (err) {
-    console.error('MFA ERROR:', err)
-
-    error.value =
-      'Invalid authentication code.'
-
-  } finally {
-    loading.value = false
-  }
-}
-</script>
 
 <style scoped>
 .auth-page {
@@ -358,4 +357,159 @@ input:focus {
 .switch a:hover {
   color: #5e2fd1;
 }
+
+/* ===== ПЛАНШЕТ (768px - 1024px) ===== */
+@media (max-width: 1024px) {
+  .auth-card {
+    max-width: 380px;
+    padding: 30px 32px 36px;
+    border-radius: 18px;
+  }
+
+  .auth-card h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+
+  input {
+    padding: 12px 14px;
+    font-size: 14px;
+  }
+
+  .btn {
+    padding: 11px;
+    font-size: 14px;
+  }
+}
+
+/* ===== МОБИЛЬНЫЕ ТЕЛЕФОНЫ (320px - 767px) ===== */
+@media (max-width: 767px) {
+  .auth-page {
+    padding: 16px;
+    min-height: 100dvh;
+  }
+
+  .auth-card {
+    max-width: 100%;
+    padding: 24px 20px 28px;
+    border-radius: 16px;
+    border: none;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  }
+
+  .auth-card h2 {
+    font-size: 22px;
+    margin-bottom: 18px;
+  }
+
+  form {
+    gap: 14px;
+  }
+
+  input {
+    padding: 12px 14px;
+    font-size: 14px;
+    border-radius: 10px;
+  }
+
+  .btn {
+    padding: 12px;
+    font-size: 14px;
+    border-radius: 24px;
+  }
+
+  .google-btn {
+    font-size: 14px;
+  }
+
+  .google-btn svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .eye {
+    font-size: 16px;
+    right: 12px;
+  }
+
+  .switch {
+    font-size: 13px;
+  }
+
+  .divider {
+    margin: 20px 0;
+    font-size: 12px;
+  }
+
+  .divider span {
+    padding: 0 12px;
+  }
+
+  .error {
+    font-size: 13px;
+  }
+
+  .actions {
+    margin-top: 8px;
+  }
+
+  .link {
+    font-size: 12px;
+  }
+
+  .mfa-login h2 {
+    font-size: 20px;
+  }
+
+  .mfa-login p {
+    font-size: 13px;
+  }
+}
+
+/* ===== ОЧЕНЬ МАЛЕНЬКИЕ ТЕЛЕФОНЫ (до 380px) ===== */
+@media (max-width: 380px) {
+  .auth-page {
+    padding: 12px;
+  }
+
+  .auth-card {
+    padding: 20px 16px 24px;
+    border-radius: 14px;
+  }
+
+  .auth-card h2 {
+    font-size: 20px;
+    margin-bottom: 14px;
+  }
+
+  input {
+    padding: 10px 12px;
+    font-size: 13px;
+    border-radius: 8px;
+  }
+
+  .btn {
+    padding: 10px;
+    font-size: 13px;
+    border-radius: 20px;
+  }
+
+  .google-btn {
+    font-size: 13px;
+  }
+
+  .google-btn svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .switch {
+    font-size: 12px;
+  }
+
+  .divider {
+    margin: 16px 0;
+  }
+}
+
 </style>

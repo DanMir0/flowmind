@@ -58,37 +58,52 @@ const emit = defineEmits(['confirm','cancel'])
 
 </template>
 <style scoped>
-.modal-backdrop {
-  position: absolute;
+.modal-wrapper {
+  position: fixed;
   inset: 0;
-  background: rgba(15,23,42,.35);
+  z-index: 9999;
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
 }
 
 .modal {
-  background: var(--bg);
+  background: var(--bg, #ffffff);
   padding: 30px;
   border-radius: 20px;
   width: 360px;
+  max-width: 100%;
   text-align: center;
-  color: var(--text);
+  color: var(--text, #0f172a);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.25), 0 8px 24px rgba(0, 0, 0, 0.12);
+  border: 1px solid var(--border, #e2e8f0);
+  position: relative;
 }
 
 .modal h3 {
   font-size: 22px;
-  margin-bottom: 12px;
+  font-weight: 700;
+  margin: 0 0 12px;
+  color: var(--text, #0f172a);
 }
 
 .modal p {
   font-size: 15px;
-  color: var(--text-grey);
+  line-height: 1.6;
+  color: var(--text-grey, #475569);
+  margin: 0;
+}
+
+.modal p strong {
+  color: var(--text, #0f172a);
 }
 
 .actions {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   gap: 12px;
   margin-top: 25px;
 }
@@ -102,12 +117,14 @@ const emit = defineEmits(['confirm','cancel'])
   font-size: 14px;
   cursor: pointer;
   transition: all 0.2s ease;
+  border: none;
+  position: relative;
+  overflow: hidden;
 }
 
 .btn-primary {
   background: #7a3cff;
-  color: var(--bg);;
-  border: none;
+  color: #ffffff;
   box-shadow: 0 2px 6px rgba(122, 60, 255, 0.25);
 }
 
@@ -126,21 +143,15 @@ const emit = defineEmits(['confirm','cancel'])
 }
 
 .btn-cancel {
-  background: var(--bg-btn-cancel);;
-  border: 1px solid #e0e0e0;
-  color: #444;
+  background: var(--bg-btn-cancel, #f1f5f9);
+  border: 1px solid var(--border, #e2e8f0);
+  color: var(--text, #475569);
 }
 
 .btn-cancel:hover {
   background: #e8e8e8;
   border-color: #ccc;
   transform: translateY(-2px);
-}
-
-.modal-wrapper {
-  position: fixed;
-  inset: 0;
-  z-index: 999;
 }
 
 /* Ripple effect */
@@ -151,11 +162,12 @@ const emit = defineEmits(['confirm','cancel'])
   left: 50%;
   width: 5px;
   height: 5px;
-  background: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.4);
   opacity: 0;
   border-radius: 100%;
-  transform: scale(1, 1) translate(-50%);
+  transform: scale(1, 1) translate(-50%, -50%);
   transform-origin: 50% 50%;
+  pointer-events: none;
 }
 
 .btn:focus:not(:active)::after {
@@ -164,29 +176,216 @@ const emit = defineEmits(['confirm','cancel'])
 
 @keyframes ripple {
   0% {
-    transform: scale(0, 0);
+    transform: scale(0, 0) translate(-50%, -50%);
     opacity: 0.5;
   }
   20% {
-    transform: scale(25, 25);
+    transform: scale(25, 25) translate(-50%, -50%);
     opacity: 0.3;
   }
   100% {
     opacity: 0;
-    transform: scale(40, 40);
+    transform: scale(40, 40) translate(-50%, -50%);
   }
 }
 
-/* Responsive */
-@media (max-width: 480px) {
-  .actions {
-    flex-direction: column;
+
+
+
+
+/* ========================================
+   МОБИЛЬНАЯ И ПЛАНШЕТНАЯ ВЕРСТКА
+   ======================================== */
+
+/* ===== ПЛАНШЕТ (768px - 1024px) ===== */
+@media (max-width: 1024px) {
+  .modal {
+    width: 420px;
+    padding: 28px;
+    border-radius: 20px;
+  }
+
+  .modal h3 {
+    font-size: 20px;
+  }
+
+  .modal p {
+    font-size: 14px;
+  }
+
+  .btn {
+    max-width: 130px;
+    padding: 10px 16px;
+    font-size: 13px;
+    height: 42px;
+  }
+}
+
+/* ===== МОБИЛЬНЫЕ ТЕЛЕФОНЫ (320px - 767px) ===== */
+@media (max-width: 767px) {
+  .modal-wrapper {
+    align-items: flex-end;
+    padding: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
   }
 
   .modal {
-    padding: 24px;
-    width: 90%;
+    width: 100%;
+    max-width: 100%;
+    padding: 24px 20px 28px;
+    border-radius: 24px 24px 0 0;
+    text-align: center;
+    animation: slideUp 0.3s ease;
+    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.15);
+    border-bottom: none;
+    border-left: none;
+    border-right: none;
   }
+
+  /* Полоска сверху для закрытия */
+  .modal::before {
+    content: '';
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 4px;
+    background: var(--border, #e2e8f0);
+    border-radius: 2px;
+  }
+
+  @keyframes slideUp {
+    from {
+      transform: translateY(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  .modal h3 {
+    font-size: 18px;
+    margin: 0 0 8px;
+  }
+
+  .modal p {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .actions {
+    flex-direction: row;
+    gap: 10px;
+    margin-top: 24px;
+  }
+
+  .btn {
+    flex: 1;
+    max-width: none;
+    height: 48px;
+    font-size: 15px;
+    border-radius: 14px;
+    padding: 0 16px;
+  }
+
+  /* Скрываем ripple на мобильных для производительности */
+  .btn::after {
+    display: none;
+  }
+}
+
+/* ===== ОЧЕНЬ МАЛЕНЬКИЕ ТЕЛЕФОНЫ (до 380px) ===== */
+@media (max-width: 380px) {
+  .modal-wrapper {
+    padding: 0;
+  }
+
+  .modal {
+    padding: 20px 16px 24px;
+    border-radius: 20px 20px 0 0;
+  }
+
+  .modal::before {
+    width: 32px;
+    height: 3px;
+    top: 8px;
+  }
+
+  .modal h3 {
+    font-size: 16px;
+  }
+
+  .modal p {
+    font-size: 13px;
+  }
+
+  .btn {
+    height: 44px;
+    font-size: 14px;
+    border-radius: 12px;
+  }
+
+  .actions {
+    gap: 8px;
+    margin-top: 20px;
+  }
+}
+
+/* ===== ПЛАНШЕТЫ В ПОРТРЕТНОЙ ОРИЕНТАЦИИ ===== */
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
+  .modal {
+    width: 380px;
+    padding: 26px;
+  }
+}
+
+/* ===== ПЛАНШЕТЫ В АЛЬБОМНОЙ ОРИЕНТАЦИИ ===== */
+@media (min-width: 1025px) and (max-width: 1366px) {
+  .modal {
+    width: 400px;
+  }
+}
+
+/* ===== ТЕМНАЯ ТЕМА ===== */
+@media (prefers-color-scheme: dark) {
+  .modal::before {
+    background: #334155;
+  }
+}
+
+[data-theme="dark"] .modal::before {
+  background: #334155;
+}
+
+[data-theme="dark"] .modal {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+[data-theme="dark"] .modal h3 {
+  color: #f1f5f9;
+}
+
+[data-theme="dark"] .modal p {
+  color: #cbd5e1;
+}
+
+[data-theme="dark"] .modal p strong {
+  color: #f1f5f9;
+}
+
+[data-theme="dark"] .btn-cancel {
+  background: #2d3748;
+  border-color: #4a5568;
+  color: #cbd5e1;
+}
+
+[data-theme="dark"] .btn-cancel:hover {
+  background: #3a4458;
 }
 </style>
 <style>
@@ -212,5 +411,26 @@ const emit = defineEmits(['confirm','cancel'])
 .modal-leave-to .modal {
   transform: translateY(20px) scale(.98);
   opacity: 0;
+}
+
+/* Для мобильных - анимация снизу */
+@media (max-width: 767px) {
+  .modal-enter-from .modal {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+
+  .modal-leave-to .modal {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+
+  .modal-enter-from {
+    opacity: 0;
+  }
+
+  .modal-leave-to {
+    opacity: 0;
+  }
 }
 </style>

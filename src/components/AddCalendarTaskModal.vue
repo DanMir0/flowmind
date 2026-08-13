@@ -241,16 +241,188 @@ label {
   box-shadow: 0 4px 12px rgba(122, 60, 255, 0.35);
 }
 
-.fade-enter-active,
-.fade-leave-active {
-  transition: .25s;
+/* ===== ПЛАНШЕТ (768px - 1024px) ===== */
+@media (max-width: 1024px) {
+  .overlay {
+    padding: 0;
+  }
+
+  .modal {
+    max-width: 400px;
+    padding: 24px;
+    border-radius: 18px;
+    gap: 14px;
+  }
+
+  h2 {
+    font-size: 20px;
+  }
+
+  input,
+  textarea,
+  select {
+    padding: 10px 14px;
+    font-size: 13px;
+    border-radius: 10px;
+  }
+
+  textarea {
+    min-height: 90px;
+  }
+
+  .selected-date {
+    padding: 10px;
+    font-size: 13px;
+  }
+
+  .cancel,
+  .save {
+    padding: 10px 16px;
+    font-size: 13px;
+  }
 }
 
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
+/* ===== МОБИЛЬНЫЕ ТЕЛЕФОНЫ (320px - 767px) ===== */
+@media (max-width: 767px) {
+  .overlay {
+    padding: 0;
+    align-items: flex-end;
+    background: rgba(0, 0, 0, 0.5);
+  }
+
+  .modal {
+    max-width: 100%;
+    padding: 20px 16px 24px;
+    border-radius: 24px 24px 0 0;
+    animation: slideUp 0.3s ease;
+    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.15);
+    border: none;
+    border-top: 1px solid var(--border, #e2e8f0);
+    gap: 12px;
+  }
+
+  /* Полоска сверху для закрытия */
+  .modal::before {
+    content: '';
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 4px;
+    background: var(--border, #e2e8f0);
+    border-radius: 2px;
+  }
+
+  @keyframes slideUp {
+    from {
+      transform: translateY(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  h2 {
+    font-size: 18px;
+    margin-bottom: 2px;
+  }
+
+  .selected-date {
+    padding: 8px 12px;
+    font-size: 13px;
+    border-radius: 10px;
+  }
+
+  input,
+  textarea,
+  select {
+    padding: 10px 12px;
+    font-size: 14px;
+    border-radius: 10px;
+  }
+
+  textarea {
+    min-height: 80px;
+  }
+
+  label {
+    font-size: 12px;
+    margin-top: -4px;
+  }
+
+  .buttons {
+    flex-direction: row;
+    gap: 10px;
+    margin-top: 4px;
+  }
+
+  .cancel,
+  .save {
+    flex: 1;
+    padding: 12px 16px;
+    font-size: 14px;
+    border-radius: 10px;
+    text-align: center;
+    justify-content: center;
+  }
+
+  .cancel {
+    flex: 0.5;
+  }
+
+  .save {
+    flex: 1;
+  }
 }
 
+/* ===== ОЧЕНЬ МАЛЕНЬКИЕ ТЕЛЕФОНЫ (до 380px) ===== */
+@media (max-width: 380px) {
+  .overlay {
+    padding: 0;
+  }
+
+  .modal {
+    padding: 16px 12px 20px;
+    border-radius: 20px 20px 0 0;
+  }
+
+  .modal::before {
+    width: 32px;
+    height: 3px;
+    top: 8px;
+  }
+
+  h2 {
+    font-size: 16px;
+  }
+
+  .selected-date {
+    font-size: 12px;
+    padding: 6px 10px;
+  }
+
+  input,
+  textarea,
+  select {
+    padding: 8px 10px;
+    font-size: 13px;
+    border-radius: 8px;
+  }
+
+  textarea {
+    min-height: 60px;
+  }
+
+  .cancel,
+  .save {
+    padding: 10px 12px;
+    font-size: 13px;
+    border-radius: 8px;
+  }
+}
 </style>
 <style>
 /* TransitionGroup animations */
@@ -295,5 +467,43 @@ label {
 .modal-leave-to .modal {
   transform: translateY(20px) scale(.98);
   opacity: 0;
+}
+
+/* Для мобильных - анимация снизу */
+@media (max-width: 767px) {
+  .modal-enter-from .modal {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+
+  .modal-leave-to .modal {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+
+  .modal-enter-from,
+  .modal-leave-to {
+    opacity: 1;
+  }
+}
+
+/* ========================================
+   ДОПОЛНИТЕЛЬНЫЕ СТИЛИ ДЛЯ TRANSITION GROUP
+   ======================================== */
+.file-enter-active,
+.file-leave-active,
+.file-move {
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.file-enter-from {
+  opacity: 0;
+  transform: translateY(-6px);
+}
+
+.file-leave-to {
+  opacity: 0;
+  position: absolute;
+  transform: translateX(6px);
 }
 </style>

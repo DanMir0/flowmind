@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, watch, onMounted } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { useTasksStore } from '@/store/tasks'
 import { storeToRefs } from 'pinia'
 import TaskCard from '@/components/TaskCard.vue'
@@ -11,6 +11,7 @@ import { showError, showSuccess } from '@/utils/toast.js'
 import { useRoute } from 'vue-router'
 import BaseSelect from '@/components/BaseSelect.vue'
 import { useSubscriptionStore } from '@/store/subscription.js'
+import MobileFilterTabs from '@/components/MobileFilterTabs.vue'
 
 const tasksStore = useTasksStore()
 const subscriptionStore = useSubscriptionStore()
@@ -30,7 +31,7 @@ const draggingId = ref(null)
 const visibleCount = ref(15)
 
 const isPremium = computed(() => {
-  return subscriptionStore.status === 'active' ||  subscriptionStore.status === 'trial'
+  return subscriptionStore.status === 'active' || subscriptionStore.status === 'trial'
 })
 
 const canDrag = computed(() => {
@@ -47,20 +48,20 @@ const isReordering = ref(false)
 const dropTargetId = ref(null)
 
 const priorityFilters = [
-    { label: 'All', value: 'all' },
-    { label: 'High', value: 1 },
-    { label: 'Medium', value: 2 },
-    { label: 'Low', value: 3 }
-  ]
+  { label: 'All', value: 'all' },
+  { label: 'High', value: 1 },
+  { label: 'Medium', value: 2 },
+  { label: 'Low', value: 3 }
+]
 
 const sortValue = [
-  { label: 'Manual', value: 'manual'},
-  { label: 'Newest first', value: 'created_desc'},
-  { label: 'Oldest first', value: 'created_asc'},
-  { label: 'High priority', value: 'priority_desc'},
-  { label: 'Low priority', value: 'priority_asc'},
-  { label: 'Nearest deadline', value: 'deadline_asc'},
-  { label: 'Farthest deadline', value: 'deadline_desc'},
+  { label: 'Manual', value: 'manual' },
+  { label: 'Newest first', value: 'created_desc' },
+  { label: 'Oldest first', value: 'created_asc' },
+  { label: 'High priority', value: 'priority_desc' },
+  { label: 'Low priority', value: 'priority_asc' },
+  { label: 'Nearest deadline', value: 'deadline_asc' },
+  { label: 'Farthest deadline', value: 'deadline_desc' }
 ]
 
 const sortedTasks = computed(() => {
@@ -420,6 +421,7 @@ onMounted(() => {
     statusFilter.value = 'all'
   }
 })
+
 function openAddTaskModal() {
   if (
     subscriptionStore.status !== 'trial' &&
@@ -427,7 +429,7 @@ function openAddTaskModal() {
     tasksStore.tasks.length >= 5
   ) {
     showError(
-      "You've reached the 5-task limit. Upgrade to Premium for unlimited tasks."
+      'You\'ve reached the 5-task limit. Upgrade to Premium for unlimited tasks.'
     )
 
     return
@@ -435,16 +437,34 @@ function openAddTaskModal() {
 
   showAddModal.value = true
 }
+
+onMounted(() => {
+  window.addEventListener('open-add-task', openAddTaskModal)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('open-add-task', openAddTaskModal)
+})
 </script>
 
 <template>
   <div class="page">
 
+    <!-- MOBILE FILTERS -->
+    <MobileFilterTabs
+      class="mobile-filters"
+      v-model:priority="priorityFilter"
+      v-model:status="statusFilter" />
+
     <div class="header-row">
+
       <div class="header-block-text">
-        <h1 class="header-title">My Task</h1>
-        <p class="header-description">{{ visibleTasks.length }}
-          {{ visibleTasks.length === 1 ? 'task' : 'tasks' }}</p>
+        <h1 class="header-title">My Tasks</h1>
+
+        <p class="header-description">
+          {{ visibleTasks.length }}
+          {{ visibleTasks.length === 1 ? 'task' : 'tasks' }}
+        </p>
       </div>
 
       <div class="controls">
@@ -454,7 +474,10 @@ function openAddTaskModal() {
           <button
             v-for="option in priorityFilters"
             :key="option.value"
-            :class="['filter-pill', { active: priorityFilter === option.value }]"
+            :class="[
+              'filter-pill',
+              { active: priorityFilter === option.value }
+            ]"
             @click="priorityFilter = option.value">
             {{ option.label }}
           </button>
@@ -462,6 +485,7 @@ function openAddTaskModal() {
 
         <!-- STATUS -->
         <div class="filters-group">
+
           <button
             class="filter-pill"
             :class="{ active: statusFilter === 'active' }"
@@ -482,6 +506,7 @@ function openAddTaskModal() {
             @click="statusFilter = 'all'">
             All
           </button>
+
         </div>
 
         <!-- SORT -->
@@ -491,42 +516,48 @@ function openAddTaskModal() {
           labelKey="label"
           valueKey="value"
           placeholder="Select sort"
-          class="sort-select"/>
+          class="sort-select" />
 
-        <button class="add-btn" @click="openAddTaskModal">
+        <!-- DESKTOP ADD -->
+        <button
+          class="add-btn"
+          @click="openAddTaskModal">
           Add Task
         </button>
+
       </div>
     </div>
 
 
-    <div v-if="loading || !isInitialized" class="tasks-grid">
-      <div v-for="i in 5" :key="i" class="task-card skeleton">
-
-        <!-- toggle -->
+    <!-- LOADING -->
+    <div
+      v-if="loading || !isInitialized"
+      class="tasks-grid">
+      <div
+        v-for="i in 5"
+        :key="i"
+        class="task-card skeleton">
         <div class="skeleton-toggle"></div>
-
-        <!-- title -->
         <div class="skeleton-title"></div>
-
-        <!-- deadline -->
         <div class="skeleton-deadline"></div>
-
-        <!-- priority -->
         <div class="skeleton-priority"></div>
 
-        <!-- buttons -->
         <div class="skeleton-buttons">
           <div class="skeleton-btn primary"></div>
           <div class="skeleton-btn danger"></div>
         </div>
-
       </div>
     </div>
 
-    <div v-else-if="error" class="error-wrapper">
+    <!-- ERROR -->
+    <div
+      v-else-if="error"
+      class="error-wrapper">
       <div class="error-card">
-        <h2 class="error-title">Connection error!</h2>
+
+        <h2 class="error-title">
+          Connection error!
+        </h2>
 
         <div class="error-illustration"></div>
 
@@ -547,6 +578,8 @@ function openAddTaskModal() {
       </div>
     </div>
 
+
+    <!-- EMPTY -->
     <EmptyState
       v-else-if="emptyType"
       :type="emptyType"
@@ -558,8 +591,13 @@ function openAddTaskModal() {
       }"
       @showCompleted="statusFilter = 'completed'" />
 
+    <!-- TASKS -->
     <div v-else>
-      <TransitionGroup name="list" tag="div" class="tasks-grid">
+
+      <TransitionGroup
+        name="list"
+        tag="div"
+        class="tasks-grid">
         <TaskCard
           v-for="task in displayedTasks"
           :key="task._key || task.id"
@@ -577,8 +615,7 @@ function openAddTaskModal() {
           @drop.prevent="onDrop(task)"
           @delete="requestDelete"
           @edit="requestEdit"
-          @toggle-complete="toggleComplete"
-        />
+          @toggle-complete="toggleComplete" />
       </TransitionGroup>
       <div
         v-if="hasMoreTasks"
@@ -586,12 +623,15 @@ function openAddTaskModal() {
         <button
           class="load-more-btn"
           @click="loadMore">
-          Load More ({{ visibleTasks.length - displayedTasks.length }})
+          Load More
+          ({{ visibleTasks.length - displayedTasks.length }})
         </button>
       </div>
+
     </div>
 
 
+    <!-- MODALS -->
     <AddTaskModal
       :isOpen="showAddModal"
       @close="showAddModal = false" />
@@ -616,6 +656,11 @@ function openAddTaskModal() {
   background: var(--bg-page);
   width: 100%;
   padding: 32px 24px 40px;
+  box-sizing: border-box;
+}
+
+.mobile-filters {
+  display: none;
 }
 
 .header-row {
@@ -638,6 +683,7 @@ function openAddTaskModal() {
 }
 
 .header-description {
+  margin: 0;
   color: var(--text-grey);
   font-size: 18px;
 }
@@ -666,6 +712,7 @@ function openAddTaskModal() {
 .controls {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   gap: 14px;
   flex-wrap: wrap;
 }
@@ -708,19 +755,16 @@ function openAddTaskModal() {
 .dragging {
   opacity: 0.45;
   transform: scale(0.98);
-  transition:
-    opacity 0.15s ease,
-    transform 0.15s ease;
+  transition: opacity 0.15s ease,
+  transform 0.15s ease;
 }
 
 .drop-target {
   transform: translateY(-4px);
-  box-shadow:
-    0 0 0 2px var(--menu-link),
-    0 12px 30px rgba(124, 58, 237, 0.15);
-  transition:
-    transform 0.15s ease,
-    box-shadow 0.15s ease;
+  box-shadow: 0 0 0 2px var(--menu-link),
+  0 12px 30px rgba(124, 58, 237, 0.15);
+  transition: transform 0.15s ease,
+  box-shadow 0.15s ease;
 }
 
 .drag-disabled {
@@ -912,6 +956,181 @@ function openAddTaskModal() {
   border-color: #D1D5DB;
   transform: translateY(-1px);
 }
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media (min-width: 768px) and (max-width: 1024px) {
+
+  .page {
+    min-height: calc(100vh - 64px);
+    padding: 24px 20px 32px;
+  }
+
+  .header-row {
+    gap: 16px;
+    margin-bottom: 22px;
+  }
+
+  .header-title {
+    font-size: 23px;
+  }
+
+  .header-description {
+    font-size: 13px;
+  }
+
+  .controls {
+    gap: 8px;
+  }
+
+  .filters-group {
+    gap: 2px;
+    padding: 4px;
+  }
+
+  .filter-pill {
+    padding: 7px 10px;
+    font-size: 12px;
+  }
+
+  .mobile-filters {
+    display: flex;
+  }
+
+  .sort-select {
+    width: 150px;
+  }
+
+  .add-btn {
+    padding: 9px 14px;
+    font-size: 13px;
+  }
+
+  /*
+   * Two task cards per row.
+   */
+  .tasks-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+}
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 767px) {
+
+  .page {
+    min-height: calc(100vh - 56px);
+    padding: 14px 12px 82px;
+  }
+
+  /* -------------------------
+     MOBILE FILTERS
+     ------------------------- */
+  .mobile-filters {
+    display: flex;
+    margin-bottom: 14px;
+    border-radius: 8px;
+  }
+
+  /* -------------------------
+     HEADER
+     ------------------------- */
+  .header-row {
+    margin-bottom: 16px;
+    align-items: center;
+  }
+
+  .header-block-text {
+    gap: 2px;
+  }
+
+  .header-title {
+    font-size: 20px;
+    line-height: 1.2;
+  }
+
+  .header-description {
+    font-size: 12px;
+  }
+
+  /*
+   * Desktop filters are completely hidden.
+   * Filtering is handled by MobileFilterTabs.
+   */
+  .controls {
+    display: none;
+  }
+
+  /* -------------------------
+     TASK GRID
+     ------------------------- */
+  .tasks-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  /*
+   * TaskCard should fill the available width.
+   */
+  .tasks-grid > * {
+    min-width: 0;
+    width: 100%;
+  }
+
+  /* -------------------------
+     LOAD MORE
+     ------------------------- */
+  .load-more-wrapper {
+    margin-top: 18px;
+    padding-bottom: 10px;
+  }
+
+  .load-more-btn {
+    width: 100%;
+    min-height: 44px;
+  }
+
+  /* -------------------------
+     ERROR
+     ------------------------- */
+  .error-wrapper {
+    margin-top: 30px;
+  }
+
+  .error-card {
+    padding: 24px 16px;
+    border-radius: 20px;
+  }
+
+  .error-illustration {
+    height: 180px;
+  }
+
+  .error-title {
+    font-size: 20px;
+  }
+
+  .error-text {
+    font-size: 14px;
+  }
+
+  /* -------------------------
+     SKELETON
+     ------------------------- */
+  .skeleton-toggle {
+    width: 38px;
+    height: 22px;
+  }
+
+  .skeleton-title {
+    width: 65%;
+  }
+}
 </style>
 <style>
 .list-move {
@@ -920,9 +1139,8 @@ function openAddTaskModal() {
 
 .list-enter-active,
 .list-leave-active {
-  transition:
-    opacity 0.2s ease,
-    transform 0.2s ease;
+  transition: opacity 0.2s ease,
+  transform 0.2s ease;
 }
 
 .list-enter-from,

@@ -496,35 +496,361 @@ onUnmounted(() => {
   background: #ef4444;
 }
 
+/* ===== ПЛАНШЕТ (768px - 1024px) ===== */
+@media (max-width: 1024px) {
+  .notification-btn {
+    width: 36px;
+    height: 36px;
+    padding: 8px;
+  }
 
+  .notification-btn svg {
+    width: 18px;
+    height: 18px;
+  }
 
+  .badge {
+    min-width: 16px;
+    height: 16px;
+    font-size: 9px;
+    top: 2px;
+    right: 2px;
+    padding: 0 4px;
+  }
 
+  .notifications-dropdown {
+    width: 340px;
+    right: -10px;
+  }
 
+  .dropdown-header {
+    padding: 14px 18px;
+  }
 
+  .dropdown-header h3 {
+    font-size: 15px;
+  }
 
-.dev-tools {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  display: flex;
-  gap: 8px;
-  z-index: 9999;
-  background: rgba(0,0,0,0.8);
-  padding: 12px;
-  border-radius: 12px;
+  .notification-item {
+    padding: 10px 16px;
+    gap: 10px;
+  }
+
+  .notification-icon {
+    font-size: 18px;
+  }
+
+  .notification-title {
+    font-size: 13px;
+  }
+
+  .notification-message {
+    font-size: 13px;
+  }
+
+  .notification-time {
+    font-size: 11px;
+  }
 }
 
-.dev-tools button {
-  padding: 6px 12px;
-  border: none;
-  border-radius: 6px;
-  background: #4f46e5;
-  color: white;
-  cursor: pointer;
-  font-size: 12px;
+/* ===== МОБИЛЬНЫЕ ТЕЛЕФОНЫ (320px - 767px) ===== */
+@media (max-width: 767px) {
+  .notifications-wrapper {
+    position: static;
+  }
+
+  .notification-btn {
+    width: 32px;
+    height: 32px;
+    padding: 4px;
+  }
+
+  .notification-btn svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .badge {
+    min-width: 14px;
+    height: 14px;
+    font-size: 8px;
+    padding: 0 3px;
+    top: 1px;
+    right: 1px;
+  }
+
+  /* ===== МОБИЛЬНЫЙ ДРОПДАУН (снизу) ===== */
+  .notifications-dropdown {
+    position: fixed;
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    max-width: 100%;
+    border-radius: 20px 20px 0 0;
+    border: none;
+    border-top: 1px solid var(--border, #e2e8f0);
+    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.15);
+    transform: translateY(0);
+    animation: slideUp 0.3s ease;
+    max-height: 80vh;
+  }
+
+  /* Полоска сверху для закрытия */
+  .notifications-dropdown::before {
+    content: '';
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 4px;
+    background: var(--border, #e2e8f0);
+    border-radius: 2px;
+    z-index: 1;
+  }
+
+  @keyframes slideUp {
+    from {
+      transform: translateY(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  .dropdown-header {
+    padding: 20px 20px 14px;
+    border-bottom: 1px solid var(--border, #e2e8f0);
+    background: var(--bg, #ffffff);
+    border-radius: 20px 20px 0 0;
+  }
+
+  .dropdown-header h3 {
+    font-size: 16px;
+  }
+
+  .mark-all-read {
+    font-size: 12px;
+    padding: 4px 10px;
+  }
+
+  .dropdown-body {
+    max-height: calc(80vh - 70px);
+    padding-bottom: 20px;
+  }
+
+  .loading-state {
+    padding: 40px 20px;
+  }
+
+  .empty-state {
+    padding: 50px 20px;
+  }
+
+  .empty-state svg {
+    width: 40px;
+    height: 40px;
+  }
+
+  .empty-state p {
+    font-size: 14px;
+  }
+
+  .empty-state span {
+    font-size: 13px;
+  }
+
+  .notification-item {
+    padding: 12px 16px;
+    gap: 12px;
+    border-bottom: 1px solid var(--border-light, #f1f5f9);
+  }
+
+  .notification-item:last-child {
+    border-bottom: none;
+  }
+
+  .notification-icon {
+    font-size: 18px;
+    margin-top: 1px;
+  }
+
+  .notification-content {
+    min-width: 0;
+  }
+
+  .notification-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text, #0f172a);
+  }
+
+  .notification-message {
+    font-size: 13px;
+    color: var(--text-grey, #475569);
+    line-height: 1.5;
+  }
+
+  .notification-time {
+    font-size: 11px;
+    color: var(--text-light, #94a3b8);
+    margin-top: 4px;
+  }
+
+  .unread-dot {
+    width: 8px;
+    height: 8px;
+    margin-top: 6px;
+    flex-shrink: 0;
+  }
+
+  /* Анимация для мобильных */
+  .dropdown-enter-from {
+    transform: translateY(100%);
+  }
+
+  .dropdown-leave-to {
+    transform: translateY(100%);
+  }
 }
 
-.dev-tools button:hover {
-  background: #4338ca;
+/* ===== ОЧЕНЬ МАЛЕНЬКИЕ ТЕЛЕФОНЫ (до 380px) ===== */
+@media (max-width: 380px) {
+  .notification-btn {
+    width: 28px;
+    height: 28px;
+  }
+
+  .notification-btn svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .badge {
+    min-width: 12px;
+    height: 12px;
+    font-size: 7px;
+    padding: 0 2px;
+  }
+
+  .dropdown-header {
+    padding: 16px 16px 12px;
+  }
+
+  .dropdown-header h3 {
+    font-size: 15px;
+  }
+
+  .notification-item {
+    padding: 10px 14px;
+    gap: 10px;
+  }
+
+  .notification-icon {
+    font-size: 16px;
+  }
+
+  .notification-title {
+    font-size: 13px;
+  }
+
+  .notification-message {
+    font-size: 12px;
+  }
+
+  .notification-time {
+    font-size: 10px;
+  }
+}
+
+/* ===== ТЕМНАЯ ТЕМА ДЛЯ МОБИЛЬНЫХ ===== */
+@media (max-width: 767px) {
+  [data-theme="dark"] .notifications-dropdown {
+    background: #1e293b;
+    border-top-color: #334155;
+  }
+
+  [data-theme="dark"] .notifications-dropdown::before {
+    background: #334155;
+  }
+
+  [data-theme="dark"] .dropdown-header {
+    background: #0f172a;
+    border-bottom-color: #334155;
+  }
+
+  [data-theme="dark"] .dropdown-header h3 {
+    color: #f1f5f9;
+  }
+
+  [data-theme="dark"] .notification-item {
+    border-bottom-color: #1e293b;
+  }
+
+  [data-theme="dark"] .notification-item:hover {
+    background: #1e293b;
+  }
+
+  [data-theme="dark"] .notification-item.unread {
+    background: #1e293b;
+  }
+
+  [data-theme="dark"] .notification-item.unread:hover {
+    background: #0f172a;
+  }
+
+  [data-theme="dark"] .notification-title {
+    color: #f1f5f9;
+  }
+
+  [data-theme="dark"] .notification-message {
+    color: #cbd5e1;
+  }
+
+  [data-theme="dark"] .badge {
+    background: #ef4444;
+  }
+}
+
+/* ===== ПЛАНШЕТЫ В ПОРТРЕТНОЙ ОРИЕНТАЦИИ ===== */
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
+  .notifications-dropdown {
+    width: 320px;
+    right: -5px;
+  }
+}
+
+/* ===== ПЛАНШЕТЫ В АЛЬБОМНОЙ ОРИЕНТАЦИИ ===== */
+@media (min-width: 1025px) and (max-width: 1366px) {
+  .notifications-dropdown {
+    width: 360px;
+  }
+}
+
+/* ===== ДОПОЛНИТЕЛЬНО: Оверлей для мобильных ===== */
+@media (max-width: 767px) {
+  .notifications-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 999;
+    animation: fadeIn 0.3s ease;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
 }
 </style>

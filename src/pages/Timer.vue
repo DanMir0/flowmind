@@ -21,7 +21,7 @@ const showPinnedToast = ref(false)
 
 const openMyQuotes = () => {
   showQuoteMenu.value = false
-  router.push({name: 'myQuotes'})
+  router.push({ name: 'myQuotes' })
 }
 const openAddQuote = () => {
   showQuoteMenu.value = false
@@ -217,7 +217,7 @@ onMounted(async () => {
   <div class="timer-page">
     <div class="circle-wrapper">
 
-      <svg :width="size" :height="size" class="progress-ring">
+      <svg :width="size" :height="size" viewBox="0 0 420 420" class="progress-ring">
         <defs>
           <linearGradient id="purpleGradient" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stop-color="#3d03a1" />
@@ -295,7 +295,8 @@ onMounted(async () => {
           class="quote-badge"
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">
-            <path fill="none" stroke="#8B5CF6" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 4v6l-2 4v2h10v-2l-2-4V4m-3 12v5M8 4h8"/>
+            <path fill="none" stroke="#8B5CF6" stroke-linecap="round" stroke-linejoin="round"
+                  stroke-width="2" d="M9 4v6l-2 4v2h10v-2l-2-4V4m-3 12v5M8 4h8" />
           </svg>
           <span>Pinned</span>
         </div>
@@ -308,14 +309,18 @@ onMounted(async () => {
       <template v-else>
 
         <div class="quote-text">
-          "{{ displayedQuote.text }}" <span class="quote-author"> — {{ displayedQuote.author || 'Unknown' }}</span>
+          "{{ displayedQuote.text }}" <span
+          class="quote-author"> — {{ displayedQuote.author || 'Unknown' }}</span>
         </div>
 
         <button
           class="quote-settings"
           @click="showQuoteMenu = true">
-          <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path fill-rule="evenodd" clip-rule="evenodd" d="M14.2788 2.15224C13.9085 2 13.439 2 12.5 2C11.561 2 11.0915 2 10.7212 2.15224C10.2274 2.35523 9.83509 2.74458 9.63056 3.23463C9.53719 3.45834 9.50065 3.7185 9.48635 4.09799C9.46534 4.65568 9.17716 5.17189 8.69017 5.45093C8.20318 5.72996 7.60864 5.71954 7.11149 5.45876C6.77318 5.2813 6.52789 5.18262 6.28599 5.15102C5.75609 5.08178 5.22018 5.22429 4.79616 5.5472C4.47814 5.78938 4.24339 6.1929 3.7739 6.99993C3.30441 7.80697 3.06967 8.21048 3.01735 8.60491C2.94758 9.1308 3.09118 9.66266 3.41655 10.0835C3.56506 10.2756 3.77377 10.437 4.0977 10.639C4.57391 10.936 4.88032 11.4419 4.88029 12C4.88026 12.5581 4.57386 13.0639 4.0977 13.3608C3.77372 13.5629 3.56497 13.7244 3.41645 13.9165C3.09108 14.3373 2.94749 14.8691 3.01725 15.395C3.06957 15.7894 3.30432 16.193 3.7738 17C4.24329 17.807 4.47804 18.2106 4.79606 18.4527C5.22008 18.7756 5.75599 18.9181 6.28589 18.8489C6.52778 18.8173 6.77305 18.7186 7.11133 18.5412C7.60852 18.2804 8.2031 18.27 8.69012 18.549C9.17714 18.8281 9.46533 19.3443 9.48635 19.9021C9.50065 20.2815 9.53719 20.5417 9.63056 20.7654C9.83509 21.2554 10.2274 21.6448 10.7212 21.8478C11.0915 22 11.561 22 12.5 22C13.439 22 13.9085 22 14.2788 21.8478C14.7726 21.6448 15.1649 21.2554 15.3694 20.7654C15.4628 20.5417 15.4994 20.2815 15.5137 19.902C15.5347 19.3443 15.8228 18.8281 16.3098 18.549C16.7968 18.2699 17.3914 18.2804 17.8886 18.5412C18.2269 18.7186 18.4721 18.8172 18.714 18.8488C19.2439 18.9181 19.7798 18.7756 20.2038 18.4527C20.5219 18.2105 20.7566 17.807 21.2261 16.9999C21.6956 16.1929 21.9303 15.7894 21.9827 15.395C22.0524 14.8691 21.9088 14.3372 21.5835 13.9164C21.4349 13.7243 21.2262 13.5628 20.9022 13.3608C20.4261 13.0639 20.1197 12.558 20.1197 11.9999C20.1197 11.4418 20.4261 10.9361 20.9022 10.6392C21.2263 10.4371 21.435 10.2757 21.5836 10.0835C21.9089 9.66273 22.0525 9.13087 21.9828 8.60497C21.9304 8.21055 21.6957 7.80703 21.2262 7C20.7567 6.19297 20.522 5.78945 20.2039 5.54727C19.7799 5.22436 19.244 5.08185 18.7141 5.15109C18.4722 5.18269 18.2269 5.28136 17.8887 5.4588C17.3915 5.71959 16.7969 5.73002 16.3099 5.45096C15.8229 5.17191 15.5347 4.65566 15.5136 4.09794C15.4993 3.71848 15.4628 3.45833 15.3694 3.23463C15.1649 2.74458 14.7726 2.35523 14.2788 2.15224ZM12.5 16C14.7091 16 16.5 14.2091 16.5 12C16.5 9.79086 14.7091 8 12.5 8C10.2909 8 8.5 9.79086 8.5 12C8.5 14.2091 10.2909 16 12.5 16Z" fill="#8262bf"/>
+          <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none"
+               xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" clip-rule="evenodd"
+                  d="M14.2788 2.15224C13.9085 2 13.439 2 12.5 2C11.561 2 11.0915 2 10.7212 2.15224C10.2274 2.35523 9.83509 2.74458 9.63056 3.23463C9.53719 3.45834 9.50065 3.7185 9.48635 4.09799C9.46534 4.65568 9.17716 5.17189 8.69017 5.45093C8.20318 5.72996 7.60864 5.71954 7.11149 5.45876C6.77318 5.2813 6.52789 5.18262 6.28599 5.15102C5.75609 5.08178 5.22018 5.22429 4.79616 5.5472C4.47814 5.78938 4.24339 6.1929 3.7739 6.99993C3.30441 7.80697 3.06967 8.21048 3.01735 8.60491C2.94758 9.1308 3.09118 9.66266 3.41655 10.0835C3.56506 10.2756 3.77377 10.437 4.0977 10.639C4.57391 10.936 4.88032 11.4419 4.88029 12C4.88026 12.5581 4.57386 13.0639 4.0977 13.3608C3.77372 13.5629 3.56497 13.7244 3.41645 13.9165C3.09108 14.3373 2.94749 14.8691 3.01725 15.395C3.06957 15.7894 3.30432 16.193 3.7738 17C4.24329 17.807 4.47804 18.2106 4.79606 18.4527C5.22008 18.7756 5.75599 18.9181 6.28589 18.8489C6.52778 18.8173 6.77305 18.7186 7.11133 18.5412C7.60852 18.2804 8.2031 18.27 8.69012 18.549C9.17714 18.8281 9.46533 19.3443 9.48635 19.9021C9.50065 20.2815 9.53719 20.5417 9.63056 20.7654C9.83509 21.2554 10.2274 21.6448 10.7212 21.8478C11.0915 22 11.561 22 12.5 22C13.439 22 13.9085 22 14.2788 21.8478C14.7726 21.6448 15.1649 21.2554 15.3694 20.7654C15.4628 20.5417 15.4994 20.2815 15.5137 19.902C15.5347 19.3443 15.8228 18.8281 16.3098 18.549C16.7968 18.2699 17.3914 18.2804 17.8886 18.5412C18.2269 18.7186 18.4721 18.8172 18.714 18.8488C19.2439 18.9181 19.7798 18.7756 20.2038 18.4527C20.5219 18.2105 20.7566 17.807 21.2261 16.9999C21.6956 16.1929 21.9303 15.7894 21.9827 15.395C22.0524 14.8691 21.9088 14.3372 21.5835 13.9164C21.4349 13.7243 21.2262 13.5628 20.9022 13.3608C20.4261 13.0639 20.1197 12.558 20.1197 11.9999C20.1197 11.4418 20.4261 10.9361 20.9022 10.6392C21.2263 10.4371 21.435 10.2757 21.5836 10.0835C21.9089 9.66273 22.0525 9.13087 21.9828 8.60497C21.9304 8.21055 21.6957 7.80703 21.2262 7C20.7567 6.19297 20.522 5.78945 20.2039 5.54727C19.7799 5.22436 19.244 5.08185 18.7141 5.15109C18.4722 5.18269 18.2269 5.28136 17.8887 5.4588C17.3915 5.71959 16.7969 5.73002 16.3099 5.45096C15.8229 5.17191 15.5347 4.65566 15.5136 4.09794C15.4993 3.71848 15.4628 3.45833 15.3694 3.23463C15.1649 2.74458 14.7726 2.35523 14.2788 2.15224ZM12.5 16C14.7091 16 16.5 14.2091 16.5 12C16.5 9.79086 14.7091 8 12.5 8C10.2909 8 8.5 9.79086 8.5 12C8.5 14.2091 10.2909 16 12.5 16Z"
+                  fill="#8262bf" />
           </svg>
         </button>
 
@@ -329,11 +334,11 @@ onMounted(async () => {
       @close="showQuoteMenu = false"
       @add-quote="openAddQuote"
       @my-quotes="openMyQuotes"
-      @pin-quote="handlePinQuote"/>
+      @pin-quote="handlePinQuote" />
 
     <AddQuoteModal
       :open="showAddQuote"
-      @close="showAddQuote = false"/>
+      @close="showAddQuote = false" />
   </div>
 </template>
 
@@ -343,27 +348,25 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-top: 40px;
-  width: clamp(420px, fit-content, 820px);
+  margin: 40px auto 0;
+  width: min(820px, calc(100vw - 48px));
+  min-height: 110px;
   gap: 32px;
   padding: 28px 32px;
-  margin-left: auto;
-  margin-right: auto;
   background: var(--bg);
   border-radius: 16px;
-  box-shadow: 0 12px 30px rgba(0,0,0,0.06);
-  min-height: 110px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.06);
   overflow: hidden;
 }
 
 .quote-text {
-  flex:1;
-  min-width:0;
-  color:var(--text-focuc-grey);
-  font-size:16px;
-  line-height:1.4;
-  word-break:break-word;
-  overflow-wrap:anywhere;
+  flex: 1;
+  min-width: 0;
+  color: var(--text-focuc-grey);
+  font-size: 16px;
+  line-height: 1.4;
+  word-break: break-word;
+  overflow-wrap: anywhere;
   max-width: 680px;
 }
 
@@ -373,20 +376,41 @@ onMounted(async () => {
 
 .quote-settings {
   flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border: none;
   background: transparent;
   cursor: pointer;
   font-size: 18px;
   color: #7b5cff;
-  transition: transform 0.2s ease;
-  padding: 0;
+  transition: transform 0.2s ease,
+  background 0.2s ease;
 }
 
 .quote-settings:hover {
   transform: rotate(20deg);
+  background: var(--timer-btn-sec-hover);
 }
 
-/* Skeleton */
+.quote-badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--bg-pink);
+  color: #7c3aed;
+  font-size: 12px;
+  font-weight: 700;
+  border: 1px solid #ddd6fe;
+  user-select: none;
+}
 
 .quote-skeleton-text {
   height: 18px;
@@ -403,23 +427,6 @@ onMounted(async () => {
   margin-bottom: 12px;
 }
 
-.quote-badge{
-  position:absolute;
-  top: 0;
-  right: 0;
-  display:flex;
-  align-items:center;
-  gap:6px;
-  padding:6px 12px;
-  border-radius:999px;
-  background: var(--bg-pink);
-  color:#7C3AED;
-  font-size:12px;
-  font-weight:700;
-  border:1px solid #DDD6FE;
-  user-select:none;
-}
-
 .quote-skeleton-author {
   height: 16px;
   width: 120px;
@@ -429,50 +436,38 @@ onMounted(async () => {
 }
 
 @keyframes skeleton {
-  0% { background-position: 200% 0 }
-  100% { background-position: -200% 0 }
-}
+  0% {
+    background-position: 200% 0;
+  }
 
-.time-display {
-  cursor: pointer;
-}
-
-.time-input {
-  font-size: 88px;
-  font-weight: 600;
-  text-align: center;
-  border: none;
-  background: transparent;
-  color: #3925a7;
-  outline: none;
-  width: 260px;
-  letter-spacing: 2px;
-}
-
-.time-input::placeholder {
-  color: #b8b8c8;
-  opacity: 0.6;
-  font-weight: 500;
-  font-size: 72px;
+  100% {
+    background-position: -200% 0;
+  }
 }
 
 .timer-page {
-  height: calc(100vh - 72px);
+  min-height: calc(100vh - 64px);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  padding: 32px 24px 48px;
+  box-sizing: border-box;
   background: var(--bg-page);
+  overflow-x: hidden;
 }
 
-/* ===== Circle ===== */
 .circle-wrapper {
   position: relative;
   width: 420px;
   height: 420px;
+  flex-shrink: 0;
 }
 
 .progress-ring {
+  display: block;
+  width: 420px;
+  height: 420px;
   transform: rotate(-90deg);
 }
 
@@ -484,7 +479,6 @@ onMounted(async () => {
   stroke-linecap: round;
 }
 
-/* ===== Content inside circle ===== */
 .content {
   position: absolute;
   inset: 0;
@@ -494,24 +488,48 @@ onMounted(async () => {
   justify-content: center;
 }
 
-/* ===== Time ===== */
 .time {
   font-size: 88px;
   font-weight: 600;
   color: #3925a7;
   letter-spacing: 2px;
   margin-bottom: 28px;
+  line-height: 1;
 }
 
-/* ===== Buttons ===== */
+.time-display {
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.time-input {
+  width: 260px;
+  font-size: 88px;
+  font-weight: 600;
+  text-align: center;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: #3925a7;
+  letter-spacing: 2px;
+}
+
+.time-input::placeholder {
+  color: #b8b8c8;
+  opacity: 0.6;
+  font-weight: 500;
+  font-size: 72px;
+}
+
 .actions {
   display: flex;
   background: var(--bg);
   border-radius: 999px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
 }
 
-button {
+.actions button {
   border: none;
   cursor: pointer;
   border-radius: 999px;
@@ -521,35 +539,225 @@ button {
   transition: all 0.25s ease;
 }
 
-/* Start */
-.primary {
-  background: linear-gradient(135deg, #7a3cff, #9d6bff);
+.actions .primary {
+  background: linear-gradient(
+    135deg,
+    #7a3cff,
+    #9d6bff
+  );
   color: white;
   box-shadow: 0 8px 20px rgba(122, 60, 255, 0.35);
 }
 
-.primary:hover {
-  background: linear-gradient(135deg, #6045a8, #a87ff6);
+.actions .primary:hover {
+  background: linear-gradient(
+    135deg,
+    #6045a8,
+    #a87ff6
+  );
 }
 
-/* Reset */
-.secondary {
+.actions .secondary {
   background: transparent;
   color: #6b6b6b;
 }
 
-.secondary:hover {
+.actions .secondary:hover {
   background: var(--timer-btn-sec-hover);
 }
 
+@media (max-width: 1100px) and (min-width: 601px) {
+
+  .timer-page {
+    min-height: calc(100vh - 64px);
+    padding: 28px 24px 44px;
+    justify-content: center;
+  }
+
+  .circle-wrapper {
+    width: 340px;
+    height: 340px;
+  }
+
+  .progress-ring {
+    width: 340px;
+    height: 340px;
+  }
+
+  .time {
+    font-size: 68px;
+    margin-bottom: 24px;
+  }
+
+  .time-input {
+    width: 220px;
+    font-size: 68px;
+  }
+
+  .time-input::placeholder {
+    font-size: 56px;
+  }
+
+  .actions button {
+    padding: 11px 30px;
+    font-size: 15px;
+  }
+
+  .quote-card {
+    width: min(680px, calc(100vw - 64px));
+    margin-top: 32px;
+    padding: 24px 28px;
+    gap: 24px;
+  }
+
+  .quote-text {
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 600px) {
+
+  .timer-page {
+    min-height: calc(100dvh - 64px);
+    width: 100%;
+    box-sizing: border-box;
+    padding: 22px 14px 32px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  .circle-wrapper {
+    width: min(82vw, 320px);
+    height: min(82vw, 320px);
+    margin-top: 12px;
+    flex-shrink: 0;
+  }
+
+  .progress-ring {
+    width: 100%;
+    height: 100%;
+  }
+
+  .time {
+    font-size: clamp(48px, 15vw, 64px);
+    line-height: 1;
+    letter-spacing: 1px;
+    margin-bottom: 18px;
+  }
+
+  .time-input {
+    width: 180px;
+    font-size: clamp(48px, 15vw, 64px);
+  }
+
+  .time-input::placeholder {
+    font-size: 40px;
+  }
+
+  .actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+  }
+
+  .actions button {
+    padding: 9px 22px;
+    font-size: 13px;
+  }
+
+  /* QUOTE */
+
+  .quote-card {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    margin-top: 24px;
+    padding: 22px 16px 18px;
+    min-height: 0;
+    gap: 10px;
+    align-items: flex-start;
+    border-radius: 12px;
+  }
+
+  .quote-text {
+    font-size: 13px;
+    line-height: 1.45;
+    max-width: none;
+  }
+
+  .quote-settings {
+    width: 34px;
+    height: 34px;
+    flex-shrink: 0;
+  }
+
+  .quote-badge {
+    padding: 4px 9px;
+    font-size: 10px;
+  }
+
+  .quote-badge svg {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+@media (max-width: 380px) {
+
+  .timer-page {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .circle-wrapper {
+    width: 280px;
+    height: 280px;
+  }
+
+  .progress-ring {
+    width: 280px;
+    height: 280px;
+  }
+
+  .time {
+    font-size: 46px;
+  }
+
+  .time-input {
+    width: 150px;
+    font-size: 46px;
+  }
+
+  .actions button {
+    padding: 8px 18px;
+    font-size: 12px;
+  }
+
+  .quote-card {
+    padding: 20px 13px 16px;
+  }
+
+  .quote-text {
+    font-size: 12px;
+  }
+}
+
+</style>
+<style>
 .badge-enter-active,
-.badge-leave-active{
-  transition:all .25s ease;
+.badge-leave-active {
+  transition: all 0.25s ease;
 }
 
 .badge-enter-from,
-.badge-leave-to{
-  opacity:0;
-  transform:translateY(-6px);
+.badge-leave-to {
+  opacity: 0;
+  transform: translateY(-6px);
 }
+
 </style>

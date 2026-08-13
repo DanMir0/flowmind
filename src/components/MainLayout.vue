@@ -24,7 +24,7 @@ import AppSidebar from '@/components/AppSidebar.vue'
 <style scoped>
 .layout {
   min-height: 100vh;
-  background: #fafafa;
+  background: var(--bg-page);
 }
 
 .body {
@@ -32,6 +32,7 @@ import AppSidebar from '@/components/AppSidebar.vue'
 }
 
 .content {
+  background: var(--bg-page);
   flex: 1;
 }
 </style>
