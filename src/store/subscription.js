@@ -111,8 +111,6 @@ export const useSubscriptionStore = defineStore('subscription', {
         }
 
       } catch (error) {
-        console.error('Load subscription error:', error)
-
         this.reset()
 
       } finally {
@@ -154,7 +152,6 @@ export const useSubscriptionStore = defineStore('subscription', {
         return data
 
       } catch (error) {
-        console.error('Start trial error:', error)
         throw error
 
       } finally {
@@ -194,8 +191,6 @@ export const useSubscriptionStore = defineStore('subscription', {
         return data
 
       } catch (error) {
-        console.error('Test payment error:', error)
-
         throw error
 
       } finally {

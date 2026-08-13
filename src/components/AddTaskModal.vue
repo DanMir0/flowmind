@@ -109,7 +109,6 @@ async function submit() {
     priority.value = 3
 
   } catch (e) {
-    console.log(e)
     showError('Failed to add task', e)
   } finally {
     loading.value = false

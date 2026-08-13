@@ -88,8 +88,6 @@ async function handleSubscriptionAction() {
     closeModal()
 
   } catch (error) {
-    console.error('Subscription action error:', error)
-
     showError(
       error?.message || 'Something went wrong'
     )

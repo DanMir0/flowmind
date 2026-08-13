@@ -39,10 +39,7 @@ async function markAsRead(id) {
   try {
     await notificationsStore.markAsRead(id)
   } catch (error) {
-    console.error(
-      'Failed to mark notification as read:',
-      error
-    )
+    throw error
   }
 }
 
@@ -50,10 +47,7 @@ async function markAllAsRead() {
   try {
     await notificationsStore.markAllAsRead()
   } catch (error) {
-    console.error(
-      'Failed to mark all notifications as read:',
-      error
-    )
+    throw error
   }
 }
 

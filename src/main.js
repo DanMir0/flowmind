@@ -26,7 +26,7 @@ supabase.auth.onAuthStateChange((event, session) => {
 
     authStore.setUser(session.user)
 
-    authStore.fetchProfile().catch(console.error)
+    authStore.fetchProfile().catch()
   }
 
   if (event === 'SIGNED_OUT') {
@@ -51,7 +51,7 @@ document.addEventListener('visibilitychange', async () => {
   try {
     await authStore.refreshUser()
   } catch (error) {
-    console.error('Failed to refresh user:', error)
+    throw e
   }
 })
 

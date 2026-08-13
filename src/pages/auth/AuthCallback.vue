@@ -9,23 +9,15 @@ const auth = useAuthStore()
 
 onMounted(async () => {
   try {
-    console.log('=== GOOGLE CALLBACK START ===')
-    console.log('URL:', window.location.href)
-    console.log('SEARCH:', window.location.search)
-    console.log('HASH:', window.location.hash)
 
     const {
       data: { session },
       error
     } = await supabase.auth.getSession()
 
-    console.log('GET SESSION:', session)
-    console.log('GET SESSION ERROR:', error)
 
     if (session?.user) {
       auth.user = session.user
-
-      console.log('GOOGLE USER:', session.user)
 
       await auth.fetchProfile()
 
@@ -36,15 +28,11 @@ onMounted(async () => {
       return
     }
 
-    console.error('GOOGLE CALLBACK: session not found')
-
     await router.replace({
       name: 'login'
     })
 
   } catch (error) {
-    console.error('Google callback error:', error)
-
     await router.replace({
       name: 'login'
     })

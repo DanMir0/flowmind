@@ -115,7 +115,7 @@ async function loadMfaStatus() {
       ) || false
 
   } catch (error) {
-    console.error('Failed to load MFA status:', error)
+    throw error
   }
 }
 
@@ -143,8 +143,6 @@ async function disableMfa() {
     )
 
   } catch (error) {
-    console.error('Disable MFA error:', error)
-
     showError(
       error?.message ||
       'Failed to disable two-factor authentication.'
@@ -190,7 +188,6 @@ async function confirmDeleteAccount() {
     })
 
   } catch (err) {
-    console.error(err)
     showError(err.message)
   } finally {
     deletingAccount.value = false
@@ -199,12 +196,7 @@ async function confirmDeleteAccount() {
 
 async function saveNewEmail(newEmail) {
   try {
-    console.log('1. Saving email:', newEmail)
-
     const result = await auth.updateEmail(newEmail)
-
-    console.log('2. updateEmail result:', result)
-    console.log('3. auth.user:', auth.user)
 
     showSuccess(
       'Confirmation email has been sent to your new address.'
@@ -213,7 +205,6 @@ async function saveNewEmail(newEmail) {
     showModalEmail.value = false
 
   } catch (err) {
-    console.error('SAVE EMAIL ERROR:', err)
     showError(err.message)
   }
 }

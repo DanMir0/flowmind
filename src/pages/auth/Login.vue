@@ -33,7 +33,6 @@ async function submit() {
       name: 'dashboard'
     })
   } catch (err) {
-    console.error('LOGIN ERROR:', err)
     if (err.message.includes('Email not confirmed')) {
       error.value = 'Please confirm your email'
     } else {
@@ -51,7 +50,6 @@ async function loginWithGoogle() {
 
     await auth.signInWithGoogle()
   } catch (err) {
-    console.error('Google login error:', err)
     error.value = err.message
   } finally {
     googleLoading.value = false
@@ -89,8 +87,6 @@ async function verifyMfa() {
     })
 
   } catch (err) {
-    console.error('MFA ERROR:', err)
-
     error.value =
       'Invalid authentication code.'
 

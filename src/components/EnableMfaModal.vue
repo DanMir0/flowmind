@@ -41,8 +41,6 @@ async function startEnrollment() {
     enrollment.value = await auth.enrollMFA()
     step.value = 'setup'
   } catch (error) {
-    console.error('MFA enrollment error:', error)
-
     showError(
       error?.message ||
       'Failed to start two-factor authentication.'
@@ -83,8 +81,6 @@ async function verify() {
     emit('close')
 
   } catch (error) {
-    console.error('MFA verification error:', error)
-
     showError(
       'Invalid authentication code. Please try again.'
     )

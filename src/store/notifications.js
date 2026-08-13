@@ -60,10 +60,6 @@ export const useNotificationsStore = defineStore(
 
           this.updateUnreadCount()
         } catch (error) {
-          console.error(
-            'Error loading notifications:',
-            error
-          )
 
           throw error
         } finally {
@@ -94,7 +90,7 @@ export const useNotificationsStore = defineStore(
             this.updateUnreadCount()
           }
         } catch (error) {
-          console.error('Error marking notification as read:', error)
+          throw error
         }
       },
 
@@ -114,11 +110,6 @@ export const useNotificationsStore = defineStore(
           .eq('read', false)
 
         if (error) {
-          console.error(
-            'Error marking all notifications as read:',
-            error
-          )
-
           throw error
         }
 
@@ -177,11 +168,6 @@ export const useNotificationsStore = defineStore(
                 filter: `user_id=eq.${auth.user.id}`,
               },
               payload => {
-                console.log(
-                  '🔔 New notification:',
-                  payload.new
-                )
-
                 this.addNotification(payload.new)
               }
             )
@@ -212,10 +198,7 @@ export const useNotificationsStore = defineStore(
               }
             )
             .subscribe(status => {
-              console.log(
-                'Notifications realtime:',
-                status
-              )
+
             })
       },
 

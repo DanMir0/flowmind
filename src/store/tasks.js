@@ -174,7 +174,6 @@ export const useTasksStore = defineStore('tasks', {
           })
 
         if (error) {
-          console.log(error)
           if (
             error.code === 'P0001' &&
             error.message === 'TASK_LIMIT_REACHED'
@@ -219,7 +218,7 @@ export const useTasksStore = defineStore('tasks', {
             await this.syncTaskFiles(task.id)
             this.creatingTaskIds.delete(task.id)
           } catch (e) {
-        console.log(e)
+
             // удаляем skeleton если ошибка
             this.tasks = this.tasks.filter(t => t.id !== tempId)
 

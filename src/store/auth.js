@@ -36,7 +36,7 @@ export const useAuthStore = defineStore('auth', {
         try {
           await this.fetchProfile()
         } catch (error) {
-          console.error('Profile loading error:', error)
+          throw error
         }
         await subscriptionStore.loadSubscription(this.user.id)
 
@@ -298,7 +298,6 @@ export const useAuthStore = defineStore('auth', {
       })
 
       if (error) {
-        console.error('Update email error:', error)
         throw error
       }
 
@@ -328,7 +327,6 @@ export const useAuthStore = defineStore('auth', {
       )
 
       if (error) {
-        console.error('Delete account error:', error)
         throw error
       }
 

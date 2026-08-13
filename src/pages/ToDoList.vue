@@ -236,8 +236,6 @@ async function onDrop(targetTask) {
       targetTask.id
     )
   } catch (error) {
-    console.error('Reorder task error:', error)
-
     if (error.message === 'PREMIUM_REQUIRED') {
       showError(
         'Drag & Drop is a Premium feature. Upgrade to Premium to reorder your tasks.'
