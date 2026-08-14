@@ -5,28 +5,27 @@ export const useSubscriptionStore = defineStore('subscription', {
   state: () => ({
     status: 'free',
     plan: 'free',
+
     expiresAt: null,
+
     trialStartedAt: null,
     trialExpiresAt: null,
+
     loading: false,
   }),
 
   getters: {
-    isTrial: (state) => {
-      return state.status === 'trial'
-    },
+    isTrial: (state) => state.status === 'trial',
 
-    isActive: (state) => {
-      return state.status === 'active'
-    },
+    isActive: (state) => state.status === 'active',
 
-    isExpired: (state) => {
-      return state.status === 'expired'
-    },
+    isExpired: (state) => state.status === 'expired',
 
     isPremium: (state) => {
-      return state.status === 'trial' ||
+      return (
+        state.status === 'trial' ||
         state.status === 'active'
+      )
     },
 
     trialUsed: (state) => {
@@ -34,20 +33,27 @@ export const useSubscriptionStore = defineStore('subscription', {
     },
 
     daysLeft: (state) => {
-      if (!state.expiresAt) {
+      const expiresAt =
+        state.status === 'trial'
+          ? state.trialExpiresAt
+          : state.expiresAt
+
+      if (!expiresAt) {
         return 0
       }
 
-      const expires = new Date(state.expiresAt)
-      const now = new Date()
+      const expires = new Date(expiresAt).getTime()
+      const now = Date.now()
 
-      const diff = expires.getTime() - now.getTime()
+      const diff = expires - now
 
       if (diff <= 0) {
         return 0
       }
 
-      return Math.ceil(diff / (1000 * 60 * 60 * 24))
+      return Math.ceil(
+        diff / (1000 * 60 * 60 * 24)
+      )
     },
   },
 
@@ -74,22 +80,40 @@ export const useSubscriptionStore = defineStore('subscription', {
           .maybeSingle()
 
         if (error) {
+          console.error(
+            '[Subscription] load error:',
+            error
+          )
+
           throw error
         }
 
         if (!data) {
+          console.error('[Subscription] Profile not found for user:', userId)
           this.reset()
           return
         }
 
-        this.status = data.subscription_status || 'free'
-        this.plan = data.subscription_plan || 'free'
-        this.expiresAt = data.subscription_expires_at || null
+        this.status =
+          data.subscription_status || 'free'
 
-        this.trialStartedAt = data.trial_started_at || null
-        this.trialExpiresAt = data.trial_expires_at || null
+        this.plan =
+          data.subscription_plan || 'free'
 
-        const now = new Date()
+        this.expiresAt =
+          data.subscription_expires_at || null
+
+        this.trialStartedAt =
+          data.trial_started_at || null
+
+        this.trialExpiresAt =
+          data.trial_expires_at || null
+
+        const now = Date.now()
+
+        // --------------------------------------------
+        // TRIAL EXPIRED
+        // --------------------------------------------
 
         if (
           this.status === 'trial' &&
@@ -99,18 +123,20 @@ export const useSubscriptionStore = defineStore('subscription', {
           this.status = 'expired'
         }
 
+        // --------------------------------------------
+        // ACTIVE SUBSCRIPTION EXPIRED
+        // --------------------------------------------
+
         if (
+          this.status === 'active' &&
           this.expiresAt &&
-          new Date(this.expiresAt).getTime() <= now &&
-          (
-            this.status === 'trial' ||
-            this.status === 'active'
-          )
+          new Date(this.expiresAt).getTime() <= now
         ) {
           this.status = 'expired'
         }
 
       } catch (error) {
+        console.error('[Subscription] loadSubscription error:', error)
         this.reset()
 
       } finally {
@@ -122,12 +148,21 @@ export const useSubscriptionStore = defineStore('subscription', {
       this.loading = true
 
       try {
-        const { data, error } = await supabase.functions.invoke(
-          'start-trial',
-          {
-            body: {
-              plan
+        const { data, error } =
+          await supabase.functions.invoke(
+            'start-trial',
+            {
+              body: {
+                plan,
+              },
             }
+          )
+
+        console.log(
+          '[Subscription] start-trial:',
+          {
+            data,
+            error,
           }
         )
 
@@ -137,21 +172,35 @@ export const useSubscriptionStore = defineStore('subscription', {
 
         if (!data?.success) {
           throw new Error(
-            data?.error || 'Failed to start free trial'
+            data?.error ||
+            'Failed to start free trial'
           )
         }
 
-        // Сразу обновляем store
-        this.status = data.status
-        this.plan = data.plan
-        this.expiresAt = data.expires_at
+        // --------------------------------------------
+        // IMPORTANT:
+        // We don't rely only on Edge Function response.
+        // Reload the real state from profiles.
+        // --------------------------------------------
 
-        this.trialStartedAt = data.started_at
-        this.trialExpiresAt = data.expires_at
+        const {
+          data: {
+            user,
+          },
+        } = await supabase.auth.getUser()
+
+        if (user) {
+          await this.loadSubscription(user.id)
+        }
 
         return data
 
       } catch (error) {
+        console.error(
+          '[Subscription] startTrial error:',
+          error
+        )
+
         throw error
 
       } finally {
@@ -166,11 +215,11 @@ export const useSubscriptionStore = defineStore('subscription', {
         const { data, error } = await supabase.functions.invoke(
           'test-payment',
           {
-            body: {
-              plan
-            }
+            body: { plan }
           }
         )
+
+        console.log('[Subscription] test-payment:', { data, error })
 
         if (error) {
           throw error
@@ -182,15 +231,15 @@ export const useSubscriptionStore = defineStore('subscription', {
           )
         }
 
-        // Обновляем store сразу после "оплаты"
-
         this.status = data.subscription.status
         this.plan = data.subscription.plan
         this.expiresAt = data.subscription.expires_at
 
+        this.trialStartedAt = data.subscription.trial_started_at ?? this.trialStartedAt
         return data
 
       } catch (error) {
+        console.error('[Subscription] testPayment error:', error)
         throw error
 
       } finally {
@@ -201,9 +250,12 @@ export const useSubscriptionStore = defineStore('subscription', {
     reset() {
       this.status = 'free'
       this.plan = 'free'
+
       this.expiresAt = null
+
       this.trialStartedAt = null
       this.trialExpiresAt = null
+
       this.loading = false
     },
   },

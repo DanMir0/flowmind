@@ -2,6 +2,7 @@
 import { ref, computed } from 'vue'
 import { useSubscriptionStore } from '@/store/subscription.js'
 import { showSuccess, showError } from '@/utils/toast.js'
+import { useAuthStore } from '@/store/auth.js'
 
 const props = defineProps({
   open: {
@@ -11,7 +12,7 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['close'])
-
+const auth = useAuthStore()
 const subscriptionStore = useSubscriptionStore()
 
 const selectedPlan = ref('6_months')
@@ -20,34 +21,34 @@ const plans = [
   {
     id: '1_month',
     name: '1 Month',
-    price: '4.99',
-    monthly: '4.99',
-    billing: '$4.99 billed monthly'
+    price: '7.99',
+    monthly: '7.99',
+    billing: '$7.99 billed monthly'
   },
   {
     id: '3_months',
     name: '3 Months',
-    price: '12.99',
-    monthly: '4.33',
-    billing: '$12.99 billed every 3 months',
-    discount: 'Save 13%'
+    price: '19.99',
+    monthly: '6.66',
+    billing: '$19.99 billed every 3 months',
+    discount: 'Save 16%'
   },
   {
     id: '6_months',
     name: '6 Months',
-    price: '21.99',
-    monthly: '3.67',
-    billing: '$21.99 billed every 6 months',
-    discount: 'Save 26%',
+    price: '34.99',
+    monthly: '5.83',
+    billing: '$34.99 billed every 6 months',
+    discount: 'Save 27%',
     popular: true
   },
   {
     id: '1_year',
     name: '12 Months',
-    price: '39.99',
-    monthly: '3.33',
-    billing: '$39.99 billed yearly',
-    discount: 'Save 33%',
+    price: '59.99',
+    monthly: '5.00',
+    billing: '$59.99 billed yearly',
+    discount: 'Save 37%',
     bestValue: true
   }
 ]
@@ -68,12 +69,11 @@ function closeModal() {
 async function handleSubscriptionAction() {
   try {
     if (subscriptionStore.trialUsed) {
-      const data = await subscriptionStore.testPayment(
+      await subscriptionStore.testPayment(
         selectedPlan.value
       )
 
       showSuccess('Premium subscription activated.')
-
       closeModal()
 
       return
@@ -84,7 +84,6 @@ async function handleSubscriptionAction() {
     )
 
     showSuccess('Your 7-day free trial has started.')
-
     closeModal()
 
   } catch (error) {
