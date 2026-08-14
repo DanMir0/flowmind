@@ -1,7 +1,7 @@
 <script setup>
 import { useSubscriptionStore } from '@/store/subscription'
 import SubscriptionModal from '@/components/SubsriptionModal.vue'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 
 defineProps({
   open: Boolean,
@@ -20,6 +20,9 @@ const subscriptionStore = useSubscriptionStore()
 function openSubscriptionModal() {
   showSubscriptionModal.value = true
 }
+const isPremium = computed(() => {
+  return subscriptionStore.status === 'active' || subscriptionStore.status === 'trial'
+})
 </script>
 
 <template>
@@ -33,10 +36,10 @@ function openSubscriptionModal() {
       class="sheet"
       @click.stop>
 
-      <template v-if="subscriptionStore.isPro">
+      <template v-if="isPremium">
 
         <button
-          :disabled="!subscriptionStore.isPro"
+          :disabled="!isPremium"
           class="sheet-item"
           @click="emit('addQuote')">
           Add quote
