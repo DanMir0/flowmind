@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, nextTick, onMounted } from 'vue'
+import { ref, computed, nextTick, onMounted, onUnmounted } from 'vue'
 import { useQuotes } from '@/composable/useQuotes.js'
 import { useSubscriptionStore } from '@/store/subscription'
 import QuoteMenu from '@/components/quotes/QuoteMenu.vue'
@@ -7,11 +7,12 @@ import AddQuoteModal from '@/components/quotes/AddQuoteModal.vue'
 import { useRouter } from 'vue-router'
 import { useFocusStore } from '@/store/focusSessions'
 import { useAuthStore } from '@/store/auth'
+import { useSound } from '@/composable/useSound.js'
 
 const subscriptionStore = useSubscriptionStore()
 const focusStore = useFocusStore()
 const authStore = useAuthStore()
-
+const tickSound = ref(null)
 let sessionStartedAt = null
 
 const router = useRouter()
@@ -56,6 +57,7 @@ const radius = center - stroke
 const circumference = 2 * Math.PI * radius
 const dashOffset = ref(0)
 
+const { playAlarm, stopAlarm, isPlaying } = useSound()
 const formattedTime = computed(() => {
   const minutes = Math.floor(timeLeft.value / 60)
   const seconds = timeLeft.value % 60
@@ -106,8 +108,6 @@ const applyEdit = () => {
 
   isEditing.value = false
 }
-
-/* ====== Timer Logic ====== */
 const tick = () => {
   const now = Date.now()
   const remainingMs = endTime - now
@@ -116,6 +116,7 @@ const tick = () => {
     timeLeft.value = 0
     dashOffset.value = circumference
     stop()
+    playAlarm()
     return
   }
 
@@ -174,7 +175,6 @@ const saveFocusSession = async () => {
   })
 
   sessionStartedAt = null
-
 }
 
 const stop = async () => {
@@ -185,9 +185,10 @@ const stop = async () => {
 
   isRunning.value = false
 
+  stopAlarm()
+
   await saveFocusSession()
 }
-
 const toggle = () => {
   isRunning.value ? stop() : start()
 }
@@ -195,6 +196,8 @@ const toggle = () => {
 const reset = async () => {
   await stop()
 
+  // Останавливаем звук если он играет
+  stopAlarm()
   dashOffset.value = 0
 
   rafId = null
@@ -209,7 +212,15 @@ const cancelEdit = () => {
 }
 
 onMounted(async () => {
+  tickSound.value = new Audio('/sounds/tick.mp3')
   await loadQuote()
+})
+onUnmounted(() => {
+  stopAlarm()
+  if (rafId) {
+    cancelAnimationFrame(rafId)
+    rafId = null
+  }
 })
 </script>
 
