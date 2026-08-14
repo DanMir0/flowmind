@@ -2,6 +2,7 @@
 import { ref, watch } from 'vue'
 import { useAuthStore } from '@/store/auth.js'
 import { showError, showSuccess } from '@/utils/toast.js'
+import { useModal } from '@/composable/useModal.js'
 
 const props = defineProps({
   open: {
@@ -14,6 +15,7 @@ const emit = defineEmits([
   'close',
   'enabled'
 ])
+const { modalRef } = useModal(() => props.open, emit)
 
 const auth = useAuthStore()
 
@@ -106,7 +108,7 @@ function reset() {
         class="modal-overlay"
         @click.self="emit('close')">
 
-        <div class="modal">
+        <div class="modal" ref="modalRef">
 
           <button
             class="close-btn"

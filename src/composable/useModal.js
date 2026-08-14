@@ -1,7 +1,7 @@
 import { ref, watch, nextTick, onUnmounted } from 'vue'
 import { createFocusTrap } from 'focus-trap'
 
-export function useModal(props, emit) {
+export function useModal(isOpen, emit) {
   const modalRef = ref(null)
 
   let trap = null
@@ -13,8 +13,15 @@ export function useModal(props, emit) {
     }
   }
 
+  function handleClickOutside(e) {
+    // Проверяем, что клик был вне модального окна
+    if (modalRef.value && !modalRef.value.contains(e.target)) {
+      emit('close')
+    }
+  }
+
   watch(
-    () => props.isOpen,
+    isOpen,
     async (open) => {
       if (open) {
         previouslyFocusedElement = document.activeElement
@@ -26,10 +33,12 @@ export function useModal(props, emit) {
         document.body.style.overflow = 'hidden'
 
         document.addEventListener('keydown', handleEsc)
+        document.addEventListener('mousedown', handleClickOutside)
 
         trap = createFocusTrap(modalRef.value, {
           escapeDeactivates: false,
-          clickOutsideDeactivates: false
+          clickOutsideDeactivates: false,
+          allowOutsideClick: true
         })
 
         trap.activate()
@@ -40,6 +49,7 @@ export function useModal(props, emit) {
         document.body.style.overflow = ''
 
         document.removeEventListener('keydown', handleEsc)
+        document.removeEventListener('mousedown', handleClickOutside)
 
         previouslyFocusedElement?.focus?.()
       }
@@ -53,6 +63,7 @@ export function useModal(props, emit) {
     trap?.deactivate()
     document.body.style.overflow = ''
     document.removeEventListener('keydown', handleEsc)
+    document.removeEventListener('mousedown', handleClickOutside)
   })
 
   return {

@@ -1,6 +1,8 @@
 <script setup>
 
-defineProps({
+import { useModal } from '@/composable/useModal.js'
+
+const props = defineProps({
   open: {
     type: Boolean,
   },
@@ -10,7 +12,8 @@ defineProps({
   }
 })
 
-const emit = defineEmits(['confirm','cancel'])
+const emit = defineEmits(['confirm','close'])
+const { modalRef } = useModal(() => props.open, emit)
 
 </script>
 
@@ -20,9 +23,9 @@ const emit = defineEmits(['confirm','cancel'])
       <div
         v-if="open"
         class="modal-wrapper"
-        @click.self="emit('cancel')"
+        @click.self="emit('close')"
       >
-        <div class="modal">
+        <div class="modal" ref="modalRef">
 
           <div class="modal-icon">
             <svg

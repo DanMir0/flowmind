@@ -3,6 +3,7 @@ import { ref, computed } from 'vue'
 import { useSubscriptionStore } from '@/store/subscription.js'
 import { showSuccess, showError } from '@/utils/toast.js'
 import { useAuthStore } from '@/store/auth.js'
+import { useModal } from '@/composable/useModal.js'
 
 const props = defineProps({
   open: {
@@ -14,6 +15,7 @@ const props = defineProps({
 const emit = defineEmits(['close'])
 const auth = useAuthStore()
 const subscriptionStore = useSubscriptionStore()
+const { modalRef } = useModal(() => props.open, emit)
 
 const selectedPlan = ref('6_months')
 
@@ -104,7 +106,7 @@ async function handleSubscriptionAction() {
         class="modal-overlay"
         @click.self="closeModal">
 
-        <div class="subscription-modal">
+        <div class="subscription-modal" ref="modalRef">
 
           <!-- CLOSE -->
 

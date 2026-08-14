@@ -3,6 +3,7 @@ import { ref, watch, computed } from 'vue'
 import { useTasksStore } from '@/store/tasks'
 import { showSuccess, showError } from '@/utils/toast'
 import BaseSelect from '@/components/BaseSelect.vue'
+import { useModal } from '@/composable/useModal.js'
 
 const props = defineProps({
   open: Boolean,
@@ -13,6 +14,7 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['close'])
+const { modalRef } = useModal(() => props.open, emit)
 
 const tasksStore = useTasksStore()
 
@@ -79,11 +81,11 @@ const save = async () => {
       <div
         v-if="open"
         class="overlay"
-        @click="emit('close')">
+        @click.self="emit('close')">
 
         <div
-          class="modal"
-          @click.stop>
+          ref="modalRef"
+          class="modal">
 
           <h2>Add task</h2>
 

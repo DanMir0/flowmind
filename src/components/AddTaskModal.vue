@@ -14,7 +14,7 @@ const props = defineProps({isOpen: Boolean})
 const tasksStore = useTasksStore()
 const auth = useAuthStore()
 
-const { modalRef } = useModal(props, emit)
+const { modalRef } = useModal(() => props.isOpen, emit)
 
 const category = ref('')
 const title = ref('')
@@ -115,13 +115,18 @@ async function submit() {
     newFiles.value = []
   }
 }
+
+function close() {
+  if (loading.value) return
+  emit('close')
+}
 </script>
 
 <template>
   <Teleport to="body">
     <Transition name="modal" appear>
       <div v-if="isOpen" class="modal-wrapper">
-        <div class="modal-backdrop" @click.self="!loading && emit('close')">
+        <div class="modal-backdrop" @click.self="close">
           <div ref="modalRef" class="modal">
             <Loader :visible="loading" />
             <h3>Add Task</h3>

@@ -1,5 +1,6 @@
 <script setup>
 import { ref, watch } from 'vue'
+import { useModal } from '@/composable/useModal.js'
 
 const props = defineProps({
   open: Boolean,
@@ -13,6 +14,7 @@ const emit = defineEmits([
   'close',
   'save'
 ])
+const { modalRef } = useModal(() => props.open, emit)
 
 const newEmail = ref('')
 
@@ -41,12 +43,12 @@ function submit() {
       <div
         v-if="open"
         class="overlay"
-        @click="emit('close')"
+        @click.self="emit('close')"
       >
 
         <div
           class="modal"
-          @click.stop
+          ref="modalRef"
         >
 
           <h2>Change email</h2>

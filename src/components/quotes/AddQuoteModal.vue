@@ -3,12 +3,14 @@
 import { ref } from 'vue'
 import { useQuotes } from '@/composable/useQuotes'
 import { showError, showSuccess } from '@/utils/toast.js'
+import { useModal } from '@/composable/useModal.js'
 
 const props = defineProps({
   open: Boolean
 })
 
 const emit = defineEmits(['close', 'saved'])
+const { modalRef } = useModal(() => props.open, emit)
 
 const quoteText = ref('')
 const quoteAuthor = ref('')
@@ -48,7 +50,7 @@ const save = async () => {
 
         <div
           class="modal"
-          @click.stop>
+          ref="modalRef">
 
           <h3>Add your quote</h3>
 

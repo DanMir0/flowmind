@@ -717,7 +717,7 @@ onMounted(async () => {
   <DeleteAccountModal
     :open="showDeleteModal"
     :loading="deletingAccount"
-    @cancel="showDeleteModal = false"
+    @close="showDeleteModal = false"
     @confirm="confirmDeleteAccount"
   />
 

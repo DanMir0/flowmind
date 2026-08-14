@@ -644,7 +644,7 @@ onUnmounted(() => {
       :isOpen="showDeleteModal"
       :title="taskToDelete?.title"
       @confirm="confirmDelete"
-      @cancel="showDeleteModal = false" />
+      @close="showDeleteModal = false" />
   </div>
 </template>
 
@@ -967,6 +967,7 @@ onUnmounted(() => {
   }
 
   .header-row {
+    margin-top: 20px;
     gap: 16px;
     margin-bottom: 22px;
   }

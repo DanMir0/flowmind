@@ -1,6 +1,8 @@
 <script setup>
 
-defineProps({
+import { useModal } from '@/composable/useModal.js'
+
+const props = defineProps({
   title: {
     type: String,
     required: true,
@@ -15,8 +17,12 @@ defineProps({
   }
 })
 
-const emit = defineEmits(['confirm','cancel'])
+const emit = defineEmits(['confirm','close'])
+const { modalRef } = useModal(() => props.isOpen, emit)
 
+function close() {
+  emit('close')
+}
 </script>
 
 <template>
@@ -24,9 +30,9 @@ const emit = defineEmits(['confirm','cancel'])
     <Transition name="modal" appear>
       <div v-if="isOpen" class="modal-wrapper">
 
-        <div class="modal-backdrop">
+        <div class="modal-backdrop" @click.self="close">
 
-          <div class="modal">
+          <div class="modal" ref="modalRef">
 
             <h3>Delete {{ entity }}</h3>
 
@@ -37,7 +43,7 @@ const emit = defineEmits(['confirm','cancel'])
 
             <div class="actions">
 
-              <button class="btn btn-cancel" @click="emit('cancel')">
+              <button class="btn btn-cancel" @click="emit('close')">
                 Cancel
               </button>
 

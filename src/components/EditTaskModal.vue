@@ -10,8 +10,6 @@ import { formatFileName } from '../utils/formatFile.js'
 const emit = defineEmits(['close'])
 const tasksStore = useTasksStore()
 
-const { modalRef } = useModal(emit)
-
 const props = defineProps({
   taskId: {
     type: String,
@@ -26,6 +24,7 @@ const props = defineProps({
   }
 })
 
+const { modalRef } = useModal(() => props.isOpen, emit)
 const task = computed(() => tasksStore.tasks.find(t => t.id === props.taskId))
 
 const categories = [
