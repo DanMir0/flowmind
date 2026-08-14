@@ -1,5 +1,7 @@
 <script setup>
 import { useSubscriptionStore } from '@/store/subscription'
+import SubscriptionModal from '@/components/SubsriptionModal.vue'
+import { ref } from 'vue'
 
 defineProps({
   open: Boolean,
@@ -12,9 +14,12 @@ const emit = defineEmits([
   'myQuotes',
   'pinQuote'
 ])
-
+const showSubscriptionModal = ref(false)
 const subscriptionStore = useSubscriptionStore()
 
+function openSubscriptionModal() {
+  showSubscriptionModal.value = true
+}
 </script>
 
 <template>
@@ -53,7 +58,7 @@ const subscriptionStore = useSubscriptionStore()
 
       <template v-else>
 
-        <button class="sheet-item pro">
+        <button class="sheet-item pro" @click="openSubscriptionModal">
           🔒 Unlock custom quotes
         </button>
 
@@ -67,6 +72,10 @@ const subscriptionStore = useSubscriptionStore()
 
     </div>
 
+    <SubscriptionModal
+      :open="showSubscriptionModal"
+      @close="showSubscriptionModal = false"
+    />
   </div>
 
 </template>
