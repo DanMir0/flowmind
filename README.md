@@ -1,412 +1,330 @@
-FlowMind
-Modern task management and productivity application built with Vue 3 and Supabase.
+# 🧠 FlowMind
 
-FlowMind is a modern application for task management, daily planning, and productivity enhancement. The application combines a task list, calendar, Focus Timer, statistics, quotes, subscription system, and personalization tools in one interface.
+> **Plan. Focus. Complete. Analyze.**
 
-✨ Key Features
-📋 Task Management
-FlowMind provides a full-featured task management system:
+FlowMind is a modern productivity and task-management application built with **Vue 3** and **Supabase**.  
+It combines task management, calendar planning, focus sessions, productivity statistics, motivational quotes, personalization, authentication, and Premium functionality in one responsive interface.
 
-create tasks;
+---
 
-edit tasks;
+## ✨ Features
 
-delete tasks;
+### 📋 Task Management
 
-task description;
+FlowMind provides a complete task-management workflow:
 
-set priority;
+- Create, edit, and delete tasks
+- Add descriptions
+- Set task priority
+- Set deadlines
+- Attach files to tasks
+- Mark tasks as completed
+- Filter tasks
+- Sort tasks
+- Search tasks
+- Drag & Drop task management
+- Task limits for Free users
+- Unlimited tasks for Premium users
 
-set deadline;
+### 🔎 Search
 
-attach files to tasks;
+The global task search helps users quickly find tasks by:
 
-mark tasks as completed;
+- Title
+- Description
+- Date
 
-filter tasks;
+Search is integrated into the main application interface.
 
-sort tasks;
+### 📅 Calendar
 
-search tasks;
+The calendar is designed for planning tasks by date.
 
-Drag & Drop;
+Users can:
 
-task limit for free users;
+- View tasks for a specific day
+- Add tasks to a selected date
+- Plan future tasks
+- See task distribution throughout the month
+- Manage scheduled work directly from the calendar
 
-unlimited tasks for Premium users.
+### 🎯 Today's Focus
 
-🔎 Search
-The application implements task search functionality.
+**Today's Focus** provides a focused view of the current day's productivity.
 
-Search allows finding tasks by:
+Users can:
 
-title;
+- View today's tasks
+- Track completed tasks
+- See completion progress
+- See remaining tasks
+- Concentrate on the tasks scheduled for today
 
-description;
+### ⏱️ Focus Timer
 
-date.
+FlowMind includes a dedicated focus timer inspired by the **Pomodoro technique**.
 
-Search works directly through the main application interface and allows quickly finding the required task.
+It can be used for:
 
-📅 Calendar
-FlowMind includes a separate calendar for task planning.
+- Focused work sessions
+- Time-limited task execution
+- Improving concentration
+- Structuring work and break periods
 
-The calendar allows:
+### 📊 Dashboard
 
-viewing tasks by day;
+The Dashboard provides an overview of the user's productivity.
 
-adding tasks for a specific date;
+It includes statistics such as:
 
-planning future tasks;
+- Total tasks
+- Completed tasks
+- Active tasks
+- Current progress
+- Productivity overview
 
-viewing task distribution across the calendar.
+### 💬 Quotes
 
-The calendar allows using FlowMind not only as a Todo List but also as a full-fledged planning tool.
+FlowMind includes motivational quotes as part of the productivity experience.
 
-🎯 Today's Focus
-Today's Focus is a special section for monitoring productivity throughout the current day.
+Users can:
 
-The user can:
+- View motivational quotes
+- Change the quote language
+- Configure the quote language in Settings
+- Add custom quotes with Premium
+- Pin favorite quotes
 
-view today's tasks;
+### ⭐ Premium
 
-track completed tasks;
+FlowMind includes a subscription system with Free, Trial, and Premium states.
 
-see progress;
+Premium features include:
 
-monitor the number of remaining tasks;
+- Unlimited tasks
+- Custom quotes
+- Pinned/favorite quotes
+- Drag & Drop functionality
+- Extended productivity functionality
 
-focus only on today's tasks.
+#### 🆓 7-Day Free Trial
 
-This allows quickly assessing productivity for the current day.
+New users can try Premium for **7 days**.
 
-⏱️ Focus Timer
-FlowMind contains a separate timer for task concentration.
+The trial:
 
-The Timer is designed for:
+- Lasts 7 days
+- Unlocks Premium functionality
+- Can only be used once
+- Changes to an expired state after the expiration date
 
-focused work;
+A **test payment flow** is currently implemented for development purposes. In a production environment it should be replaced with a real payment provider.
 
-time limiting for task completion;
+### 🔐 Authentication
 
-increasing concentration;
+FlowMind supports:
 
-Pomodoro-style work.
+- Registration
+- Login
+- Logout
+- Email/password authentication
+- Google OAuth
+- Email change
+- Password change
+- Two-factor authentication (2FA)
+- Session-based authorization
 
-The timer is placed in a separate application section.
+After authentication, each user receives a personal workspace with their own tasks, profile, settings, quotes, files, and subscription data.
 
-📊 Dashboard
-The main page contains statistics and general information about user productivity.
+### ⚙️ Settings
 
-On the Dashboard, you can get a quick overview of:
+The Settings page provides account and application customization.
 
-number of tasks;
+Users can manage:
 
-completed tasks;
+- 🎨 Light/Dark theme
+- 🌍 Quote language
+- 📧 Account email
+- 🔑 Account password
+- 🔐 Two-factor authentication
 
-active tasks;
+### 🔔 Notifications
 
-current progress;
+The application provides notifications for important user and system events, including:
 
-productivity.
+- Task changes
+- Successful operations
+- Errors
+- Subscription events
+- Other important application messages
+
+Toast notifications are used for immediate feedback.
+
+### 📎 Task Files
+
+Tasks can contain attached files.
+
+Stored file metadata includes:
 
-The Dashboard is the central point of the application after authorization.
+- File name
+- File path
+- File type
+- File size
+- Upload date
 
-💬 Quotes
-FlowMind uses quotes for additional user motivation.
+Files are linked to tasks and are removed automatically when their related task is deleted through the database relationship.
 
-Features:
+---
+
+## 🎨 UI / UX
 
-display quotes;
+FlowMind follows a modern, minimalistic and responsive design.
 
-change quote language;
+The interface includes:
 
-select quote language in settings;
+- Desktop layout
+- Mobile layout
+- Responsive header
+- Mobile navigation/menu
+- Profile controls
+- Notifications
+- Global task search
+- Modal dialogs
+- Toast notifications
+- Focus states
+- Smooth transitions and animations
+- Responsive task cards
+- Mobile-friendly calendar
+- Mobile-friendly timer
+- Responsive dashboard
 
-add custom quotes for Premium users;
+The application is designed to provide the same core functionality across desktop and mobile screen sizes.
+
+---
 
-pin favorite quotes.
+## 🏗️ Architecture
 
-Premium users get extended quote management capabilities.
+FlowMind follows a client + backend architecture:
 
-⭐ Premium
-FlowMind implements a Premium subscription system.
+```text
+┌─────────────────────────────────────┐
+│              Vue 3                  │
+│                                     │
+│  Pages → Components → Composables   │
+│             ↓                       │
+│          Pinia Stores               │
+│             ↓                       │
+│       Supabase Client               │
+└──────────────────┬──────────────────┘
+                   │
+                   ▼
+┌─────────────────────────────────────┐
+│             Supabase                │
+│                                     │
+│  Auth → PostgreSQL → Storage        │
+│              ↓                      │
+│         Row Level Security          │
+│              ↓                      │
+│        Edge Functions               │
+└─────────────────────────────────────┘
+```
 
-Free
-Free users have access to basic application features with certain limitations.
+### Main frontend layers
 
-Premium
-Premium users get additional features:
+- **Pages** — application screens
+- **Components** — reusable UI components
+- **Composables** — reusable Vue logic
+- **Pinia Stores** — global application state
+- **Services** — Supabase client and integrations
+- **Utils** — helper functions and shared utilities
 
-unlimited tasks;
+---
 
-create custom quotes;
+## 🛠️ Technology Stack
 
-pin quotes;
+| Technology | Purpose |
+|---|---|
+| **Vue 3** | Frontend framework |
+| **Composition API** | Component logic |
+| **`<script setup>`** | Modern Vue component syntax |
+| **Pinia** | Global state management |
+| **Vue Router** | Application routing |
+| **Vite** | Development server and build tool |
+| **JavaScript** | Application logic |
+| **CSS** | UI styling and responsive layouts |
+| **Supabase** | Backend platform |
+| **PostgreSQL** | Database |
+| **Supabase Auth** | Authentication |
+| **Google OAuth** | Social authentication |
+| **Supabase Storage** | File storage |
+| **Row Level Security** | Database-level authorization |
+| **Supabase Edge Functions** | Server-side business logic |
+| **2FA** | Additional account security |
 
-Drag & Drop;
+---
 
-extended productivity features.
+## 🧠 State Management
 
-Free Trial
-New users get a 7-day free Premium Trial.
+Application-wide state is managed with **Pinia**.
 
-The Trial:
+The main stores include:
 
-lasts 7 days;
+```text
+store/
+├── auth.js
+├── tasks.js
+└── subscription.js
+```
 
-allows trying Premium features;
+### `authStore`
 
-can be used once;
+Responsible for:
 
-after expiration, switches the user to expired state.
+- Current user
+- Authentication state
+- User profile
+- Login/logout
+- Session handling
+- Authorization-related state
 
-A test payment system is also implemented for development and testing of Premium functionality.
+### `tasksStore`
 
-In the future, the test payment may be replaced with a full-fledged payment service.
+Responsible for:
 
-👤 Authentication
-FlowMind contains a full-featured authentication system.
+- Loading tasks
+- Creating tasks
+- Updating tasks
+- Deleting tasks
+- Task search
+- Filtering
+- Sorting
+- Task state
 
-Supported:
+### `subscriptionStore`
 
-registration;
+Responsible for:
 
-login;
+- Subscription status
+- Current Premium plan
+- Expiration date
+- Trial state
+- Trial expiration
+- Starting the free trial
+- Test Premium activation
 
-logout;
+---
 
-Google login;
+## 🗄️ Database
 
-email change;
+The main PostgreSQL tables include:
 
-password change;
+### `profiles`
 
-two-factor authentication (2FA).
+Stores user profile and subscription information.
 
-After authorization, the user receives a personal workspace with their own tasks, settings, quotes, and subscription.
+Important fields:
 
-🔐 Security
-Supabase is used for the backend.
-
-Access to user data is protected using:
-
-Supabase Authentication;
-
-Row Level Security (RLS);
-
-JWT authentication;
-
-user access policies;
-
-Edge Functions;
-
-Service Role for server operations.
-
-The user has access only to their own data.
-
-For example, tasks are linked to a specific user and should not be accessible to other users.
-
-⚙️ Settings
-FlowMind has a separate settings page.
-
-The user can change:
-
-🎨 Theme
-Application theme switching is supported:
-
-Light;
-
-Dark.
-
-🌍 Quote Language
-The language of displayed quotes can be changed.
-
-📧 Email
-The user can change their account email.
-
-🔑 Password
-The user can change their password.
-
-🔐 Two-Factor Authentication
-2FA configuration is available in settings for additional account protection.
-
-🎨 UI / UX
-FlowMind is developed using a modern responsive UI.
-
-Core interface principles:
-
-modern minimalistic design;
-
-desktop adaptation;
-
-mobile adaptation;
-
-unified header;
-
-mobile menu;
-
-profile menu;
-
-notifications;
-
-task search;
-
-modal dialogs;
-
-toast notifications;
-
-focus states;
-
-smooth transitions and animations.
-
-The interface is adapted for various screen sizes.
-
-🔔 Notifications
-The application includes a notification system.
-
-It is used to display important events:
-
-task state changes;
-
-user actions;
-
-errors;
-
-successful operations;
-
-subscription events;
-
-other system messages.
-
-Toast notifications are used for user messages.
-
-📎 Task Files
-Files can be attached to tasks.
-
-The following information is stored for files:
-
-file name;
-
-file path;
-
-file type;
-
-size;
-
-upload date.
-
-Files are linked to a specific task and are deleted along with the task due to cascade relationship.
-
-🏗️ Architecture
-The project is built on Vue 3 + Supabase architecture.
-
-Main application levels:
-
-text
-Vue 3
-│
-├── Pages
-│
-├── Components
-│
-├── Composables
-│
-├── Pinia Stores
-│
-└── Supabase Client
-│
-├── Authentication
-├── PostgreSQL
-├── Storage
-└── Edge Functions
-🛠️ Technologies
-Frontend
-Vue 3
-Main frontend framework.
-
-Used:
-
-Composition API;
-
-<script setup>;
-
-reactive state;
-
-computed properties;
-
-watchers;
-
-composables.
-
-Pinia
-Used for global application state management.
-
-Main stores:
-
-Authentication;
-
-Tasks;
-
-Subscription;
-
-other global application data.
-
-Example:
-
-js
-import { defineStore } from 'pinia'
-
-export const useSubscriptionStore = defineStore(
-  'subscription',
-  {
-    // ...
-  }
-)
-Vue Router
-Used for navigation between pages.
-
-Main routes:
-
-text
-/
-├── /dashboard
-├── /login
-├── /register
-├── /to-do-list
-├── /timer
-├── /my-quotes
-├── /settings
-└── /calendar
-A navigation guard is also used for user authorization verification.
-
-☁️ Backend
-Supabase
-Supabase is used as a backend-as-a-service.
-
-The project uses:
-
-Supabase Authentication;
-
-PostgreSQL;
-
-Supabase Storage;
-
-Row Level Security;
-
-Edge Functions.
-
-Supabase is responsible for storing user data, tasks, subscriptions, and files.
-
-🗄️ Database
-Main project tables:
-
-profiles
-Stores user information.
-
-Example main fields:
-
-text
+```text
 id
 user_id
 username
@@ -416,12 +334,15 @@ subscription_expires_at
 trial_started_at
 trial_expires_at
 created_at
-tasks
+```
+
+### `tasks`
+
 Stores user tasks.
 
-Main fields:
+Important fields:
 
-text
+```text
 id
 user_id
 title
@@ -430,12 +351,15 @@ priority
 deadline
 created_at
 updated_at
-task_files
+```
+
+### `task_files`
+
 Stores files attached to tasks.
 
-Main fields:
+Important fields:
 
-text
+```text
 id
 task_id
 file_name
@@ -443,260 +367,324 @@ file_path
 file_type
 file_size
 uploaded_at
-🔒 Row Level Security
-RLS policies are used for user data.
+```
 
-For example, a user can only manage their own tasks.
+---
 
-Access logic:
+## 🔒 Security
 
-sql
+Security is handled on multiple levels.
+
+### Supabase Authentication
+
+Authentication is managed through Supabase Auth and supports:
+
+- Email/password
+- Google OAuth
+- Session management
+- 2FA
+
+### Row Level Security
+
+Database access is protected using PostgreSQL **Row Level Security (RLS)**.
+
+For example, task access is restricted to the authenticated owner:
+
+```sql
 auth.uid() = user_id
-For files, task ownership is verified.
+```
 
-This prevents one user from accessing another user's data.
+This prevents users from directly accessing another user's tasks.
 
-⚡ Edge Functions
-Supabase Edge Functions are used for server-side business logic.
+### Edge Functions
 
-In particular:
+Sensitive subscription operations are executed through Supabase Edge Functions rather than being trusted entirely to the frontend.
 
-text
-start-trial
-test-payment
-start-trial
-Creates a 7-day Premium Trial.
+### Service Role
 
-The function:
+The Supabase Service Role Key is used only inside server-side Edge Functions.
 
-verifies Authorization;
+> **The Service Role Key must never be exposed in frontend code or committed to the repository.**
 
-retrieves the current user;
+---
 
-retrieves the profile;
+## ⚡ Edge Functions
 
-checks if the Trial was already used;
+FlowMind currently uses Supabase Edge Functions for subscription-related server logic.
 
-checks the current subscription;
+### `start-trial`
 
-creates the Trial;
-
-updates the profile;
-
-returns subscription data.
-
-test-payment
-Used for testing Premium purchases without real payment.
+Creates the user's 7-day Premium trial.
 
 The function:
 
-verifies the user;
+1. Verifies the Authorization header
+2. Identifies the authenticated user
+3. Retrieves the user's profile
+4. Checks whether the trial was already used
+5. Checks the current subscription state
+6. Creates the 7-day trial
+7. Updates the profile
+8. Returns subscription information
 
-retrieves the selected tariff;
+### `test-payment`
 
-checks existing subscription;
+Simulates a successful Premium purchase for development/testing.
 
-calculates the expiration date;
+The function:
 
-activates Premium;
+1. Verifies authentication
+2. Validates the selected plan
+3. Retrieves the user's profile
+4. Checks the existing subscription
+5. Calculates the expiration date
+6. Activates Premium
+7. Updates the profile
+8. Returns test payment and subscription data
 
-returns test payment information.
+> The test payment implementation is intentionally not a production payment solution.
 
-In production, the test payment must be replaced with a real payment provider.
+---
 
-📦 Project Structure
-Example project structure:
+## 🧭 Application Routes
 
-text
+The main routes are:
+
+```text
+/
+├── /dashboard
+├── /login
+├── /register
+├── /to-do-list
+├── /timer
+├── /my-quotes
+├── /settings
+└── /calendar
+```
+
+The router uses navigation guards to protect authenticated routes.
+
+---
+
+## 📁 Project Structure
+
+A simplified project structure:
+
+```text
 flowmind/
 │
 ├── public/
 │
 ├── src/
-│   │
 │   ├── assets/
-│   │
 │   ├── components/
-│   │
 │   ├── composables/
-│   │
 │   ├── pages/
-│   │
 │   ├── router/
-│   │
 │   ├── services/
-│   │   └── supabase.js
-│   │
 │   ├── store/
 │   │   ├── auth.js
 │   │   ├── tasks.js
 │   │   └── subscription.js
-│   │
 │   ├── utils/
-│   │
 │   ├── App.vue
 │   └── main.js
 │
 ├── supabase/
-│   │
 │   ├── functions/
 │   │   ├── start-trial/
 │   │   └── test-payment/
-│   │
 │   └── migrations/
 │
 ├── .env
 ├── package.json
 ├── vite.config.js
 └── README.md
-🚀 Installation
-Requirements
-Before running, you need to install:
+```
 
-Node.js;
+---
 
-npm;
+# 🚀 Getting Started
 
-Git;
+## Requirements
 
-Supabase project.
+Before running FlowMind locally, install:
 
-It is recommended to use the latest LTS version of Node.js.
+- **Node.js** — latest LTS recommended
+- **npm**
+- **Git**
+- A **Supabase project**
 
-Check installation:
+Check your installed versions:
 
-bash
+```bash
 node -v
 npm -v
 git --version
-📥 Clone repository
-Clone the project:
+```
 
-bash
-git clone <REPOSITORY_URL>
-Navigate to the directory:
+---
 
-bash
+## 📥 Installation
+
+### 1. Clone the repository
+
+```bash
+git clone <YOUR_REPOSITORY_URL>
 cd flowmind
-📦 Install dependencies
-Install dependencies:
+```
 
-bash
+### 2. Install dependencies
+
+```bash
 npm install
-🔐 Environment Variables
-Create a file:
+```
 
-text
-.env
-Add Supabase credentials:
+### 3. Configure environment variables
 
-env
+Create a `.env` file in the project root:
+
+```env
 VITE_SUPABASE_URL=https://YOUR_PROJECT.supabase.co
 VITE_SUPABASE_ANON_KEY=YOUR_SUPABASE_ANON_KEY
-Do not add SUPABASE_SERVICE_ROLE_KEY to the frontend .env.
+```
 
-The Service Role Key should never be exposed in client-side code.
+### ⚠️ Important
 
-It is only used by server-side Edge Functions.
+Do **not** put the following key into the frontend `.env`:
 
-🗄️ Supabase Setup
-Create a project in Supabase.
+```env
+SUPABASE_SERVICE_ROLE_KEY
+```
 
-After that, you need to:
+The Service Role Key has elevated database privileges and must only be used in server-side Edge Functions.
 
-create necessary tables;
+---
 
-configure Authentication;
+# ☁️ Supabase Setup
 
-configure Google OAuth;
+Create a Supabase project and configure:
 
-enable Row Level Security;
+1. PostgreSQL database
+2. Authentication
+3. Google OAuth
+4. Row Level Security
+5. RLS policies
+6. Storage
+7. Edge Functions
+8. Required server-side secrets
 
-create RLS policies;
+The database schema and policies should match the application requirements.
 
-configure Storage;
+---
 
-add Edge Functions;
+## 🔑 Google Authentication
 
-add required environment secrets.
+In the Supabase dashboard:
 
-🔑 Google Authentication
-For Google login, you need to configure the OAuth provider in Supabase.
-
-In Supabase:
-
-text
+```text
 Authentication
-    ↓
+      ↓
 Providers
-    ↓
+      ↓
 Google
-After configuration, you need to specify:
+```
 
-Google Client ID;
+Configure:
 
-Google Client Secret;
+- Google Client ID
+- Google Client Secret
+- Supabase OAuth redirect URL
 
-Redirect URL.
+The redirect URL must exactly match the URL configured in the Supabase Authentication settings and the Google Cloud OAuth configuration.
 
-The Redirect URL must match the URL specified in Supabase Authentication settings.
+---
 
-▶️ Development
-To start the development server:
+# ▶️ Development
 
-bash
+Start the Vite development server:
+
+```bash
 npm run dev
-After starting, Vite will show the local address, for example:
+```
 
-text
+Vite will provide a local URL, usually:
+
+```text
 http://localhost:5173
-Open it in your browser.
+```
 
-🏭 Production Build
-To create a production build:
+Open the URL in your browser.
 
-bash
+---
+
+# 🏭 Production Build
+
+Create a production build:
+
+```bash
 npm run build
+```
+
 Preview the production build locally:
 
-bash
+```bash
 npm run preview
-🧪 Development Workflow
-Recommended workflow:
+```
 
-bash
+---
+
+# 🔄 Development Workflow
+
+A typical development workflow:
+
+```bash
 git pull
 npm install
 npm run dev
+```
+
 Before creating a production build:
 
-bash
+```bash
 npm run build
-🔄 Application Flow
-After opening the application, the user is redirected to the login page if not authenticated.
+```
 
-Guest
-text
-Login
-   │
-   ├── Register
-   └── Continue with Google
-Authenticated user
-text
+---
+
+# 🔁 Application Flow
+
+### Guest user
+
+```text
+Landing / Login
+      │
+      ├── Register
+      └── Continue with Google
+```
+
+### Authenticated user
+
+```text
 Dashboard
    │
    ├── Today's Focus
    ├── To-Do List
    ├── Calendar
-   ├── Timer
+   ├── Focus Timer
    ├── Quotes
    ├── Notifications
    ├── Settings
    └── Profile
-🧠 Productivity Workflow
-Main FlowMind usage scenario:
+```
 
-text
+---
+
+# 🧩 Typical Productivity Workflow
+
+The core FlowMind workflow can be represented as:
+
+```text
 Create Task
      ↓
 Set Priority
@@ -705,141 +693,118 @@ Set Deadline
      ↓
 Schedule in Calendar
      ↓
-Focus Timer
+Start Focus Timer
      ↓
 Complete Task
      ↓
 Today's Focus
      ↓
 Dashboard Statistics
-Thus, the application combines planning, execution, and productivity analysis.
+```
 
-📱 Responsive Design
-FlowMind supports desktop and mobile layouts.
+FlowMind therefore combines:
 
-On mobile devices, the interface adapts to small screens:
+**Planning → Execution → Completion → Analysis**
 
-mobile navigation;
+---
 
-adapted header;
+# 📱 Responsive Design
 
-profile controls;
+FlowMind supports responsive desktop and mobile layouts.
 
-notifications;
+Mobile adaptations include:
 
-responsive task cards;
+- Mobile navigation
+- Responsive header
+- Profile controls
+- Notifications
+- Responsive task cards
+- Mobile calendar
+- Mobile-friendly timer
+- Responsive dashboard
+- Adapted modal dialogs
 
-adapted modal windows;
+The goal is to keep the primary productivity workflow usable regardless of screen size.
 
-mobile calendar;
+---
 
-mobile-friendly timer;
+# 💳 Subscription Plans
 
-responsive Dashboard.
+FlowMind supports the following subscription periods:
 
-💳 Subscription Plans
-The project includes the following plans:
+| Plan | Duration |
+|---|---:|
+| Free | No Premium subscription |
+| 1 Month | 1 month |
+| 3 Months | 3 months |
+| 6 Months | 6 months |
+| 1 Year | 12 months |
+| Free Trial | 7 days |
 
-Plan	Duration
-Free	Free
-1 Month	1 month
-3 Months	3 months
-6 Months	6 months
-1 Year	12 months
-Also available:
+> Prices and payment processing are currently development-oriented and may change when a production payment provider is integrated.
 
-text
-7-Day Free Trial
-Prices and payment logic may vary depending on the production payment provider.
+---
 
-🛡️ Production Considerations
-Before publishing the project, you need to:
+# 🛡️ Production Checklist
 
-replace test-payment with a real payment provider;
+Before deploying FlowMind to production, verify:
 
-verify all RLS policies;
+- [ ] Replace `test-payment` with a real payment provider
+- [ ] Verify all RLS policies
+- [ ] Verify Storage policies
+- [ ] Configure production Google OAuth redirect URLs
+- [ ] Configure production environment variables
+- [ ] Configure email authentication
+- [ ] Configure and test 2FA
+- [ ] Verify subscription expiration logic
+- [ ] Configure Edge Function secrets
+- [ ] Enable production logging/monitoring
+- [ ] Never expose the Service Role Key
+- [ ] Test session recovery after page reload
+- [ ] Test authentication flows
+- [ ] Test Premium/trial transitions
+- [ ] Test mobile layouts
+- [ ] Test file upload/delete behavior
 
-verify Google OAuth production redirect URL;
+---
 
-configure production environment variables;
+# 🔮 Future Improvements
 
-verify Storage policies;
+Potential future extensions include:
 
-configure email authentication;
+- 💳 Full production payment integration
+- 📱 Dedicated mobile application
+- 🔔 Push notifications
+- 🤖 AI Assistant
+- 🤖 AI-powered task planning
+- 📅 Automatic task scheduling
+- 🔁 Recurring tasks
+- 📈 Advanced productivity analytics
+- 👥 Team workspaces
+- 🤝 Collaborative tasks
+- 📆 Google Calendar integration
+- 🍎 Apple Calendar integration
+- 🔗 Additional external integrations
+- ⭐ More advanced subscription tiers
 
-configure 2FA;
+---
 
-verify subscription expiration logic;
+# 📄 License
 
-enable production logging/monitoring;
+FlowMind is currently a private project.
 
-do not expose the Service Role Key;
+A separate open-source or commercial license can be added if the project is distributed publicly.
 
-verify Edge Functions permissions;
+---
 
-test mobile layout;
+# 👨‍💻 About FlowMind
 
-test session recovery after page reload.
+**FlowMind** is a productivity-focused application designed around one simple workflow:
 
-🔮 Future Improvements
-In the future, FlowMind can be extended with:
+> **Plan → Focus → Complete → Analyze**
 
-full-fledged payment system;
+It brings task management, scheduling, focused work sessions, productivity statistics, motivational content, personalization, and Premium functionality together in a single application.
 
-mobile application;
+Built with:
 
-push notifications;
-
-AI Assistant;
-
-AI task planning;
-
-automatic task distribution across calendar;
-
-recurring tasks;
-
-advanced productivity analytics;
-
-team workspaces;
-
-collaborative tasks;
-
-Google Calendar integration;
-
-Apple Calendar integration;
-
-external service integration;
-
-extended subscription system.
-
-📄 License
-The project is a private project.
-
-A license may be added separately depending on the distribution method of FlowMind.
-
-👨‍💻 Tech Stack
-Technology	Purpose
-Vue 3	Frontend framework
-Composition API	Component logic
-Pinia	State management
-Vue Router	Application routing
-Vite	Development & build tool
-Supabase	Backend platform
-PostgreSQL	Database
-Supabase Auth	Authentication
-Supabase Storage	File storage
-Supabase Edge Functions	Server-side logic
-Row Level Security	Database security
-Google OAuth	Social authentication
-2FA	Account security
-CSS	UI styling
-JavaScript	Application logic
-🌟 About FlowMind
-FlowMind is a productivity-focused application created to combine task management, time planning, and concentration in one place.
-
-The application allows the user to:
-
-Plan → Focus → Complete → Analyze
-
-Plan tasks, focus on completing them, complete them, and analyze your own productivity.
-
+**Vue 3 · Pinia · Vue Router · Vite · Supabase · PostgreSQL**
