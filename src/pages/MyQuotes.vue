@@ -124,7 +124,7 @@ const handlePin = async (quoteId) => {
 /* LOAD */
 
 onMounted(() => {
-  if (subscriptionStore.isPro) {
+  if (isPremium.value) {
     loadQuotes(authStore.user.id)
   }
 })
