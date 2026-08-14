@@ -1,4 +1,4 @@
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useSettingsStore } from '@/store/settings'
 import { useAuthStore } from '@/store/auth'
 import { supabase } from '@/services/supabase'
@@ -158,7 +158,11 @@ export function useQuotes() {
 
     if (!authStore.user) return
 
-    if (!subscriptionStore.isPro) {
+    let isPremium = computed(() => {
+      return subscriptionStore.status === 'active' || subscriptionStore.status === 'trial'
+    })
+
+    if (!isPremium.value) {
       throw new Error('Pro subscription required')
     }
 
