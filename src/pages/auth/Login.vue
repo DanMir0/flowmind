@@ -1,7 +1,5 @@
 <script setup>
 import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { supabase } from '@/services/supabase.js'
 import { useAuthStore } from '@/store/auth'
 import router from '@/router/router.js'
 
@@ -18,30 +16,27 @@ const showMfa = ref(false)
 const mfaCode = ref('')
 
 async function submit() {
-  error.value = ''
-  loading.value = true
-
   try {
+    loading.value = true
+    error.value = ''
+
     const result = await auth.signIn(email.value, password.value)
 
     if (result.mfaRequired) {
       showMfa.value = true
+      auth.mfaFactorId = result.factorId || auth.mfaFactorId
+      loading.value = false
       return
     }
 
-    await router.push({
-      name: 'dashboard'
-    })
+    await router.push({ name: 'dashboard' })
   } catch (err) {
-    if (err.message.includes('Email not confirmed')) {
-      error.value = 'Please confirm your email'
-    } else {
-      error.value = err.message
-    }
+    error.value = err.message || 'Invalid email or password'
   } finally {
-    loading.value = false
+    if (!showMfa.value) {
+      loading.value = false
+    }
   }
-
 }
 
 async function loginWithGoogle() {
@@ -57,17 +52,10 @@ async function loginWithGoogle() {
 }
 
 async function verifyMfa() {
-  error.value = ''
-
-  if (!/^\d{6}$/.test(mfaCode.value)) {
-    error.value = 'Enter the 6-digit authentication code.'
-
-    return
-  }
-
-  loading.value = true
-
   try {
+    loading.value = true
+    error.value = ''
+
     await auth.verifyMFA(
       auth.mfaFactorId,
       mfaCode.value
@@ -76,20 +64,11 @@ async function verifyMfa() {
     showMfa.value = false
     mfaCode.value = ''
 
-    /*
-     * Теперь сессия AAL2.
-     * Загружаем остальные данные.
-     */
     await auth.fetchProfile()
 
-    await router.push({
-      name: 'dashboard'
-    })
-
-  } catch (err) {
-    error.value =
-      'Invalid authentication code.'
-
+    await router.push({ name: 'dashboard' })
+  } catch (error) {
+    error.value = 'Invalid authentication code.'
   } finally {
     loading.value = false
   }

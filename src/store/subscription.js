@@ -80,16 +80,10 @@ export const useSubscriptionStore = defineStore('subscription', {
           .maybeSingle()
 
         if (error) {
-          console.error(
-            '[Subscription] load error:',
-            error
-          )
-
           throw error
         }
 
         if (!data) {
-          console.error('[Subscription] Profile not found for user:', userId)
           this.reset()
           return
         }
@@ -136,7 +130,6 @@ export const useSubscriptionStore = defineStore('subscription', {
         }
 
       } catch (error) {
-        console.error('[Subscription] loadSubscription error:', error)
         this.reset()
 
       } finally {
@@ -157,14 +150,6 @@ export const useSubscriptionStore = defineStore('subscription', {
               },
             }
           )
-
-        console.log(
-          '[Subscription] start-trial:',
-          {
-            data,
-            error,
-          }
-        )
 
         if (error) {
           throw error
@@ -196,11 +181,6 @@ export const useSubscriptionStore = defineStore('subscription', {
         return data
 
       } catch (error) {
-        console.error(
-          '[Subscription] startTrial error:',
-          error
-        )
-
         throw error
 
       } finally {
@@ -218,8 +198,6 @@ export const useSubscriptionStore = defineStore('subscription', {
             body: { plan }
           }
         )
-
-        console.log('[Subscription] test-payment:', { data, error })
 
         if (error) {
           throw error
@@ -239,7 +217,6 @@ export const useSubscriptionStore = defineStore('subscription', {
         return data
 
       } catch (error) {
-        console.error('[Subscription] testPayment error:', error)
         throw error
 
       } finally {

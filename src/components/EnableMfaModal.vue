@@ -1,8 +1,9 @@
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, computed, onMounted } from 'vue'
 import { useAuthStore } from '@/store/auth.js'
 import { showError, showSuccess } from '@/utils/toast.js'
 import { useModal } from '@/composable/useModal.js'
+import router from '@/router/router.js'
 
 const props = defineProps({
   open: {
@@ -24,6 +25,12 @@ const code = ref('')
 const enrollment = ref(null)
 const step = ref('setup')
 
+// Исправленная проверка
+const isMfaEnabled = computed(() => {
+  // Проверяем по mfaFactorId
+  return auth.mfaFactorId !== null && auth.mfaFactorId !== undefined
+})
+
 watch(
   () => props.open,
   async (open) => {
@@ -32,9 +39,32 @@ watch(
       return
     }
 
+    // Обновляем состояние MFA перед проверкой
+    await auth.checkMFA()
+
+    // Если 2FA уже включена, закрываем модалку
+    if (isMfaEnabled.value) {
+      showError('Two-factor authentication is already enabled.')
+      emit('close')
+      return
+    }
+
+    // Очищаем старые неподтвержденные факторы
+    await cleanupUnverifiedFactors()
+
     await startEnrollment()
-  }
+  },
+  { immediate: true }
 )
+
+async function cleanupUnverifiedFactors() {
+  const factors = await auth.getMFAFactors()
+  const unverifiedFactors = factors.totp?.filter(f => f.status === 'unverified') || []
+
+  for (const factor of unverifiedFactors) {
+    await auth.disableMFA(factor.id)
+  }
+}
 
 async function startEnrollment() {
   loading.value = true
@@ -43,6 +73,16 @@ async function startEnrollment() {
     enrollment.value = await auth.enrollMFA()
     step.value = 'setup'
   } catch (error) {
+
+    if (error.message?.includes('already exists')) {
+      await cleanupUnverifiedFactors()
+
+      enrollment.value = await auth.enrollMFA()
+      step.value = 'setup'
+      loading.value = false
+      return
+    }
+
     showError(
       error?.message ||
       'Failed to start two-factor authentication.'
@@ -75,45 +115,54 @@ async function verify() {
       cleanCode
     )
 
-    showSuccess(
-      'Two-factor authentication has been enabled.'
-    )
+    showSuccess('Two-factor authentication has been enabled.')
+
+    // Выходим и заходим заново, чтобы обновить сессию ★★★
+    await auth.signOut()
+    await router.push({ name: 'login' })
 
     emit('enabled')
     emit('close')
 
   } catch (error) {
-    showError(
-      'Invalid authentication code. Please try again.'
-    )
+    showError('Invalid authentication code. Please try again.')
   } finally {
     loading.value = false
   }
 }
 
 function reset() {
+  if (enrollment.value?.id) {
+    auth.disableMFA(enrollment.value.id).catch(() => {})
+  }
+
   enrollment.value = null
   code.value = ''
   loading.value = false
   step.value = 'setup'
 }
-</script>
 
+// Добавим проверку при монтировании компонента
+onMounted(async () => {
+  if (auth.user) {
+    await auth.checkMFA()
+  }
+})
+</script>
 <template>
   <Teleport to="body">
     <Transition name="modal">
-
       <div
         v-if="open"
         class="modal-overlay"
-        @click.self="emit('close')">
-
+        @click.self="emit('close')"
+      >
         <div class="modal" ref="modalRef">
-
           <button
             class="close-btn"
             type="button"
-            @click="emit('close')">
+            @click="emit('close')"
+          >
             ×
           </button>
 
@@ -125,9 +174,7 @@ function reset() {
             </svg>
           </div>
 
-          <h2>
-            Set up two-factor authentication
-          </h2>
+          <h2>Set up two-factor authentication</h2>
 
           <p class="subtitle">
             Scan the QR code with your authenticator app,
@@ -136,16 +183,17 @@ function reset() {
 
           <div
             v-if="loading"
-            class="loading">
+            class="loading"
+          >
             Preparing authentication...
           </div>
 
           <template v-else-if="enrollment">
-
             <div class="qr-wrapper">
               <img
                 :src="enrollment.totp.qr_code"
-                alt="Two-factor authentication QR code">
+                alt="Two-factor authentication QR code"
+              >
             </div>
 
             <p class="scan-text">
@@ -157,24 +205,14 @@ function reset() {
 
             <div
               v-if="enrollment.totp.secret"
-              class="secret-wrapper">
-
-              <span>
-                Can't scan the QR code?
-              </span>
-
-              <code>
-                {{ enrollment.totp.secret }}
-              </code>
-
+              class="secret-wrapper"
+            >
+              <span>Can't scan the QR code?</span>
+              <code>{{ enrollment.totp.secret }}</code>
             </div>
 
             <div class="code-field">
-
-              <label>
-                Authentication code
-              </label>
-
+              <label>Authentication code</label>
               <input
                 v-model="code"
                 type="text"
@@ -183,17 +221,17 @@ function reset() {
                 maxlength="6"
                 placeholder="000000"
                 @input="code = code.replace(/\D/g, '').slice(0, 6)"
-                @keyup.enter="verify">
-
+                @keyup.enter="verify"
+              >
             </div>
 
             <div class="actions">
-
               <button
                 type="button"
                 class="cancel-btn"
                 :disabled="loading"
-                @click="emit('close')">
+                @click="emit('close')"
+              >
                 Cancel
               </button>
 
@@ -201,24 +239,17 @@ function reset() {
                 type="button"
                 class="primary-btn"
                 :disabled="loading || code.length !== 6"
-                @click="verify">
-
+                @click="verify"
+              >
                 {{ loading ? 'Verifying...' : 'Enable 2FA' }}
-
               </button>
-
             </div>
-
           </template>
-
         </div>
-
       </div>
-
     </Transition>
   </Teleport>
 </template>
-
 <style scoped>
 .modal-overlay {
   position: fixed;

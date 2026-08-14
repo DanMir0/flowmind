@@ -14,7 +14,7 @@ export const useAuthStore = defineStore('auth', {
 
     // MFA
     mfaRequired: false,
-    mfaFactorId: null
+    mfaFactorId: null,
   }),
 
   actions: {
@@ -42,6 +42,13 @@ export const useAuthStore = defineStore('auth', {
 
         // Проверяем MFA для уже существующей сессии
         await this.checkMFA()
+
+        if (this.mfaFactorId) {
+          const { data: aalData } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel()
+          if (aalData.currentLevel === 'aal1') {
+            this.mfaRequired = true
+          }
+        }
       }
 
       this.initialized = true
@@ -96,29 +103,24 @@ export const useAuthStore = defineStore('auth', {
     },
 
     async checkMFA() {
-      const {
-        data,
-        error
-      } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel()
+      try {
+        const { data, error } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel()
 
-      if (error) {
-        throw error
-      }
+        if (error) {
+          this.mfaFactorId = null
+          this.mfaRequired = false
+          return { required: false, factorId: null }
+        }
 
-      const required =
-        data.currentLevel === 'aal1' &&
-        data.nextLevel === 'aal2'
+        const required = data.currentLevel === 'aal1'
 
-      this.mfaRequired = required
+        this.mfaRequired = required
 
-      if (required) {
-        const {
-          data: factors,
-          error: factorsError
-        } = await supabase.auth.mfa.listFactors()
+        const { data: factors, error: factorsError } = await supabase.auth.mfa.listFactors()
 
         if (factorsError) {
-          throw factorsError
+          this.mfaFactorId = null
+          return { required, factorId: null }
         }
 
         const verifiedTotp = factors.totp?.find(
@@ -126,13 +128,21 @@ export const useAuthStore = defineStore('auth', {
         )
 
         this.mfaFactorId = verifiedTotp?.id || null
-      } else {
-        this.mfaFactorId = null
-      }
 
-      return {
-        required,
-        factorId: this.mfaFactorId
+        // Если есть верифицированный фактор, но currentLevel = aal1,
+        // значит пользователь не прошел 2FA в этой сессии
+        if (verifiedTotp && data.currentLevel === 'aal1') {
+          this.mfaRequired = true
+        }
+
+        return {
+          required: this.mfaRequired,
+          factorId: this.mfaFactorId
+        }
+      } catch (error) {
+        this.mfaFactorId = null
+        this.mfaRequired = false
+        return { required: false, factorId: null }
       }
     },
 
@@ -153,38 +163,65 @@ export const useAuthStore = defineStore('auth', {
     /*
      * Создаём challenge и проверяем код.
      */
+    // В store/auth.js
+
+    // В store/auth.js
+
     async verifyMFA(factorId, code) {
-      const {
-        data: challenge,
-        error: challengeError
-      } = await supabase.auth.mfa.challenge({
-        factorId
-      })
+      try {
+        const { data: challenge, error: challengeError } = await supabase.auth.mfa.challenge({
+          factorId
+        })
 
-      if (challengeError) {
-        throw challengeError
-      }
+        if (challengeError) {
+          throw challengeError
+        }
 
-      const {
-        data,
-        error
-      } = await supabase.auth.mfa.verify({
-        factorId,
-        challengeId: challenge.id,
-        code: code.trim()
-      })
+        const { data, error } = await supabase.auth.mfa.verify({
+          factorId,
+          challengeId: challenge.id,
+          code: code.trim()
+        })
 
-      if (error) {
+        if (error) {
+          throw error
+        }
+
+        // ★★★ КРИТИЧНО: Принудительно обновляем сессию ★★★
+        // 1. Сначала получаем текущую сессию
+        const { data: sessionData } = await supabase.auth.getSession()
+
+        if (sessionData?.session) {
+          // 2. Обновляем сессию
+          const { data: refreshed, error: refreshError } = await supabase.auth.refreshSession()
+        }
+
+        // 3. Получаем пользователя с обновленной сессией
+        const { data: userData, error: userError } = await supabase.auth.getUser()
+
+        if (!userError && userData.user) {
+          this.user = userData.user
+        }
+
+        // 4. Проверяем уровень
+        const { data: aalData } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel()
+
+        // 5. Получаем факторы
+        const { data: factors } = await supabase.auth.mfa.listFactors()
+
+        const verifiedTotp = factors.totp?.find(f => f.status === 'verified')
+
+        if (verifiedTotp) {
+          this.mfaFactorId = verifiedTotp.id
+        }
+
+        this.mfaRequired = false
+
+        return data
+
+      } catch (error) {
         throw error
       }
-
-      this.mfaRequired = false
-      this.mfaFactorId = null
-
-      // Получаем обновлённую сессию AAL2
-      await supabase.auth.refreshSession()
-
-      return data
     },
 
     /*
@@ -341,22 +378,32 @@ export const useAuthStore = defineStore('auth', {
     },
 
     async refreshUser() {
-      const {
-        data: { user },
-        error
-      } = await supabase.auth.getUser()
+      try {
+        const { data: { user }, error } = await supabase.auth.getUser()
 
-      if (error) {
+        if (error) {
+          throw error
+        }
+
+        if (user) {
+          this.user = user
+
+          // Обновляем MFA статус
+          await this.checkMFA()
+
+          // Если есть верифицированный фактор и уровень aal2, то 2FA пройдена
+          if (this.mfaFactorId) {
+            const { data: aalData } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel()
+            if (aalData.currentLevel === 'aal2') {
+              this.mfaRequired = false
+            }
+          }
+        }
+
+        return user
+      } catch (error) {
         throw error
       }
-
-      this.user = user
-
-      if (user) {
-        await this.fetchProfile()
-      }
-
-      return user
     },
 
     // Если пользователь не авторизирован и нажимает на любую кнопку в dashboard, то перекидыват на страницу логина
