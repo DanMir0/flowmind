@@ -293,16 +293,6 @@ watch(
           </div>
         </div>
 
-        <!-- Skeleton loading -->
-        <div v-else-if="loading">
-
-          <div
-            v-for="n in 3"
-            :key="n"
-            class="quote-skeleton" />
-
-        </div>
-
         <!-- Quotes list -->
         <div v-else class="quotes-list">
 
@@ -348,7 +338,7 @@ watch(
         entity="quote"
         :title="deleteTitle"
         @confirm="confirmDelete"
-        @cancel="showDeleteModal=false"
+        @close="showDeleteModal=false"
       />
 
       <AddQuoteModal

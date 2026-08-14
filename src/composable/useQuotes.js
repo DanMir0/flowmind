@@ -165,14 +165,14 @@ export function useQuotes() {
     if (!isPremium.value) {
       throw new Error('Pro subscription required')
     }
-
+    loading.value = true
     await addUserQuote(
       authStore.user.id,
       quoteText,
       settingsStore.locale,
       authorText,
     )
-
+    loading.value = false
   }
   const pinCurrentSystemQuote = async () => {
 

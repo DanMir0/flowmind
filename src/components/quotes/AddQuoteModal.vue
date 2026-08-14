@@ -4,11 +4,12 @@ import { ref } from 'vue'
 import { useQuotes } from '@/composable/useQuotes'
 import { showError, showSuccess } from '@/utils/toast.js'
 import { useModal } from '@/composable/useModal.js'
+import Loader from '@/components/Loader.vue'
 
 const props = defineProps({
   open: Boolean
 })
-
+const loading = ref(false)
 const emit = defineEmits(['close', 'saved'])
 const { modalRef } = useModal(() => props.open, emit)
 
@@ -20,7 +21,7 @@ const { createUserQuote } = useQuotes()
 const save = async () => {
 
   if (!quoteText.value.trim()) return
-
+  loading.value = true
   try {
     await createUserQuote(
       quoteText.value,
@@ -34,10 +35,16 @@ const save = async () => {
     emit('close')
   } catch (e) {
     showError('Failed to add quote', e)
+  } finally {
+    loading.value = false
   }
 
 }
 
+function close() {
+  if (loading.value) return
+  emit('close')
+}
 </script>
 
 <template>
@@ -46,14 +53,12 @@ const save = async () => {
       <div
         v-if="open"
         class="modal-overlay"
-        @click="emit('close')">
-
+        @click.self="close">
         <div
           class="modal"
           ref="modalRef">
-
+          <Loader :visible="loading" />
           <h3>Add your quote</h3>
-
 
           <textarea
             v-model="quoteText"
@@ -73,7 +78,7 @@ const save = async () => {
 
             <button
               class="cancel"
-              @click="$emit('close')">
+              @click="close">
               Cancel
             </button>
 
@@ -183,7 +188,7 @@ const save = async () => {
 .modal input:focus, textarea:focus {
   outline: none;
   border-color: #7C3AED;
-  box-shadow: 0 0 0 3px rgba(124,58,237,.12);
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, .12);
 }
 
 .fade-enter-active,

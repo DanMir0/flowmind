@@ -240,4 +240,224 @@ const isLong = computed(() => props.quote.text.length > 180)
 .icon-btn.danger {
   color: #FF4545;
 }
+
+@media (max-width: 1024px) {
+  .quote-card {
+    padding: 22px 26px;
+    margin-bottom: 18px;
+    border-radius: 18px;
+    min-height: 140px;
+    gap: 16px;
+  }
+
+  .left {
+    gap: 18px;
+  }
+
+  .quote-icon {
+    font-size: 28px;
+  }
+
+  .quote-icon svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .text {
+    font-size: 16px;
+    line-height: 1.6;
+  }
+
+  .author {
+    font-size: 14px;
+  }
+
+  .pin-btn {
+    height: 42px;
+    padding: 0 20px;
+    font-size: 13px;
+    border-radius: 12px;
+  }
+
+  .pin-btn .pin-icon svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .icon-btn {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+  }
+
+  .icon-btn svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .actions {
+    gap: 10px;
+  }
+}
+
+@media (max-width: 767px) {
+  .quote-card {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 18px 16px;
+    margin-bottom: 14px;
+    border-radius: 14px;
+    min-height: auto;
+    gap: 14px;
+    border: 1px solid var(--border, #e2e8f0);
+  }
+
+  .quote-card:hover {
+    transform: none;
+  }
+
+  .left {
+    gap: 14px;
+    align-items: flex-start;
+  }
+
+  .quote-icon {
+    font-size: 22px;
+    margin-top: 2px;
+  }
+
+  .quote-icon svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .text {
+    font-size: 15px;
+    line-height: 1.5;
+    -webkit-line-clamp: 3;
+  }
+
+  .author {
+    font-size: 13px;
+    margin-top: 6px;
+  }
+
+  .read-more {
+    font-size: 13px;
+    margin-top: 6px;
+  }
+
+  .actions {
+    align-self: flex-end;
+    gap: 8px;
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .pin-btn {
+    height: 38px;
+    padding: 0 16px;
+    font-size: 12px;
+    border-radius: 10px;
+    gap: 6px;
+  }
+
+  .pin-btn .pin-icon svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .icon-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+  }
+
+  .icon-btn svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .icon-btn .icon-pencil {
+    width: 18px;
+    height: 18px;
+  }
+
+  .icon-btn.danger svg {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+@media (max-width: 380px) {
+  .quote-card {
+    padding: 14px 12px;
+    margin-bottom: 10px;
+    border-radius: 12px;
+    gap: 10px;
+  }
+
+  .left {
+    gap: 10px;
+  }
+
+  .quote-icon {
+    font-size: 18px;
+  }
+
+  .quote-icon svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .text {
+    font-size: 14px;
+    -webkit-line-clamp: 4;
+  }
+
+  .author {
+    font-size: 12px;
+  }
+
+  .read-more {
+    font-size: 12px;
+  }
+
+  .actions {
+    gap: 6px;
+  }
+
+  .pin-btn {
+    height: 34px;
+    padding: 0 12px;
+    font-size: 11px;
+    border-radius: 8px;
+  }
+
+  .pin-btn .pin-icon svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  .icon-btn {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+  }
+
+  .icon-btn svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .icon-btn .icon-pencil {
+    width: 16px;
+    height: 16px;
+  }
+
+  .icon-btn.danger svg {
+    width: 16px;
+    height: 16px;
+  }
+}
 </style>
