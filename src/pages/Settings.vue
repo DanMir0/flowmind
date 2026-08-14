@@ -445,7 +445,7 @@ onMounted(async () => {
             <h2>Authentication</h2>
 
             <span>
-              Manage how you sign in to TaskMaster.
+              Manage how you sign in to FlowMind.
             </span>
           </div>
 

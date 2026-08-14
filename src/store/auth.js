@@ -150,7 +150,7 @@ export const useAuthStore = defineStore('auth', {
       const { data, error } =
         await supabase.auth.mfa.enroll({
           factorType: 'totp',
-          friendlyName: 'TaskMaster Authenticator'
+          friendlyName: 'FlowMind Authenticator'
         })
 
       if (error) {
