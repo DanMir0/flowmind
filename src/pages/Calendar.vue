@@ -748,7 +748,7 @@ function hasOverflowTasks(day) {
 /* ===== ПЛАНШЕТ (768px - 1024px) ===== */
 @media (max-width: 1024px) {
   .calendar-layout {
-    grid-template-columns: 260px 1fr;
+    grid-template-columns: 1fr;
     gap: 16px;
     padding: 16px;
   }
