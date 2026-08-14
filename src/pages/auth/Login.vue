@@ -56,10 +56,13 @@ async function verifyMfa() {
     loading.value = true
     error.value = ''
 
-    await auth.verifyMFA(
-      auth.mfaFactorId,
-      mfaCode.value
-    )
+    if (auth.mfaFactorId) {
+      await auth.verifyMFA(
+        auth.mfaFactorId,
+        mfaCode.value
+      )
+    }
+
 
     showMfa.value = false
     mfaCode.value = ''

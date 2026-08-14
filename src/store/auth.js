@@ -43,12 +43,6 @@ export const useAuthStore = defineStore('auth', {
         // Проверяем MFA для уже существующей сессии
         await this.checkMFA()
 
-        if (this.mfaFactorId) {
-          const { data: aalData } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel()
-          if (aalData.currentLevel === 'aal1') {
-            this.mfaRequired = true
-          }
-        }
       }
 
       this.initialized = true
@@ -104,45 +98,77 @@ export const useAuthStore = defineStore('auth', {
 
     async checkMFA() {
       try {
-        const { data, error } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel()
+        const {
+          data: factors,
+          error: factorsError
+        } = await supabase.auth.mfa.listFactors()
 
-        if (error) {
+        console.log('[MFA] factors:', factors)
+        console.log('[MFA] factors error:', factorsError)
+
+        const {
+          data: aalData,
+          error: aalError
+        } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel()
+
+        console.log('[MFA] AAL:', aalData)
+        console.log('[MFA] AAL error:', aalError)
+
+        if (factorsError || aalError) {
           this.mfaFactorId = null
           this.mfaRequired = false
-          return { required: false, factorId: null }
-        }
 
-        const required = data.currentLevel === 'aal1'
-
-        this.mfaRequired = required
-
-        const { data: factors, error: factorsError } = await supabase.auth.mfa.listFactors()
-
-        if (factorsError) {
-          this.mfaFactorId = null
-          return { required, factorId: null }
+          return {
+            required: false,
+            factorId: null
+          }
         }
 
         const verifiedTotp = factors.totp?.find(
           factor => factor.status === 'verified'
         )
 
-        this.mfaFactorId = verifiedTotp?.id || null
+        console.log('[MFA] verified TOTP:', verifiedTotp)
 
-        // Если есть верифицированный фактор, но currentLevel = aal1,
-        // значит пользователь не прошел 2FA в этой сессии
-        if (verifiedTotp && data.currentLevel === 'aal1') {
-          this.mfaRequired = true
+        if (!verifiedTotp) {
+          console.log('[MFA] No verified factor → MFA NOT required')
+
+          this.mfaFactorId = null
+          this.mfaRequired = false
+
+          return {
+            required: false,
+            factorId: null
+          }
         }
+
+        this.mfaFactorId = verifiedTotp.id
+
+        this.mfaRequired =
+          aalData.currentLevel === 'aal1'
+
+        console.log('[MFA] Result:', {
+          factorId: this.mfaFactorId,
+          currentLevel: aalData.currentLevel,
+          nextLevel: aalData.nextLevel,
+          required: this.mfaRequired
+        })
 
         return {
           required: this.mfaRequired,
           factorId: this.mfaFactorId
         }
+
       } catch (error) {
+        console.error('[MFA] checkMFA error:', error)
+
         this.mfaFactorId = null
         this.mfaRequired = false
-        return { required: false, factorId: null }
+
+        return {
+          required: false,
+          factorId: null
+        }
       }
     },
 
