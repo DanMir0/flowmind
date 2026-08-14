@@ -16,6 +16,8 @@ export function useSound() {
       intervalId = null
     }
 
+    count = 0
+
     if (!audio.value) {
       audio.value = new Audio('/sounds/timer-bell.mp3')
     }

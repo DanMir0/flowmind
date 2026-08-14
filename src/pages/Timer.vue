@@ -58,22 +58,12 @@ const radius = center - stroke
 const circumference = 2 * Math.PI * radius
 const dashOffset = ref(0)
 
-const { playAlarm, stopAlarm, isPlaying } = useSound()
+const { playAlarm, stopAlarm } = useSound()
 const formattedTime = computed(() => {
   const minutes = Math.floor(timeLeft.value / 60)
   const seconds = timeLeft.value % 60
   return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
 })
-
-const limitInput = () => {
-  // Убираем всё кроме цифр
-  editValue.value = editValue.value.replace(/\D/g, '')
-
-  // Жёстко обрезаем до 4 символов
-  if (editValue.value.length > 4) {
-    editValue.value = editValue.value.slice(0, 4)
-  }
-}
 
 const onInput = () => {
   const input = timeInput.value
