@@ -41,9 +41,10 @@ const randomQuotesEnabled = ref(false)
 const initialized = ref(false)
 const showSubscriptionModal = ref(false)
 
-const isPremium = computed(() =>
-  authStore.profile?.subscription_plan !== 'free'
-)
+const isPremium = computed(() => {
+  return subscriptionStore.status === 'active' || subscriptionStore.status === 'trial'
+})
+
 const editQuote = (quoteId) => {
   editingQuote.value = quotes.value.find(q => q.id === quoteId)
   showEditQuote.value = true
@@ -251,7 +252,7 @@ watch(
 
       <!-- NOT PRO -->
       <div
-        v-else-if="!subscriptionStore.isPro"
+        v-else-if="!subscriptionStore.isPremium"
         class="pro-lock">
 
         <h2>Custom quotes are a Pro feature</h2>
