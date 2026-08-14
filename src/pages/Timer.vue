@@ -14,6 +14,7 @@ const focusStore = useFocusStore()
 const authStore = useAuthStore()
 const tickSound = ref(null)
 let sessionStartedAt = null
+const displayValue = ref('')
 
 const router = useRouter()
 const showQuoteMenu = ref(false)
@@ -69,14 +70,70 @@ const limitInput = () => {
   editValue.value = editValue.value.replace(/\D/g, '')
 
   // Жёстко обрезаем до 4 символов
-  if (editValue.value.length > 5) {
-    editValue.value = editValue.value.slice(0, 5)
+  if (editValue.value.length > 4) {
+    editValue.value = editValue.value.slice(0, 4)
   }
+}
+
+const onInput = () => {
+  const input = timeInput.value
+  if (!input) return
+
+  // Считаем сколько цифр до курсора
+  const beforeCursor = displayValue.value.slice(0, input.selectionStart)
+  const digitsBefore = beforeCursor.replace(/\D/g, '').length
+
+  // Убираем всё кроме цифр
+  let value = displayValue.value.replace(/\D/g, '')
+
+  if (value.length > 4) {
+    value = value.slice(0, 4)
+  }
+
+  editValue.value = value
+
+  // Форматируем
+  let formatted = value
+  if (value.length >= 2) {
+    formatted = value.slice(0, 2) + ':' + value.slice(2)
+  }
+
+  displayValue.value = formatted
+
+  // Восстанавливаем курсор по количеству цифр
+  nextTick(() => {
+    // Ищем позицию после нужного количества цифр
+    let newPos = 0
+    let digitCount = 0
+    for (let i = 0; i < formatted.length; i++) {
+      if (formatted[i] !== ':') {
+        digitCount++
+      }
+      if (digitCount === digitsBefore) {
+        newPos = i + 1
+        break
+      }
+    }
+    // Если дошли до конца
+    if (newPos === 0 && digitsBefore > 0) {
+      newPos = formatted.length
+    }
+
+    newPos = Math.min(newPos, formatted.length)
+    input.setSelectionRange(newPos, newPos)
+  })
 }
 
 const enableEdit = async () => {
   if (isRunning.value) return
-  editValue.value = ''
+
+  // Показываем текущее время в формате MMSS
+  const minutes = Math.floor(timeLeft.value / 60)
+  const seconds = timeLeft.value % 60
+  const mmss = `${String(minutes).padStart(2, '0')}${String(seconds).padStart(2, '0')}`
+
+  editValue.value = mmss
+  displayValue.value = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
 
   isEditing.value = true
 
@@ -91,23 +148,24 @@ const applyEdit = () => {
     return
   }
 
-  const digits = editValue.value
+  const digits = editValue.value.padStart(4, '0')
 
-  let minutes = parseInt(digits.slice(0, -2) || 0)
-  let seconds = parseInt(digits.slice(-2) || 0)
+  let minutes = parseInt(digits.slice(0, 2))
+  let seconds = parseInt(digits.slice(2, 4))
 
   if (seconds > 59) seconds = 59
+  if (minutes > 99) minutes = 99
 
   let total = minutes * 60 + seconds
 
   if (total < 1) total = 1
-  if (total > 4 * 60 * 60) total = 4 * 60 * 60
 
   workDuration.value = total
   timeLeft.value = total
 
   isEditing.value = false
 }
+
 const tick = () => {
   const now = Date.now()
   const remainingMs = endTime - now
@@ -206,7 +264,7 @@ const reset = async () => {
   timeLeft.value = workDuration.value
 }
 
-/* ====== Edit Mode ====== */
+
 const cancelEdit = () => {
   isEditing.value = false
 }
@@ -215,6 +273,7 @@ onMounted(async () => {
   tickSound.value = new Audio('/sounds/tick.mp3')
   await loadQuote()
 })
+
 onUnmounted(() => {
   stopAlarm()
   if (rafId) {
@@ -275,13 +334,13 @@ onUnmounted(() => {
           <input
             v-else
             ref="timeInput"
-            v-model="editValue"
+            v-model="displayValue"
             class="time-input"
             inputmode="numeric"
             placeholder="MM:SS"
             pattern="[0-9]*"
             maxlength="5"
-            @input="limitInput"
+            @input="onInput"
             @keyup.enter="applyEdit"
             @keyup.esc="cancelEdit"
             @blur="applyEdit" />
