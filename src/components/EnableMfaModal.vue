@@ -432,10 +432,9 @@ onMounted(async () => {
   color: var(--text-grey);
 }
 
-/* ===== ПЛАНШЕТ (768px - 1024px) ===== */
 @media (max-width: 1024px) {
   .modal-overlay {
-    padding: 0;
+    padding: 16px;
   }
 
   .modal {
@@ -470,47 +469,30 @@ onMounted(async () => {
   }
 }
 
-/* ===== МОБИЛЬНЫЕ ТЕЛЕФОНЫ (320px - 767px) ===== */
+/* ========================================
+   МОБИЛЬНЫЕ ТЕЛЕФОНЫ (320px - 767px)
+   ======================================== */
 @media (max-width: 767px) {
   .modal-overlay {
-    padding: 0;
-    align-items: flex-end;
+    padding: 12px;
+    align-items: center;
     background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
   }
 
   .modal {
     max-width: 100%;
     padding: 20px 16px 24px;
-    border-radius: 24px 24px 0 0;
-    animation: slideUp 0.3s ease;
-    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.15);
-    border: none;
-    border-top: 1px solid var(--border-card, #e2e8f0);
-    max-height: 92vh;
+    border-radius: 20px;
+    max-height: calc(100vh - 24px);
+    border: 1px solid var(--border-card, #e2e8f0);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+    animation: none;
   }
 
-  /* Полоска сверху для закрытия */
+  /* Убираем полоску сверху */
   .modal::before {
-    content: '';
-    position: absolute;
-    top: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 40px;
-    height: 4px;
-    background: var(--border-card, #e2e8f0);
-    border-radius: 2px;
-  }
-
-  @keyframes slideUp {
-    from {
-      transform: translateY(100%);
-      opacity: 0;
-    }
-    to {
-      transform: translateY(0);
-      opacity: 1;
-    }
+    display: none;
   }
 
   .close-btn {
@@ -592,7 +574,9 @@ onMounted(async () => {
   }
 }
 
-/* ===== ОЧЕНЬ МАЛЕНЬКИЕ ТЕЛЕФОНЫ (до 380px) ===== */
+/* ========================================
+   ОЧЕНЬ МАЛЕНЬКИЕ ТЕЛЕФОНЫ (до 380px)
+   ======================================== */
 @media (max-width: 380px) {
   .modal-overlay {
     padding: 8px;
@@ -600,14 +584,8 @@ onMounted(async () => {
 
   .modal {
     padding: 16px 12px 20px;
-    border-radius: 20px 20px 0 0;
-    max-height: 94vh;
-  }
-
-  .modal::before {
-    width: 32px;
-    height: 3px;
-    top: 8px;
+    border-radius: 16px;
+    max-height: calc(100vh - 16px);
   }
 
   .close-btn {
@@ -650,6 +628,7 @@ onMounted(async () => {
     font-size: 13px;
   }
 }
+
 </style>
 <style>
 .modal-enter-active,

@@ -23,8 +23,7 @@ const { modalRef } = useModal(() => props.open, emit)
       <div
         v-if="open"
         class="modal-wrapper"
-        @click.self="emit('close')"
-      >
+        @click.self="emit('close')">
         <div class="modal" ref="modalRef">
 
           <div class="modal-icon">
@@ -33,39 +32,33 @@ const { modalRef } = useModal(() => props.open, emit)
               height="24"
               viewBox="0 0 24 24"
               fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
+              xmlns="http://www.w3.org/2000/svg">
               <path
                 d="M3 6H21"
                 stroke="currentColor"
                 stroke-width="1.8"
-                stroke-linecap="round"
-              />
+                stroke-linecap="round" />
               <path
                 d="M8 6V4C8 3.44772 8.44772 3 9 3H15C15.5523 3 16 3.44772 16 4V6"
                 stroke="currentColor"
                 stroke-width="1.8"
-                stroke-linecap="round"
-              />
+                stroke-linecap="round" />
               <path
                 d="M19 6L18 19C17.9 20.1 17 21 15.9 21H8.1C7 21 6.1 20.1 6 19L5 6"
                 stroke="currentColor"
                 stroke-width="1.8"
                 stroke-linecap="round"
-                stroke-linejoin="round"
-              />
+                stroke-linejoin="round" />
               <path
                 d="M10 10V17"
                 stroke="currentColor"
                 stroke-width="1.8"
-                stroke-linecap="round"
-              />
+                stroke-linecap="round" />
               <path
                 d="M14 10V17"
                 stroke="currentColor"
                 stroke-width="1.8"
-                stroke-linecap="round"
-              />
+                stroke-linecap="round" />
             </svg>
           </div>
 
@@ -81,7 +74,7 @@ const { modalRef } = useModal(() => props.open, emit)
             <button
               type="button"
               class="btn btn-cancel"
-              @click="emit('cancel')"
+              @click="emit('close')"
             >
               Cancel
             </button>
@@ -123,7 +116,7 @@ const { modalRef } = useModal(() => props.open, emit)
   padding: 30px;
   background: var(--bg);
   color: var(--text);
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--border-card);
   border-radius: 22px;
   text-align: center;
   box-shadow:
@@ -264,11 +257,7 @@ const { modalRef } = useModal(() => props.open, emit)
   }
 }
 
-/* ========================================
-   МОБИЛЬНАЯ И ПЛАНШЕТНАЯ ВЕРСТКА
-   ======================================== */
 
-/* ===== ПЛАНШЕТ (768px - 1024px) ===== */
 @media (max-width: 1024px) {
   .modal-wrapper {
     padding: 16px;
@@ -276,6 +265,7 @@ const { modalRef } = useModal(() => props.open, emit)
 
   .modal {
     max-width: 420px;
+    max-height: calc(100vh - 32px);
     padding: 26px;
     border-radius: 20px;
   }
@@ -305,48 +295,31 @@ const { modalRef } = useModal(() => props.open, emit)
   }
 }
 
-/* ===== МОБИЛЬНЫЕ ТЕЛЕФОНЫ (320px - 767px) ===== */
+/* ========================================
+   МОБИЛЬНЫЕ ТЕЛЕФОНЫ (320px - 767px)
+   ======================================== */
 @media (max-width: 767px) {
   .modal-wrapper {
-    align-items: flex-end;
-    padding: 16px;
+    align-items: center;
+    padding: 12px;
     background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
   }
 
   .modal {
     max-width: 100%;
+    max-height: calc(100vh - 24px);
     padding: 24px 20px 28px;
-    border-radius: 24px 24px 0 0;
+    border-radius: 20px;
     text-align: center;
-    animation: slideUp 0.3s ease;
-    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.15);
-    border-bottom: none;
-    border-left: none;
-    border-right: none;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+    border: 1px solid var(--border-card);
+    animation: none;
   }
 
-  /* Полоска сверху для закрытия */
+  /* Убираем полоску сверху */
   .modal::before {
-    content: '';
-    position: absolute;
-    top: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 40px;
-    height: 4px;
-    background: #e2e8f0;
-    border-radius: 2px;
-  }
-
-  @keyframes slideUp {
-    from {
-      transform: translateY(100%);
-      opacity: 0;
-    }
-    to {
-      transform: translateY(0);
-      opacity: 1;
-    }
+    display: none;
   }
 
   .modal-icon {
@@ -397,21 +370,18 @@ const { modalRef } = useModal(() => props.open, emit)
   }
 }
 
-/* ===== ОЧЕНЬ МАЛЕНЬКИЕ ТЕЛЕФОНЫ (до 380px) ===== */
+/* ========================================
+   ОЧЕНЬ МАЛЕНЬКИЕ ТЕЛЕФОНЫ (до 380px)
+   ======================================== */
 @media (max-width: 380px) {
   .modal-wrapper {
-    padding: 12px;
+    padding: 8px;
   }
 
   .modal {
+    max-height: calc(100vh - 16px);
     padding: 20px 16px 24px;
-    border-radius: 20px 20px 0 0;
-  }
-
-  .modal::before {
-    width: 32px;
-    height: 3px;
-    top: 8px;
+    border-radius: 16px;
   }
 
   .modal-icon {
@@ -445,7 +415,9 @@ const { modalRef } = useModal(() => props.open, emit)
   }
 }
 
-/* ===== ПЛАНШЕТЫ В ПОРТРЕТНОЙ ОРИЕНТАЦИИ ===== */
+/* ========================================
+   ПЛАНШЕТЫ В ПОРТРЕТНОЙ ОРИЕНТАЦИИ
+   ======================================== */
 @media (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
   .modal {
     max-width: 380px;
@@ -453,7 +425,9 @@ const { modalRef } = useModal(() => props.open, emit)
   }
 }
 
-/* ===== ПЛАНШЕТЫ В АЛЬБОМНОЙ ОРИЕНТАЦИИ ===== */
+/* ========================================
+   ПЛАНШЕТЫ В АЛЬБОМНОЙ ОРИЕНТАЦИИ
+   ======================================== */
 @media (min-width: 1025px) and (max-width: 1366px) {
   .modal {
     max-width: 420px;
@@ -486,20 +460,21 @@ const { modalRef } = useModal(() => props.open, emit)
   transform: scale(0.96) translateY(8px);
 }
 
+/* На мобильных та же анимация */
 @media (max-width: 767px) {
   .modal-enter-from .modal {
-    transform: translateY(100%);
+    transform: scale(0.96) translateY(8px);
     opacity: 0;
   }
 
   .modal-leave-to .modal {
-    transform: translateY(100%);
+    transform: scale(0.96) translateY(8px);
     opacity: 0;
   }
 
   .modal-enter-from,
   .modal-leave-to {
-    opacity: 1;
+    opacity: 0;
   }
 }
 </style>

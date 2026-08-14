@@ -1,5 +1,4 @@
 <script setup>
-
 import { useModal } from '@/composable/useModal.js'
 
 const props = defineProps({
@@ -195,20 +194,17 @@ function close() {
   }
 }
 
-
-
-
-
-/* ========================================
-   МОБИЛЬНАЯ И ПЛАНШЕТНАЯ ВЕРСТКА
-   ======================================== */
-
-/* ===== ПЛАНШЕТ (768px - 1024px) ===== */
 @media (max-width: 1024px) {
+  .modal-wrapper {
+    padding: 16px;
+  }
+
   .modal {
     width: 420px;
+    max-width: 100%;
     padding: 28px;
     border-radius: 20px;
+    max-height: calc(100vh - 32px);
   }
 
   .modal h3 {
@@ -227,11 +223,9 @@ function close() {
   }
 }
 
-/* ===== МОБИЛЬНЫЕ ТЕЛЕФОНЫ (320px - 767px) ===== */
 @media (max-width: 767px) {
   .modal-wrapper {
-    align-items: flex-end;
-    padding: 0;
+    padding: 12px;
     background: rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(4px);
   }
@@ -240,37 +234,17 @@ function close() {
     width: 100%;
     max-width: 100%;
     padding: 24px 20px 28px;
-    border-radius: 24px 24px 0 0;
+    border-radius: 20px;
+    max-height: calc(100vh - 24px);
     text-align: center;
-    animation: slideUp 0.3s ease;
-    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.15);
-    border-bottom: none;
-    border-left: none;
-    border-right: none;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+    border: 1px solid var(--border, #e2e8f0);
+    animation: none;
   }
 
-  /* Полоска сверху для закрытия */
+  /* Убираем полоску сверху */
   .modal::before {
-    content: '';
-    position: absolute;
-    top: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 40px;
-    height: 4px;
-    background: var(--border, #e2e8f0);
-    border-radius: 2px;
-  }
-
-  @keyframes slideUp {
-    from {
-      transform: translateY(100%);
-      opacity: 0;
-    }
-    to {
-      transform: translateY(0);
-      opacity: 1;
-    }
+    display: none;
   }
 
   .modal h3 {
@@ -304,21 +278,15 @@ function close() {
   }
 }
 
-/* ===== ОЧЕНЬ МАЛЕНЬКИЕ ТЕЛЕФОНЫ (до 380px) ===== */
 @media (max-width: 380px) {
   .modal-wrapper {
-    padding: 0;
+    padding: 8px;
   }
 
   .modal {
     padding: 20px 16px 24px;
-    border-radius: 20px 20px 0 0;
-  }
-
-  .modal::before {
-    width: 32px;
-    height: 3px;
-    top: 8px;
+    border-radius: 16px;
+    max-height: calc(100vh - 16px);
   }
 
   .modal h3 {
@@ -341,7 +309,6 @@ function close() {
   }
 }
 
-/* ===== ПЛАНШЕТЫ В ПОРТРЕТНОЙ ОРИЕНТАЦИИ ===== */
 @media (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
   .modal {
     width: 380px;
@@ -349,7 +316,6 @@ function close() {
   }
 }
 
-/* ===== ПЛАНШЕТЫ В АЛЬБОМНОЙ ОРИЕНТАЦИИ ===== */
 @media (min-width: 1025px) and (max-width: 1366px) {
   .modal {
     width: 400px;

@@ -243,88 +243,29 @@ label {
   box-shadow: 0 4px 12px rgba(122, 60, 255, 0.35);
 }
 
-/* ===== ПЛАНШЕТ (768px - 1024px) ===== */
-@media (max-width: 1024px) {
-  .overlay {
-    padding: 0;
-  }
-
-  .modal {
-    max-width: 400px;
-    padding: 24px;
-    border-radius: 18px;
-    gap: 14px;
-  }
-
-  h2 {
-    font-size: 20px;
-  }
-
-  input,
-  textarea,
-  select {
-    padding: 10px 14px;
-    font-size: 13px;
-    border-radius: 10px;
-  }
-
-  textarea {
-    min-height: 90px;
-  }
-
-  .selected-date {
-    padding: 10px;
-    font-size: 13px;
-  }
-
-  .cancel,
-  .save {
-    padding: 10px 16px;
-    font-size: 13px;
-  }
-}
-
 /* ===== МОБИЛЬНЫЕ ТЕЛЕФОНЫ (320px - 767px) ===== */
 @media (max-width: 767px) {
   .overlay {
-    padding: 0;
-    align-items: flex-end;
+    padding: 12px;
+    align-items: center;
     background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
   }
 
   .modal {
     max-width: 100%;
     padding: 20px 16px 24px;
-    border-radius: 24px 24px 0 0;
-    animation: slideUp 0.3s ease;
-    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.15);
-    border: none;
-    border-top: 1px solid var(--border, #e2e8f0);
+    border-radius: 20px;
     gap: 12px;
+    max-height: calc(100vh - 24px);
+    border: 1px solid var(--border, #e2e8f0);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+    animation: none;
   }
 
-  /* Полоска сверху для закрытия */
+  /* Убираем полоску сверху */
   .modal::before {
-    content: '';
-    position: absolute;
-    top: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 40px;
-    height: 4px;
-    background: var(--border, #e2e8f0);
-    border-radius: 2px;
-  }
-
-  @keyframes slideUp {
-    from {
-      transform: translateY(100%);
-      opacity: 0;
-    }
-    to {
-      transform: translateY(0);
-      opacity: 1;
-    }
+    display: none;
   }
 
   h2 {
@@ -383,18 +324,13 @@ label {
 /* ===== ОЧЕНЬ МАЛЕНЬКИЕ ТЕЛЕФОНЫ (до 380px) ===== */
 @media (max-width: 380px) {
   .overlay {
-    padding: 0;
+    padding: 8px;
   }
 
   .modal {
     padding: 16px 12px 20px;
-    border-radius: 20px 20px 0 0;
-  }
-
-  .modal::before {
-    width: 32px;
-    height: 3px;
-    top: 8px;
+    border-radius: 16px;
+    max-height: calc(100vh - 16px);
   }
 
   h2 {
@@ -471,21 +407,21 @@ label {
   opacity: 0;
 }
 
-/* Для мобильных - анимация снизу */
+/* Для мобильных - та же анимация, что и везде */
 @media (max-width: 767px) {
   .modal-enter-from .modal {
-    transform: translateY(100%);
+    transform: translateY(45px) scale(0.95);
     opacity: 0;
   }
 
   .modal-leave-to .modal {
-    transform: translateY(100%);
+    transform: translateY(20px) scale(0.98);
     opacity: 0;
   }
 
   .modal-enter-from,
   .modal-leave-to {
-    opacity: 1;
+    opacity: 0;
   }
 }
 

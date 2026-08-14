@@ -408,17 +408,16 @@ input, textarea, select {
   z-index: 999;
 }
 
-/* ========================================
-   МОБИЛЬНАЯ И ПЛАНШЕТНАЯ ВЕРСТКА МОДАЛКИ
-   ======================================== */
-
-/* ===== ПЛАНШЕТ (768px - 1024px) ===== */
 @media (max-width: 1024px) {
+  .modal-wrapper {
+    padding: 16px;
+  }
+
   .modal {
     width: 480px;
+    max-width: 100%;
     padding: 24px;
-    max-height: 90vh;
-    overflow-y: auto;
+    max-height: calc(100vh - 32px);
   }
 
   .modal h3 {
@@ -439,59 +438,34 @@ input, textarea, select {
   }
 }
 
-/* ===== МОБИЛЬНЫЕ ТЕЛЕФОНЫ (320px - 767px) ===== */
+/* ========================================
+   МОБИЛЬНЫЕ ТЕЛЕФОНЫ (320px - 767px)
+   ======================================== */
 @media (max-width: 767px) {
   .modal-wrapper {
-    display: flex;
-    align-items: flex-end;
-    justify-content: center;
+    padding: 12px;
+    background: rgba(15, 23, 42, 0.5);
   }
 
   .modal-backdrop {
-    position: fixed;
-    inset: 0;
-    background: rgba(15, 23, 42, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: flex-end;
     padding: 0;
   }
 
   .modal {
     width: 100%;
     max-width: 100%;
-    max-height: 92vh;
-    padding: 20px 20px 24px;
-    border-radius: 24px 24px 0 0;
+    max-height: calc(100vh - 24px);
+    padding: 20px 16px 24px;
+    border-radius: 20px;
     gap: 12px;
-    overflow-y: auto;
-    animation: slideUp 0.3s ease;
-    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.15);
-
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+    border: 1px solid var(--border, #e2e8f0);
+    animation: none;
   }
 
-  /* Полоска сверху для закрытия */
+  /* Убираем полоску сверху */
   .modal::before {
-    content: '';
-    position: absolute;
-    top: 8px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 40px;
-    height: 4px;
-    background: var(--border, #e2e8f0);
-    border-radius: 2px;
-  }
-
-  @keyframes slideUp {
-    from {
-      transform: translateY(100%);
-      opacity: 0;
-    }
-    to {
-      transform: translateY(0);
-      opacity: 1;
-    }
+    display: none;
   }
 
   .modal h3 {
@@ -555,7 +529,6 @@ input, textarea, select {
     margin: -6px 0 4px;
   }
 
-  /* Скрываем скроллбар на мобильных */
   .modal::-webkit-scrollbar {
     width: 0;
   }
@@ -565,11 +538,18 @@ input, textarea, select {
   }
 }
 
-/* ===== ОЧЕНЬ МАЛЕНЬКИЕ ТЕЛЕФОНЫ (до 380px) ===== */
+/* ========================================
+   ОЧЕНЬ МАЛЕНЬКИЕ ТЕЛЕФОНЫ (до 380px)
+   ======================================== */
 @media (max-width: 380px) {
+  .modal-wrapper {
+    padding: 8px;
+  }
+
   .modal {
-    padding: 16px 16px 20px;
-    max-height: 94vh;
+    padding: 16px 12px 20px;
+    max-height: calc(100vh - 16px);
+    border-radius: 16px;
   }
 
   .modal h3 {
@@ -614,7 +594,9 @@ input, textarea, select {
   }
 }
 
-/* ===== ПЛАНШЕТЫ В ПОРТРЕТНОЙ ОРИЕНТАЦИИ ===== */
+/* ========================================
+   ПЛАНШЕТЫ В ПОРТРЕТНОЙ ОРИЕНТАЦИИ
+   ======================================== */
 @media (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
   .modal {
     width: 420px;
@@ -623,12 +605,15 @@ input, textarea, select {
   }
 }
 
-/* ===== ПЛАНШЕТЫ В АЛЬБОМНОЙ ОРИЕНТАЦИИ ===== */
+/* ========================================
+   ПЛАНШЕТЫ В АЛЬБОМНОЙ ОРИЕНТАЦИИ
+   ======================================== */
 @media (min-width: 1025px) and (max-width: 1366px) {
   .modal {
     width: 460px;
   }
 }
+
 
 /* ===== ТЕМНАЯ ТЕМА ===== */
 @media (prefers-color-scheme: dark) {
@@ -658,31 +643,13 @@ input, textarea, select {
     #2d3748 63%
   );
 }
-/* ===== МОДАЛЬНАЯ АНИМАЦИЯ ===== */
-.modal-enter-active,
-.modal-leave-active {
-  transition: all 0.3s ease;
-}
-
-.modal-enter-from {
-  opacity: 0;
-  transform: scale(0.95);
-}
-
-.modal-leave-to {
-  opacity: 0;
-  transform: scale(0.95);
-}
-
 </style>
 <style>
 /* TransitionGroup animations */
 .file-enter-active,
 .file-leave-active,
 .file-move {
-  transition:
-    transform .2s ease,
-    opacity .2s ease;
+  transition: transform 0.2s ease, opacity 0.2s ease;
 }
 
 .file-enter-from {
@@ -696,40 +663,29 @@ input, textarea, select {
   transform: translateX(6px);
 }
 
+/* Modal animation */
 .modal-enter-active,
 .modal-leave-active {
-  transition: opacity .25s ease;
+  transition: opacity 0.25s ease;
 }
 
 .modal-enter-from,
 .modal-leave-to {
   opacity: 0;
 }
+
 .modal-enter-active .modal,
 .modal-leave-active .modal {
-  transition:
-    transform .35s cubic-bezier(.16,1,.3,1),
-    opacity .25s ease;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
 }
+
 .modal-enter-from .modal {
-  transform: translateY(45px) scale(.95);
+  transform: translateY(45px) scale(0.95);
   opacity: 0;
 }
+
 .modal-leave-to .modal {
-  transform: translateY(20px) scale(.98);
+  transform: translateY(20px) scale(0.98);
   opacity: 0;
-}
-
-/* Для мобильных - анимация снизу */
-@media (max-width: 767px) {
-  .modal-enter-from {
-    transform: translateY(100%);
-    opacity: 0;
-  }
-
-  .modal-leave-to {
-    transform: translateY(100%);
-    opacity: 0;
-  }
 }
 </style>

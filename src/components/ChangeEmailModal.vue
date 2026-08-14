@@ -222,19 +222,18 @@ input[readonly]{
 }
 
 /* ========================================
-   МОБИЛЬНАЯ И ПЛАНШЕТНАЯ ВЕРСТКА
+   ПЛАНШЕТ (768px - 1024px)
    ======================================== */
-
-/* ===== ПЛАНШЕТ (768px - 1024px) ===== */
 @media (max-width: 1024px) {
   .overlay {
-    padding: 0;
+    padding: 16px;
   }
 
   .modal {
     max-width: 420px;
     padding: 24px;
     border-radius: 20px;
+    max-height: calc(100vh - 32px);
   }
 
   h2 {
@@ -259,46 +258,30 @@ input[readonly]{
   }
 }
 
-/* ===== МОБИЛЬНЫЕ ТЕЛЕФОНЫ (320px - 767px) ===== */
+/* ========================================
+   МОБИЛЬНЫЕ ТЕЛЕФОНЫ (320px - 767px)
+   ======================================== */
 @media (max-width: 767px) {
   .overlay {
-    padding: 0;
-    align-items: flex-end;
+    padding: 12px;
+    align-items: center;
     background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
   }
 
   .modal {
     max-width: 100%;
     padding: 20px 16px 24px;
-    border-radius: 24px 24px 0 0;
-    animation: slideUp 0.3s ease;
-    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.15);
-    border: none;
-    border-top: 1px solid var(--border, #e2e8f0);
+    border-radius: 20px;
+    max-height: calc(100vh - 24px);
+    border: 1px solid var(--border, #e2e8f0);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+    animation: none;
   }
 
-  /* Полоска сверху для закрытия */
+  /* Убираем полоску сверху */
   .modal::before {
-    content: '';
-    position: absolute;
-    top: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 40px;
-    height: 4px;
-    background: var(--border, #e2e8f0);
-    border-radius: 2px;
-  }
-
-  @keyframes slideUp {
-    from {
-      transform: translateY(100%);
-      opacity: 0;
-    }
-    to {
-      transform: translateY(0);
-      opacity: 1;
-    }
+    display: none;
   }
 
   h2 {
@@ -350,7 +333,9 @@ input[readonly]{
   }
 }
 
-/* ===== ОЧЕНЬ МАЛЕНЬКИЕ ТЕЛЕФОНЫ (до 380px) ===== */
+/* ========================================
+   ОЧЕНЬ МАЛЕНЬКИЕ ТЕЛЕФОНЫ (до 380px)
+   ======================================== */
 @media (max-width: 380px) {
   .overlay {
     padding: 8px;
@@ -358,13 +343,8 @@ input[readonly]{
 
   .modal {
     padding: 16px 12px 20px;
-    border-radius: 20px 20px 0 0;
-  }
-
-  .modal::before {
-    width: 32px;
-    height: 3px;
-    top: 8px;
+    border-radius: 16px;
+    max-height: calc(100vh - 16px);
   }
 
   h2 {
@@ -386,70 +366,6 @@ input[readonly]{
     font-size: 13px;
   }
 }
-
-/* ===== ТЕМНАЯ ТЕМА ===== */
-@media (prefers-color-scheme: dark) {
-  .overlay {
-    background: rgba(0, 0, 0, 0.6);
-  }
-
-  .modal {
-    background: #1e293b;
-    border-color: #334155;
-  }
-
-  .modal::before {
-    background: #334155;
-  }
-
-  h2 {
-    color: #f1f5f9;
-  }
-
-  .subtitle {
-    color: #94a3b8;
-  }
-
-  label {
-    color: #94a3b8;
-  }
-
-  input {
-    background: #0f172a;
-    border-color: #334155;
-    color: #f1f5f9;
-  }
-
-  input:focus {
-    border-color: #7c3aed;
-    box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.2);
-  }
-
-  input[readonly] {
-    background: #0f172a;
-    color: #64748b;
-  }
-
-  .cancel {
-    background: #2d3748;
-    border-color: #4a5568;
-    color: #cbd5e1;
-  }
-
-  .cancel:hover {
-    background: #3a4458;
-  }
-
-  .save {
-    background: #7c3aed;
-  }
-
-  .save:hover {
-    background: #6d28d9;
-  }
-}
-
-
 
 </style>
 <style>
@@ -476,21 +392,20 @@ input[readonly]{
   transform:translateY(20px) scale(.97);
 }
 
-/* Для мобильных - анимация снизу */
 @media (max-width: 767px) {
   .modal-enter-from .modal {
-    transform: translateY(100%);
+    transform: translateY(20px) scale(0.97);
     opacity: 0;
   }
 
   .modal-leave-to .modal {
-    transform: translateY(100%);
+    transform: translateY(20px) scale(0.97);
     opacity: 0;
   }
 
   .modal-enter-from,
   .modal-leave-to {
-    opacity: 1;
+    opacity: 0;
   }
 }
 </style>
