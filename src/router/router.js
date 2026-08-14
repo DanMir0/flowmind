@@ -16,6 +16,7 @@ import NotFound from '@/pages/NotFound.vue'
 import AuthCallback from '@/pages/auth/AuthCallback.vue'
 import PrivacyPolicy from '@/components/PrivacyPolicy.vue'
 import TermsOfService from '@/components/TermsOfService.vue'
+import EmailConfirmed from '@/pages/auth/EmailConfirmed.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -37,6 +38,7 @@ const router = createRouter({
     { path: '/:pathMatch(.*)', name: 'NotFound', component: NotFound, },
     { path: '/privacy-policy', name: 'privacyPolicy', component: PrivacyPolicy, },
     { path: '/terms-of-service', name: 'termsOfService', component: TermsOfService, },
+    { path: '/auth/email-confirmed', name: 'emailConfirmed', component: EmailConfirmed, },
   ]
 })
 
